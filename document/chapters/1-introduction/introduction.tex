@@ -18,12 +18,61 @@ Both Protelis and Scafi presents strengths, but also weaknesses: in order to add
 The work described in this thesis consists in the development of a new aggregate programming framework in Kotlin, which strengths are transparency, minimality and portability. 
 
 \section{Context}
-In this section is going to be discussed in details the paradigm of Aggregate Programming, in order to provide some context that is going to be necessary for the following part of this document.
+In this section it is going to be discussed in details the paradigm of Aggregate Programming, in order to provide the context of its development and an overview about how the paradigm works.
 
 \subsection{Aggregate Programming}
+Since the last few decades have witnessed technological advances, the traditional way of engineering software is, in some cases, suboptimal.
+The systems developed are becoming more and more complex, with requirements that are difficult to achieve. 
 
+These challenges are enhanced when coming to terms with distributed systems, because there is the need to handle the always increasing number of connected devices, that share and compute data.\newline
+Some relevant complexities are the following \cite{distributed_systems_challenges}:
+\begin{itemize}
+    \item Scalability: as the number of devices in a distributed system grows, the coordination becomes increasingly complex. This requires the development of scalable algorithms and protocols that can handle large numbers of devices;
+    \item Heterogeneity and interoperability: in a distributed system, devices may be made by different manufacturers and use different protocols, which can make it difficult for them to communicate with each other. The interoperability between heterogeneous devices and systems is a major challenge;
+    \item Synchronization: devices are usually not connected to a common clock, which can make it difficult to synchronize their activities. This can lead to inconsistencies and errors in the system;
+    \item Latency: the distance between devices in a distributed system can lead to high latency, which can affect the performance of the system. Managing and reducing latency is a major challenge in the coordination of devices;
+    \item Consistency: devices may have different views of the system state, which can lead to inconsistencies. Guarantee consistency across devices can be challenging and requires the development of distributed algorithms and protocols;
+    \item Fault tolerance (or error control): devices may fail or become disconnected, which can disrupt the system. Ensuring fault tolerance and the ability to detect and recover from failures is essential in this kind of systems;
+    \item Security and privacy: coordinating devices in a distributed system requires the sharing of sensitive information, which can create security risks.
+\end{itemize}
 
-\subsubsection{Domain restriction: alignment}
+The traditional way of developing this kind of architectures is typically focused on the single device, instead of the system as a whole. This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures.
+
+Aggregate programming is a programming paradigm that focuses on the manipulation of complex data structures as a whole, rather than their individual components. The focus is on what a system is required to do, rather than how is going to achieve it.\newline
+This paradigm is closely related to the \textit{field calculus}, a mathematical framework for modeling and reasoning about distributed systems.
+Aggregate programming in combination with field calculus, provides a powerful tool for modeling, reasoning, and programming distributed systems. It allows for the efficient manipulation of large and complex data in distributed systems, and facilitates the representation of relationships and interactions between devices. It is a useful approach for IoT and other distributed systems where scalability, coordination, and security are critical concerns.
+
+The basic concept used in aggregate programming is the \textbf{computational field}, which is a mathematical function that assigns a value to each point in a space, and it is used to represent and manipulate the state of a distributed system.
+
+In order to explain better what a computational field is and how it is used, it is necessary to discuss the assumed computational model \cite{computational_fields_theory}.
+Supposed a program P, it is executed by a network of devices, which is defined by a dynamic neighboring relationship. The computation of P can be analyzed by a local and a global point of view.
+Considering the local perspective, P is computing on a round-based scheme in single devices. A round is executed in the following way:
+\begin{itemize}
+    \item the device sleeps for a delta of time and at some point it wakes up;
+    \item it retrieves information received from neighbors while it was sleeping. The messages sent by the neighbors are in fields, and they map the neighbor device identifier with the values computed;
+    \item it gathers information about its context;
+    \item it retrieves the information stored locally in the previous round about the context;
+    \item it executes P, which might manipulate the data of the current context, the data retrieved in the previous round and the neighbors values;
+    \item at the end of the execution of P, the device stores the current context's value in the local memory and sent the message to all the neighbors about the current computation;
+    \item at the end of the round, the device returns to sleep, until another round begins.
+\end{itemize}
+
+On the other hand, the global point of view is the key that make aggregate computing a powerful tool. In this case, the computation considers the entire network of interconnected devices as a single, unified entity. The data is represented as a distributed space-time field evolution: it maps the computation events to values computed by devices.
+A computational field is a snapshot of the state of the distributed system's network at a certain moment in time, which maps device identifiers to their values.\newline
+
+The main constructs provided by the field calculus are the following:
+\begin{itemize}
+    \item \textbf{Rep-expression} $rep(e_0)\{(x)-> e\}$ \newline
+    This is the repeat construct, and it represents the \textit{time evolution}. This allows the field to change dynamically: if in the previous round the rep expression has not been evaluated, the initialization value is $e_0$, otherwise it is the value obtained in the last computation of rep;
+    \item \textbf{Nbr-expression} $nbr\{e\}$\newline
+    The neighboring is used to model the device-to-neighbor interaction. In order to do this, it is necessary to construct neighboring fields: in this data structure each event is associated to a value, that is mapped to a neighbor identifier and its last value computed. Using this construct it is possible for a device to understand its surrounding by manipulating the neighboring field obtained;
+    \item \textbf{Branching} $if(e_0)\{e_1\} else \{e_2\}$\newline
+    Branching causes a domain restriction, which means that devices compute $e_1$ only in the restricted domain where $e_0$ is true, otherwise they compute $e_2$. This behavior and its consequences will be discussed in details in Section \ref{section:alignment};
+    \item \textbf{Function calls} $e(e_1, ..., e_n)$ \newline
+    This construct model a function call where $e$ evaluates to a field of function values. 
+\end{itemize}
+
+\subsubsection{Domain restriction: alignment}\label{section:alignment}
 
 \section{State of the art}
 \subsection{Protelis}
