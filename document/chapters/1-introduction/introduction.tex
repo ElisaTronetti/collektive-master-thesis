@@ -86,6 +86,21 @@ This limitation can be overcome by extending the field calculus with a new const
 \end{figure}
 
 \subsubsection{Domain restriction: alignment}\label{section:alignment}
+The expected consequence of a branch construct is to determine the portion of code that is going to be computed. In the field calculus, the branch construct has also an unusual behavior, which is called domain restriction.
+
+Taking in consideration this portion of pseudocode
+\begin{lstlisting}
+    if (e0) {e1} else {e2}
+\end{lstlisting}
+it is possible to identify two different restricted subdomains: the first one it where e0 is true, which is going to be called $D_{true}$, the second one is defined by e0 equals to false, which is $D_{false}$.
+For example, if a device is in the domain $D_{true}$, the following are the implications \cite{computational_fields_theory}:
+\begin{itemize}
+    \item it does not compute e2, which is the typical branch behavior;
+    \item if e2 involves a nbr-expression, this is not going to be evaluated by the considered device. This means that the neighboring devices in $D_{true}$ can not obtain the value of this device for the nbr-expression in e2, because it has not been computed. Similarly, the nbr-expression in e1 evaluated by this device, is not going to be share from $D_{false}$ to  $D_{true}$;
+    \item if the device evaluated e2 instead of e1 in its previous round, then all the rep-expressions in e2 are going to be computed using the initialization value.
+\end{itemize}
+
+// TODO -> devi dire perché si parla di allineamento tra device, che non coinvolge solo l'if, ma anche le espressioni in generale. La parola clustering è bella, usala
 
 \section{State of the art}
 \subsection{Protelis}
