@@ -73,6 +73,18 @@ The main constructs provided by the field calculus are the following:
     This construct model a function call where $e$ evaluates to a field of function values. 
 \end{itemize}
 
+As already said, the data structures manipulated are distributed over space, and they evolve over time. These two aspects are handled, in the case of field calculus, by two separate constructs: the evolution in time is manipulated by \textit{rep-expression}, the space management, which provide neighbors interactions, is provided by the \textit{nbr-expression}.\newline
+The use of time evolution and neighbor interaction operators in the traditional way leads to a slowdown in the efficient spread of information. This is due to the separation of state sharing (nbr) and state updates (rep), which requires information received through nbr to be stored through rep in the local memory of the device before it can be passed on during the next execution of nbr \cite{share_operator}. 
+
+This limitation can be overcome by extending the field calculus with a new construct, which has been called \textbf{share} \cite{share_operator}. The share operator allows to observe the neighbors' field, updated the local values and sharing immediately the updated state in a single computation. It is possible to observe the differences between the behavior of the share operator and the combination of rep and nbr in Figure \ref{fig:share_operator_introduction}.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.8]{document/chapters/1-introduction/images/share_operator_introduction.png}
+    \caption{Comparison between the combination of rep-expression and nbr-expression, and the share construct \cite{share_operator}}
+    \label{fig:share_operator_introduction}
+\end{figure}
+
 \subsubsection{Domain restriction: alignment}\label{section:alignment}
 
 \section{State of the art}
