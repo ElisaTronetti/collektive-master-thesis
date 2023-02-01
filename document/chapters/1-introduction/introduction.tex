@@ -96,11 +96,21 @@ it is possible to identify two different restricted subdomains: the first one it
 For example, if a device is in the domain $D_{true}$, the following are the implications \cite{computational_fields_theory}:
 \begin{itemize}
     \item it does not compute e2, which is the typical branch behavior;
-    \item if e2 involves a nbr-expression, this is not going to be evaluated by the considered device. This means that the neighboring devices in $D_{true}$ can not obtain the value of this device for the nbr-expression in e2, because it has not been computed. Similarly, the nbr-expression in e1 evaluated by this device, is not going to be share from $D_{false}$ to  $D_{true}$;
+    \item if e2 involves a nbr-expression, this is not going to be evaluated by the considered device. This means that the neighboring devices in $D_{true}$ can not obtain the value of this device for the nbr-expression in e2, because it has not been computed. Similarly, the nbr-expression in e1 evaluated by this device, is not going to be shared from $D_{false}$ to $D_{true}$;
     \item if the device evaluated e2 instead of e1 in its previous round, then all the rep-expressions in e2 are going to be computed using the initialization value.
 \end{itemize}
 
-// TODO -> devi dire perché si parla di allineamento tra device, che non coinvolge solo l'if, ma anche le espressioni in generale. La parola clustering è bella, usala
+Given this behavior, the result is that devices that operate in different subdomains are computing in isolation. This means that they can not communicate with each other, unless they are in the same domain. For this reason, this characteristic is called \textit{clustering}, which is an important feature: it allows restricting computations in subdomains in an easy and efficient way, which is extremely useful in many use-cases.
+
+The domain restriction is a crucial trait of aggregate programming, and it introduces to a problem that has to be taken in consideration. Different devices that operate in a highly distributed system do not have a shared memory that can be used to keep track of the computation of each device. On the other hand, the domain restriction characteristic requires that each device has to communicate only with devices in the same subdomain, which means that they are computing the same operation.\newline
+This is defined as the \textbf{alignment problem}, and it is necessary to explore all the information of the system in order to find a solution. First, it is important to keep in mind that each device has its own identifier, which can be used to define the author of a message. Second, when dealing with a computational field, such as when retrieving neighboring values using a nbr-expression, the device is currently computing the operation that it is actually looking for in the field.\newline
+In order to explain this concept better, here is a snippet of pseudocode:
+\begin{lstlisting}
+    if (e0) {nbr(e1)} else {nbr(e2)}
+\end{lstlisting}
+When a device $\delta_1$ is in the domain $D_{true}$, it computes $nbr(e1)$: this means that it is retrieving from the neighbors that computed $e1$, while being evaluating $e1$ itself.\newline
+Consequently, $\delta_1$ and the other devices have to be aligned in order to exchange information.\newline
+Given these concepts, it is possible to understand how to deal with the alignment problem: thanks to the current computational location of a device, it is possible to understand which values it is currently trying to retrieve, and, since each device has an identifier, the values can be mapped to those identifiers. Then, combining all the information together, a computational field is obtained.
 
 \section{State of the art}
 \subsection{Protelis}
