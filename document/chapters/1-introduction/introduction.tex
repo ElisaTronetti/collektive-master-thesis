@@ -5,13 +5,13 @@ The Internet has also become an integral part of modern life, connecting people 
 Mobile technology has grown exponentially, thanks to the adoption of smartphones and other mobile devices.\newline
 One of the fields that has seen a substantial growth, due to the increasing availability and affordability of devices, sensors and other components, is the Internet of Things (IoT). The term IoT refers to the growing network of physical devices, vehicles, buildings and other items that are embedded with sensors, software and connectivity, which enables these \textit{Things} to collect and share data. These capabilities have the potential to bring significant benefits to society and economy, such as improving public services, increasing efficiency and productivity, and reducing costs.
 
-This technological development is closely connected with the growth of distributed systems. With the increase in computing power and the availability of fast and reliable networks, it has become possible to allow devices and systems to work together and share data, even when they are physically separated.
+This technological development is closely connected with the growth of distributed systems. As a consequence of the increase in computing power and the availability of fast and reliable networks, it has become possible to allow devices and systems to work together and share data, even when they are physically separated.
 
-The general growth just discussed brought new challenges: there is the need of engineering complex software that has to take full advantage of the computational infrastructure available, taking in consideration the unpredictability of changes and the heterogeneity of communication required.
+The general growth just discussed brought new challenges, such as the need of engineering complex software which has to take full advantage of the computational infrastructure available, taking in consideration the unpredictability of changes and the heterogeneity of communication required.
 
-In order to face the new complexities there is the necessity to rethink and renovate the process of software development.
+In order to face the new complexities it is necessary to rethink and renovate the process of software development.
 
-\textit{Aggregate Programming} is a paradigm which aim is to address these requirements. It allows for the easy manipulation of data across devices, making it possible to perform operation on the data of distributed systems, in a simple and efficient manner.\newline
+\textit{Aggregate Programming} is a paradigm which aims to address these requirements. It allows for the easy manipulation of data across devices, making it possible to perform operation on the data of distributed systems, in a simple and efficient manner.\newline
 This paradigm has been implemented in different programming languages and platforms: two of them are Protelis and Scafi. 
 Both Protelis and Scafi presents strengths, but also weaknesses: in order to address those, a new framework can be a solution.
 
@@ -29,18 +29,25 @@ Some relevant complexities are the following \cite{distributed_systems_challenge
 \begin{itemize}
     \item Scalability: as the number of devices in a distributed system grows, the coordination becomes increasingly complex. This requires the development of scalable algorithms and protocols that can handle large numbers of devices;
     \item Heterogeneity and interoperability: in a distributed system, devices may be made by different manufacturers and use different protocols, which can make it difficult for them to communicate with each other. The interoperability between heterogeneous devices and systems is a major challenge;
-    \item Synchronization: devices are usually not connected to a common clock, which can make it difficult to synchronize their activities. This can lead to inconsistencies and errors in the system;
-    \item Latency: the distance between devices in a distributed system can lead to high latency, which can affect the performance of the system. Managing and reducing latency is a challenge in the coordination of devices;
+    \item Synchronization: devices are usually not connected to a common clock, which can make it difficult to synchronize their activities. This can lead to inconsistencies and errors within the system;
+    \item Latency: the distance between devices in a distributed system can lead to high latency, which can affect the performance of the system. Managing and reducing latency is a challenge while coordinating numerous devices;
     \item Consistency: devices may have different views of the system state, which can lead to inconsistencies. Guarantee consistency across devices can be challenging and requires the development of distributed algorithms and protocols;
     \item Fault tolerance (or error control): devices may fail or become disconnected, which can disrupt the system. Ensuring fault tolerance and the ability to detect and recover from failures is essential in this kind of systems;
     \item Security and privacy: coordinating devices in a distributed system requires the sharing of sensitive information, which can create security risks.
 \end{itemize}
 
-Traditionally, the development this kind of architectures is typically focused on the single device, instead of the system as a whole. This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures.
+Traditionally, the development in this kind of architectures is focused on the single device, instead of the system as a whole. This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures, such as the one represented in Figure \ref{fig:iot_connected_things}.
 
-Aggregate programming is a programming paradigm that focuses on the manipulation of complex data structures as a whole, rather than their individual components. The focus is on what a system is required to do, rather than on how is going to achieve it.\newline
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.8]{document/chapters/1-introduction/images/iot_connected_things.png}
+    \caption{Example of a real life environment, where heterogeneous devices have the possibility to communicate with each other wirelessly creating complex distributed systems. \cite{aggregate_programmig_iot}}
+    \label{fig:iot_connected_things}
+\end{figure}
+
+Aggregate programming is a paradigm that focuses on the manipulation of complex data structures as a whole, rather than their individual components. The focus is on what a system is required to do, rather than on how is going to achieve it.\newline
 This paradigm is closely related to the \textit{field calculus}, a mathematical framework for modeling and reasoning about distributed systems.\newline
-Aggregate programming in combination with field calculus, provides a powerful tool for modeling, reasoning, and programming distributed systems. It allows for the efficient manipulation of large and complex data in distributed systems, and facilitates the representation of relationships and interactions between devices. It is a useful approach for IoT and other distributed systems where scalability, coordination, and security are critical concerns.
+Aggregate programming in combination with field calculus, provides a powerful tool for modeling, reasoning, and programming distributed systems. It allows for the efficient manipulation of large and complex data in distributed systems, and facilitates the representation of relationships and interactions between devices. It is a useful approach to adopt for IoT and other distributed systems where scalability, coordination, and security are critical concerns.
 
 The basic concept used in aggregate programming is the \textbf{computational field}, which is a mathematical function that assigns a value to each point in a space, and it is used to represent and manipulate the state of a distributed system.
 
@@ -58,7 +65,7 @@ Considering the local perspective, P is computing on a round-based scheme in sin
 \end{itemize}
 
 On the other hand, the global point of view is the key that makes aggregate computing a powerful tool. In this case, the computation considers the entire network of interconnected devices as a single, unified entity.
-The data is represented as a distributed space-time field evolution: it maps the computation events to values computed by devices.\newline
+The data is represented as a distributed space-time field evolution, which maps the computation events to values computed by devices.\newline
 A computational field is a snapshot of the state of the distributed system's network at a certain moment in time, which maps device identifiers to their values.
 
 The main constructs provided by the field calculus are the following:
@@ -73,7 +80,7 @@ The main constructs provided by the field calculus are the following:
     This construct model a function call where $e$ evaluates to a field of function values. 
 \end{itemize}
 
-As already said, the data structures manipulated are distributed over space, and they evolve over time. These two aspects are handled, in the case of field calculus, by two separate constructs: the evolution in time is manipulated by \textit{rep-expression}, the space management, which provide neighbors interactions, is provided by the \textit{nbr-expression}.\newline
+As previously said, the data structures manipulated are distributed over space, and they evolve over time. These two aspects are handled, in the case of field calculus, by two separate constructs: the evolution in time is manipulated by \textit{rep-expression}, the space management, which provide neighbors interactions, is provided by the \textit{nbr-expression}.\newline
 The use of time evolution and neighbor interaction operators in the traditional way leads to a slowdown in the efficient spread of information. This is due to the separation of state sharing (nbr) and state updates (rep), which requires information received through nbr to be stored through rep in the local memory of the device before it can be passed on during the next execution of nbr \cite{share_operator}. 
 
 This limitation can be overcome by extending the field calculus with a new construct, which has been called \textbf{share} \cite{share_operator}. The share operator allows to observe the neighbors' field, updated the local values and sharing immediately the updated state in a single computation. It is possible to observe the differences between the behavior of the share operator and the combination of rep and nbr in Figure \ref{fig:share_operator_introduction}.
@@ -109,7 +116,7 @@ In order to explain this concept better, here is a snippet of pseudocode:
     if (e0) {nbr(e1)} else {nbr(e2)}
 \end{lstlisting}
 When a device $\delta_1$ is in the domain $D_{true}$, it computes $nbr(e1)$: this means that it is retrieving from the neighbors that computed $e1$, while being evaluating $e1$ itself.\newline
-Consequently, $\delta_1$ and the other devices have to be aligned in order to exchange information.\newline
+Consequently, $\delta_1$ and the other devices have to be aligned in order to exchange information: they all are in the same subdomain, in which $e0$ is evaluated as true, and they are computing $nbr(e1)$.\newline
 Given these concepts, it is possible to understand how to deal with the alignment problem: thanks to the current computational location of a device, it is possible to understand which values it is currently trying to retrieve, and, since each device has an identifier, the values can be mapped to those identifiers. Then, combining all the information together, a computational field is obtained.
 
 \section{State of the art}
