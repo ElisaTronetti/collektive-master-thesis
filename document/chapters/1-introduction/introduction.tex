@@ -120,8 +120,38 @@ Consequently, $\delta_1$ and the other devices have to be aligned in order to ex
 Given these concepts, it is possible to understand how to deal with the alignment problem: thanks to the current computational location of a device, it is possible to understand which values it is currently trying to retrieve, and, since each device has an identifier, the values can be mapped to those identifiers. Then, combining all the information together, a computational field is obtained.
 
 \section{State of the art}
+The aim of this section is to give an introduction about the state-of-the-art technologies that has been developed in the field of aggregate programming. This overview is going to take in consideration how each implementation work and the choices that led their development, in order to depict a representation of the context in which the project of this thesis is going to be set in.
+
 \subsection{Protelis}
+Protelis \cite{protelis_introduction} is a functional language inspired by Proto. It implements the field calculus providing a modern specification language.\newline
+The architecture is based on Java, and the reasons are multiple:
+\begin{itemize}
+    \item Java is portable across different systems and devices;
+    \item it is easy to import libraries and APIs;
+    \item the variety of low-cost embedded devices that are able to support Java is increasing;
+    \item Java optimizations in terms of speed and resources consumption are making it a valid alternative to low-level languages, such as C.
+\end{itemize}
+
+Since Protelis is a functional language, but its syntax is Java-like, its adoption is not difficult.
+For example, the following is a snippet of Protelis code, which is used to calculate the distance between each device and the source, creating a gradient base on said distance:
+\begin{lstlisting}[language=Python, caption=Protelis example, captionpos=b]
+def myPosition() = self.getDevicePosition()
+def nbrRange() = nbr(myPosition()).distanceTo(myPosition())
+share (d <- POSITIVE_INFINITY) {
+    let shortestPathViaNeighborhood = 
+        foldMin(POSITIVE_INFINITY, d + nbrRange())
+    if (env.has("source")) { 
+        0 
+    } else {
+        shortestPathViaNeighborhood
+    }
+}
+\end{lstlisting}
+
+Protelis is very versatile, and it can be used in a wide range of application domains. It is possible to create Protelis modules and execute them in simulations using Alchemist \cite{alchemist}, which is a simulator for pervasive computing and distributed systems.
+
 \subsection{Scafi}
+
 \subsection{FCPP}
 
 \section{Motivation and goal}
