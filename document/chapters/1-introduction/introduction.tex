@@ -12,8 +12,8 @@ The general growth just discussed brought new challenges, such as the need of en
 In order to face the new complexities it is necessary to rethink and renovate the process of software development.
 
 \textit{Aggregate Programming} is a paradigm which aims to address these requirements. It allows for the easy manipulation of data across devices, making it possible to perform operation on the data of distributed systems, in a simple and efficient manner.\newline
-This paradigm has been implemented in different programming languages and platforms: two of them are Protelis and Scafi. 
-Both Protelis and Scafi presents strengths, but also weaknesses: in order to address those, a new framework can be a solution.
+This paradigm has been implemented in different programming languages and platforms: for example Protelis, Scafi and FCPP.\newline
+All of them present strengths, but also weaknesses: in order to address those, a new framework can be a solution.
 
 The work described in this thesis consists in the development of a new aggregate programming framework in Kotlin, which strengths are transparency, minimality and portability. 
 
@@ -163,5 +163,13 @@ The combination of the Scala programming language, the Akka framework, and the J
 In particular, the choice of a JVM-based architecture has the same advantages discussed previously for Protelis (Section \ref{protelis}), which are mainly portability, low-cost of devices, diffusion and general JVM performances optimizations.
 
 \subsection{FCPP}
+FCPP \cite{fcpp_introduction} is a library in C++14, and it implements the field calculus.\newline
+It provides tools for simulation of distributed systems, and its extensible component-based architecture makes it suitable for a wide range of application scenarios.
+
+Differently from Protelis and Scafi, FCPP does not rely on the Java Virtual Machine (JVM). It is implemented in C++, which choice gives the following advantages:
+\begin{itemize}
+    \item numerous devices support C++ architectures, making it possible deploy FCPP on systems of any sort, which includes microcontrollers;
+    \item C++ is performance-oriented, which means that there are low system requirements, increasing the variety of devices that can use FCCP.
+\end{itemize}
 
 \section{Motivation and goal}
