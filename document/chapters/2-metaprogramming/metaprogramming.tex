@@ -1,4 +1,13 @@
 \chapter{Metaprogramming in Kotlin}\label{chapter:metaprogramming}
+A typical program computation can be summarized as follows: it read data as input, compute that data and generates an output. Metaprograms \cite{metaprogramming_introduction} are able to take as input another program, sometime even itself, manipulate it and return it with a modified behavior.\newline
+Metaprogramming in Kotlin is a powerful feature that allows for the manipulation and generation of code at compile time. The possible benefits of this technique are:
+\begin{itemize}
+    \item Code generation: it generates repetitive or boilerplate code automatically, reducing the amount of code that needs to be written and maintained by hand. Consequently, this can increase code readability and maintainability, as well as reduce the risk of introducing bugs or errors;
+    \item Readability: it provides a higher level of abstraction, allowing to abstract away complex logic and make code more readable and easier to understand. This can also help to simplify the implementation of complex algorithms and data structures;
+    \item Reusability: by generating code automatically, it is possible reuse the same logic across multiple parts of applications, increasing overall code reuse and maintainability;
+    \item Supports Domain-Specific Languages (DSLs): it enables to create custom, domain-specific languages (DSLs) that are optimized for specific tasks or use cases, which can help to simplify complex operations and make the code more readable and intuitive;
+    \item Custom annotations: it allows creating custom annotations, which can be used to provide additional information about the code and to automate tasks such as code generation. This can improve code quality and make it easier to understand the intention behind the code.
+\end{itemize}
 
 \section{Metaprogramming techniques}
 \subsection{Annotations}
