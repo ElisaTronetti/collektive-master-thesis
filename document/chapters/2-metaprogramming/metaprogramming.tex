@@ -10,7 +10,39 @@ Metaprogramming in Kotlin is a powerful feature that allows for the manipulation
 \end{itemize}
 
 \section{Metaprogramming techniques}
+There are different techniques that can be used in Kotlin in order to create metaprograms. In the following sections they are going to be analyzed in details the main approaches provided by Kotlin, in order to give an overview of the possible alternatives when coming into terms with metaprogramming.
+
 \subsection{Annotations}
+Annotations \cite{annotation_documentation} in Kotlin are a type of metadata that can be added to provide additional information about the code, as well as to automate certain tasks.\newline
+An annotation is represented by an \textbf{@} symbol followed by the annotation type.
+
+For example, this is a custom annotation in Kotlin:
+\begin{lstlisting}[caption={Example of custom annotation in Kotlin}, language=Kotlin, captionpos=b, label={code:kotlin_annotations_creation}]
+    @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class MyAnnotation
+\end{lstlisting}
+In this snippet of code, the \textbf{@Target} annotation specifies the elements that the annotation can be applied to, in this case either classes or functions. The \textbf{@Retention} annotation refers to the retention policy, which determines whether the annotation is available at runtime.
+
+Annotations can be used to provide metadata, such as the purpose of a function, the intended usage of a class, or the preferred behavior of a method. One possible use case is to use annotations to specify that a certain method should only be called on a background thread, or that a certain class is serializable.
+
+Another feature provided by annotations, which can be considered metaprogramming, is the possibility to used them to automate tasks, such as code generation. For example, annotations can be used to automatically generates code for serializing and deserializing objects.
+
+To create annotations, first it is necessary to declare the annotation type, using the \textbf{annotation} keyword in Kotlin, in the same way shown in the Listing \ref{code:kotlin_annotations_creation}.\newline
+Then, it is possible to use the annotation in the code by placing the \textbf{@} symbol, followed by the annotation type before the element that is going to be annotated, such as a class, function, or property.
+
+The following snippet of code shows how to actually use a custom annotation, such as the one created in Listing \ref{code:kotlin_annotations_creation}:
+\begin{lstlisting}[caption={Example of usage of a custom annotation in Kotlin}, language=Kotlin, captionpos=b, label={code:kotlin_annotations_usage}]
+    @MyAnnotation
+    class MyClass
+
+    fun myFunction() {
+        @MyAnnotation
+        val myVariable = 42
+    }
+\end{lstlisting}
+In this example, the \textbf{MyAnnotation} annotation is applied to both a class and a variable. The annotations can be used by other code, either at compile time or at runtime, to provide additional information about the annotated elements.
+
 \subsection{KSP}
 \subsection{Kotlin compiler plugins}
 \subsubsection{Basics}
