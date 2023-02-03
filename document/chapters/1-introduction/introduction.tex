@@ -1,4 +1,4 @@
-\chapter{Introduction}\label{introduction}
+\chapter{Introduction}\label{chapter:introduction}
 In the last few decades, there has been a significant technological development in various fields.
 Computing technology has advanced rapidly, with the introduction of faster and more powerful processors, and the widespread adoption of cloud computing.\newline
 The Internet has also become an integral part of modern life, connecting people and devices across the globe; in addition, the development of faster and more reliable connectivity networks has made it possible to transfer and share data at an even faster rate.\newline
@@ -75,7 +75,7 @@ The main constructs provided by the field calculus are the following:
     \item \textbf{Nbr-expression} $nbr\{e\}$\newline
     The neighboring is used to model the device-to-neighbor interaction. In order to do this, it is necessary to construct neighboring fields: in this data structure each event is associated to a value, that is mapped to a neighbor identifier and its last value computed. Using this construct it is possible for a device to understand its surrounding by manipulating the neighboring field obtained;
     \item \textbf{Branching} $if(e_0)\{e_1\} else \{e_2\}$\newline
-    Branching causes a domain restriction, which means that devices compute $e_1$ only in the restricted domain where $e_0$ is true, otherwise they compute $e_2$. This behavior and its consequences will be discussed in details in Section \ref{section:alignment};
+    Branching causes a domain restriction, which means that devices compute $e_1$ only in the restricted domain where $e_0$ is true, otherwise they compute $e_2$. This behavior and its consequences will be discussed in details in Section \ref{subsection:alignment};
     \item \textbf{Function calls} $e(e_1, ..., e_n)$ \newline
     This construct model a function call where $e$ evaluates to a field of function values. 
 \end{itemize}
@@ -92,7 +92,7 @@ This limitation can be overcome by extending the field calculus with a new const
     \label{fig:share_operator_introduction}
 \end{figure}
 
-\subsubsection{Domain restriction: alignment}\label{section:alignment}
+\subsubsection{Domain restriction: alignment}\label{subsection:alignment}
 The expected consequence of a branch construct is to determine the portion of code that is going to be computed. In the field calculus, the branch construct has also an unusual behavior, which is called domain restriction.
 
 Taking in consideration this portion of pseudocode
@@ -122,7 +122,7 @@ Given these concepts, it is possible to understand how to deal with the alignmen
 \section{State of the art}
 The aim of this section is to give an introduction about the state-of-the-art technologies that has been developed in the field of aggregate programming. This overview is going to take in consideration how each implementation work and the choices that led their development, in order to depict a representation of the context in which the project of this thesis is going to be set in.
 
-\subsection{Protelis}\label{protelis}
+\subsection{Protelis}\label{subsection:protelis}
 Protelis \cite{protelis_introduction} is a functional language inspired by Proto. It implements the field calculus providing a modern specification language.\newline
 The architecture is based on Java, and the reasons are multiple:
 \begin{itemize}
@@ -150,7 +150,7 @@ share (d <- POSITIVE_INFINITY) {
 
 Protelis is very versatile, and it can be used in a wide range of application domains. It is possible to create Protelis modules and execute them in simulations using Alchemist \cite{alchemist}, which is a simulator for pervasive computing and distributed systems.
 
-\subsection{ScaFi}
+\subsection{ScaFi}\label{subsection:scafi}
 ScaFi \cite{scafi_introduction} is a programming language and framework for Aggregate Programming. Its name stands for \textit{\textbf{Sca}la \textbf{Fi}elds}, because it is built on top of the Scala programming language, which provides the functional programming paradigm and type-safe features. It also uses the Akka framework for actor-based concurrency and the Java Virtual Machine (JVM) for execution.
 
 Scafi implements a variant of field calculus, providing a domain-specific language (DSL) and API in order to allow writing, testing and running aggregate programs.
@@ -160,9 +160,9 @@ One of the key features of ScaFi is its support for declarative programming, whi
 Overall, ScaFi aims to provide a high-level and type-safe programming interface for building complex and large-scale distributed systems, making it easier for developers to write correct and efficient algorithms. 
 
 The combination of the Scala programming language, the Akka framework, and the JVM provides a strong foundation for building scalable and robust distributed systems.\newline
-In particular, the choice of a JVM-based architecture has the same advantages discussed previously for Protelis (Section \ref{protelis}), which are mainly portability, low-cost of devices, diffusion and general JVM performances optimizations.
+In particular, the choice of a JVM-based architecture has the same advantages discussed previously for Protelis (Section \ref{subsection:protelis}), which are mainly portability, low-cost of devices, diffusion and general JVM performances optimizations.
 
-\subsection{FCPP}
+\subsection{FCPP}\label{subsection:fcpp}
 FCPP \cite{fcpp_introduction} is a library in C++14, and it implements the field calculus.\newline
 It provides tools for simulation of distributed systems, and its extensible component-based architecture makes it suitable for a wide range of application scenarios.
 
@@ -172,4 +172,26 @@ Differently from Protelis and Scafi, FCPP does not rely on the Java Virtual Mach
     \item C++ is performance-oriented, which means that there are low system requirements, increasing the variety of devices that can use FCCP.
 \end{itemize}
 
+These two features allow covering multiple use-cases that were not possible to handle with Protelis and Scafi: for example the deployment on microcontroller-based systems or cloud applications that have strict parallelism requirements in order to scale correctly, which is guaranteed by the performance improvements.
+
 \section{Motivation and goal}
+When talking about aggregate computing, there are several important features that must be considered when comparing different aggregate programming frameworks, such as ScaFi, Protelis, and FCPP.\newline
+After the analysis of the previous sections, it is possible to conclude that:
+\begin{itemize}
+    \item \textbf{Protelis}\newline
+    It has a simple and expressive programming model, but its simplicity and expressiveness come at the cost of performances, as the framework does not provide much control over the underlying data structures and algorithms. Moreover, Protelis might not be the best choice for systems that require strong interoperability with other systems and technologies, since it has a limited set of integrations;
+    \item \textbf{ScaFi}\newline
+    It has a strong focus on programmability and support for Scala, which can make the system more complex and difficult to understand for developers who are not familiar with the language or the functional programming paradigm. Additionally, ScaFi may have a higher overhead compared to other frameworks due to its use of a more expressive programming model;
+    \item \textbf{FCPP}\newline
+    The key aspects taken in consideration from FCPP are scalability and performance, providing efficient algorithms and data structures for large-scale data processing. These features can make the framework more complex and difficult to understand, since it has a low-level programming model that requires a deep understanding of algorithms and data structures.
+\end{itemize}
+
+These considerations highlight crucial weaknesses of the already existent frameworks that the project of this thesis tries to overcome. Specifically, the project is an aggregate programming Domain-Specific Language (DSL) in Kotlin and the crucial feature to achieve are the following:
+\begin{itemize}
+    \item \textbf{Transparency}: refers to the ability of the DSL to provide clear and concise information about the underlying system's behavior, such as how data is processed, stored, and communicated between nodes in a distributed system. Transparency helps to reduce the complexity of the system and makes it easier to understand and maintain, especially in the case of large and complex systems;
+    \item \textbf{Minimality}: refers to the design of the DSL to have as few constructs and abstractions as possible while still providing all the necessary functionality. This makes the system easier to understand, maintain, and debug. Minimality also helps to minimize the overhead associated with the use of the DSL, which is especially important for systems that require high performance and scalability;
+    \item \textbf{Portability}: refers to the ability of the DSL to run on different platforms and environments, such as different operating systems, cloud platforms, and hardware architectures. Portability helps to ensure that the systems built using the DSL can be easily deployed and run in different environments, which is especially important for systems that need to be deployed in multiple locations or need to scale to meet changing demands.
+\end{itemize}
+
+The goal of this thesis is the study and the implementation of the aggregate programming paradigm, facing the alignment problem discussed in Section \ref{subsection:alignment}, focussing on transparency, minimality and portability.\newline
+The reminder of this thesis is organized as follows. Section \ref{chapter:metaprogramming} debates all the possibility of metaprogramming in Kotlin, and Section \ref{chapter:alignment} explains in details the solution of the alignment problem. Section \ref{chapter:collektive} describes how the DSL is implemented and shows the end usage result. Finally, Section \ref{chapter:conclusion} summarizes the work done in this thesis, adding the plans for the future development.
