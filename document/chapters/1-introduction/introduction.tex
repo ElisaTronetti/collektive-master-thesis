@@ -64,7 +64,7 @@ Considering the local perspective, P is computing on a round-based scheme in sin
     \item at the end of the round, the device returns to sleep, until another round begins.
 \end{itemize}
 
-On the other hand, the global point of view is the key that makes aggregate computing a powerful tool. In this case, the computation considers the entire network of interconnected devices as a single, unified entity.
+On the other hand, the global point of view is the key that makes aggregate computing a powerful tool. In this case, the computation considers the entire network of interconnected devices as a single, unified entity.\newline
 The data is represented as a distributed space-time field evolution, which maps the computation events to values computed by devices.\newline
 A computational field is a snapshot of the state of the distributed system's network at a certain moment in time, which maps device identifiers to their values.
 
@@ -122,7 +122,7 @@ Given these concepts, it is possible to understand how to deal with the alignmen
 \section{State of the art}
 The aim of this section is to give an introduction about the state-of-the-art technologies that has been developed in the field of aggregate programming. This overview is going to take in consideration how each implementation work and the choices that led their development, in order to depict a representation of the context in which the project of this thesis is going to be set in.
 
-\subsection{Protelis}
+\subsection{Protelis}\label{protelis}
 Protelis \cite{protelis_introduction} is a functional language inspired by Proto. It implements the field calculus providing a modern specification language.\newline
 The architecture is based on Java, and the reasons are multiple:
 \begin{itemize}
@@ -150,7 +150,17 @@ share (d <- POSITIVE_INFINITY) {
 
 Protelis is very versatile, and it can be used in a wide range of application domains. It is possible to create Protelis modules and execute them in simulations using Alchemist \cite{alchemist}, which is a simulator for pervasive computing and distributed systems.
 
-\subsection{Scafi}
+\subsection{ScaFi}
+ScaFi \cite{scafi_introduction} is a programming language and framework for Aggregate Programming. Its name stands for \textit{\textbf{Sca}la \textbf{Fi}elds}, because it is built on top of the Scala programming language, which provides the functional programming paradigm and type-safe features. It also uses the Akka framework for actor-based concurrency and the Java Virtual Machine (JVM) for execution.
+
+Scafi implements a variant of field calculus, providing a domain-specific language (DSL) and API in order to allow writing, testing and running aggregate programs.
+
+One of the key features of ScaFi is its support for declarative programming, which allows developers to specify the desired outcome of a computation, rather than how the computation should be performed. This makes it easier for developers to write correct and efficient distributed algorithms, as they can abstract away the low-level details of communication and synchronization.
+
+Overall, ScaFi aims to provide a high-level and type-safe programming interface for building complex and large-scale distributed systems, making it easier for developers to write correct and efficient algorithms. 
+
+The combination of the Scala programming language, the Akka framework, and the JVM provides a strong foundation for building scalable and robust distributed systems.\newline
+In particular, the choice of a JVM-based architecture has the same advantages discussed previously for Protelis (Section \ref{protelis}), which are mainly portability, low-cost of devices, diffusion and general JVM performances optimizations.
 
 \subsection{FCPP}
 
