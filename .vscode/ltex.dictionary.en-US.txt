@@ -8,3 +8,6 @@ FCPP
 Proto
 ScaFi
 Akka
+programmability
+Minimality
+metaprogramming
