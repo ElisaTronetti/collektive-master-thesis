@@ -17,3 +17,7 @@ mateprograms
 DSLs
 metaprograms
 KSP
+@Target
+@Retention
+@Repeatable
+@MustBeDocumented
