@@ -55,6 +55,46 @@ The following snippet of code shows how to actually use a custom annotation, spe
 In this example, the \textbf{MyAnnotation} annotation is applied to both a class and a variable. The annotations can be used by other code, either at compile time or at runtime, to provide additional information about the annotated elements.
 
 \subsection{KSP}
+KSP stands for \textbf{Kotlin Symbol Processing}, and it is an API that can be used to build lightweight compiler plugins \cite{ksp_documentation}. It offers an easier compiler plugin API that takes advantage of Kotlin's capabilities, but it keeps the learning curve low.
+
+KSP has been developed as an alternative technology to kapt \cite{kapt_documentation}, which was used to allow annotation processing. Currently, kapt is in maintenance mode; it is being kept up-to-date with the new Kotlin and Java releases, without adding any features.\newline
+In comparison to kapt, annotation processors that utilize KSP can be executed two times quicker.
+
+Kotlin Symbol Processing is a feature of the Kotlin compiler that allows to manipulate the code at compile time by processing the symbols of the code. Because of that, it is possible to write metaprogramming code that analyze, transform, and generate other code, without the need to access the code at runtime.
+
+This API allows processing Kotlin programs in a native way, with an understanding of Kotlin-specifc features, which includes extension functions, local functions and declaration-site variance. It models types explicitly, which enables type checking.
+
+KSP models the structure of Kotlin programs, making class declarations, class members, functions and parameters accessible for processing, while elements such as if blocks and for loops are not.\newline
+It can also be seen as a preprocessor framework, which makes a KSP plugin a symbol processor that follow three main steps:
+\begin{enumerate}
+    \item it analyzes the source program and its resources;
+    \item it generates an output, which might be code or in another form;
+    \item finally, the Kotlin compiler compiles the source program with the generated output.
+\end{enumerate}
+
+Differently from a typical compiler plugin, KSP restricts processors from modifying the source code, as it is considered read-only. This choice can be justified by the intention to prevent confusion that may arise from a plugin that modifies the language semantics.
+
+When analyzing the source code, from the KSP perspective, it looks like this:
+\begin{lstlisting}[caption={The source code from KSP perspective \cite{ksp_documentation}}, captionpos=b, label={code:ksp_source_code}]
+KSFile
+  packageName: KSName
+  fileName: String
+    declarations: List<KSDeclaration>
+      KSClassDeclaration //class, interface, object
+        simpleName: KSName
+        qualifiedName: KSName
+        containingFile: String
+        typeParameters: KSTypeParameter
+        parentDeclaration: KSDeclaration
+        classKind: ClassKind
+        primaryConstructor: KSFunctionDeclaration
+        superTypes: List<KSTypeReference>
+        //contains inner classes, functions, properties
+        declarations: List<KSDeclaration>    
+\end{lstlisting}
+The Listing \ref{code:ksp_source_code} shows the data structure that is accessible using KSP. Specifically, in this code there is a class declaration (\textit{KSClassDeclaration}), and it is possible to get its name, type, parameters, inner declarations, and so on. This allows to have a complete overview of the code structure.
+
+
 \subsection{Kotlin compiler plugins}
 \subsubsection{Basics}
 \subsubsection{Advanced features}
