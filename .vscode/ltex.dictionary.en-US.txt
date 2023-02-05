@@ -22,3 +22,6 @@ KSP
 @Repeatable
 @MustBeDocumented
 kapt
+MyAnnotation
+Kotlin-specifc
+KSClassDeclaration
