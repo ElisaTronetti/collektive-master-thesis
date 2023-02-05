@@ -25,3 +25,5 @@ kapt
 MyAnnotation
 Kotlin-specifc
 KSClassDeclaration
+SymbolProcessorProvider
+SymbolProcessor
