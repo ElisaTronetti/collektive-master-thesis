@@ -18,7 +18,7 @@ An annotation is represented by an \textbf{@} symbol followed by the annotation 
 
 To create a custom annotation in Kotlin, first it is necessary to declare the annotation type, using the \textbf{annotation} keyword in Kotlin, in the same way shown in the following code:
 \begin{lstlisting}[caption={Example of creation of a custom annotation in Kotlin}, language=Kotlin, captionpos=b, label={code:kotlin_annotations_creation}]
-    annotation class MyAnnotation
+annotation class MyAnnotation
 \end{lstlisting}
 
 Kotlin provides the option to use additional attributes by annotating the annotation class with \textbf{meta-annotation}. The alternatives of meta-annotation are:
@@ -31,9 +31,9 @@ Kotlin provides the option to use additional attributes by annotating the annota
 
 For example, this is a possible custom annotation that uses meta-annotation:
 \begin{lstlisting}[caption={Example of custom annotation in Kotlin}, language=Kotlin, captionpos=b, label={code:kotlin_annotations_customization}]
-    @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-    @Retention(AnnotationRetention.RUNTIME)
-    annotation class MyAnnotation
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class MyAnnotation
 \end{lstlisting}
 In this snippet of code, the \textbf{@Target} annotation specifies the elements that the annotation can be applied to, in this case either classes or functions. The \textbf{@Retention} annotation refers to the retention policy, which determines that the annotation is available at runtime.
 
@@ -44,13 +44,13 @@ Another feature provided by annotations, which is considered metaprogramming, is
 It is possible to use the annotation in the code by placing the \textbf{@} symbol, followed by the annotation type before the element that is going to be annotated, such as a class, function, or property.\newline
 The following snippet of code shows how to actually use a custom annotation, specifically the one created in Listing \ref{code:kotlin_annotations_customization}:
 \begin{lstlisting}[caption={Example of usage of a custom annotation in Kotlin}, language=Kotlin, captionpos=b, label={code:kotlin_annotations_usage}]
-    @MyAnnotation
-    class MyClass
+@MyAnnotation
+class MyClass
 
-    fun myFunction() {
-        @MyAnnotation
-        val myVariable = 42
-    }
+fun myFunction() {
+    @MyAnnotation
+    val myVariable = 42
+}
 \end{lstlisting}
 In this example, the \textbf{MyAnnotation} annotation is applied to both a class and a variable. The annotations can be used by other code, either at compile time or at runtime, to provide additional information about the annotated elements.
 
@@ -94,6 +94,44 @@ KSFile
 \end{lstlisting}
 The Listing \ref{code:ksp_source_code} shows the data structure that is accessible using KSP. Specifically, in this code there is a class declaration (\textit{KSClassDeclaration}), and it is possible to get its name, type, parameters, inner declarations, and so on. This allows to have a complete overview of the code structure.
 
+Two are the elements that KSP expects to be implemented: the \textbf{SymbolProcessorProvider} and the \textbf{SymbolProcessor}.\newline
+The SymbolProcessorProvider interface is define like this:
+\begin{lstlisting}[caption={SymbolProcessorProvider interface \cite{ksp_documentation}}, language=Kotlin, captionpos=b, label={code:symbol_processor_provider_interface}]
+interface SymbolProcessorProvider {
+    fun create(environment: SymbolProcessorEnvironment):
+        SymbolProcessor
+}
+\end{lstlisting}
+It must be implemented in order to be able to create a SymbolProcessor: because of that, the \textit{create} function is invoked when KSP creates an instance of the SymbolProcessor. The SymbolProcessorProvider is separated from the SymbolProcessor to give more freedom during the development.
+
+This is the interface of the SymbolProcessor:
+\begin{lstlisting}[caption={SymbolProcessor interface \cite{ksp_documentation}}, language=Kotlin, captionpos=b, label={code:symbol_processor_interface}]
+interface SymbolProcessor {
+    fun process(resolver: Resolver): List<KSAnnotated>
+}
+\end{lstlisting}
+The only function that needs to be overridden is \textit{process}, which is typically used to read files and pass the elements to the visitors.\newline
+The \textit{Resolver} is the entry point of the functionalities provided by KSP: it can be used, for example, to get all the files of the source code, the symbols with annotation, a class or a function declaration by name.\newline
+As many other compiler related APIs, KSP supports the \textbf{visitor pattern}, allowing to examine each element in an object-oriented way.\newline
+For example, this is an implementation of a visitor that inspects the declarations, and it collects the functions:
+\begin{lstlisting}[caption={Visitor that collects function declarations \cite{ksp_documentation}}, language=Kotlin, captionpos=b, label={code:ksp_visitor}]
+class FindFunctionsVisitor: KSTopDownVisitor<Unit, Unit>() {
+    override fun visitFunctionDeclaration(
+        function: KSFunctionDeclaration,
+        data: Unit
+    ) {
+        functions.add(function.toString())
+    }
+}
+\end{lstlisting}
+
+In conclusion, one of the biggest strength of KSP is that it provides an API built on top of the compiler plugin: for this reason, it is able to hide the compiler changes, minimize maintenance efforts, and its API makes possible to implement a light-weight compiler plugin without the complexities and the knowledge required to create a real compiler plugin.\newline
+On the other hand, since the goal of KSP is to be a simple solution for common problems, it comes with some limitations \cite{ksp_limitations}:
+\begin{itemize}
+    \item it can not examine expression-level information;
+    \item it can not modify the source code, but it can only generate new code;
+    \item it is not integrated with the IDE, meaning that the IDE has any information about the code generated.
+\end{itemize}
 
 \subsection{Kotlin compiler plugins}
 \subsubsection{Basics}
