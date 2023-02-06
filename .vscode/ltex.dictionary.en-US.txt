@@ -27,3 +27,5 @@ Kotlin-specifc
 KSClassDeclaration
 SymbolProcessorProvider
 SymbolProcessor
+accessor
+kotlinc
