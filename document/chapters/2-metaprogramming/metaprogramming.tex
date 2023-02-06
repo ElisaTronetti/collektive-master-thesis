@@ -134,6 +134,24 @@ On the other hand, since the goal of KSP is to be a simple solution for common p
 \end{itemize}
 
 \subsection{Kotlin compiler plugins}
+Kotlin compiler plugins are a way to extend the functionality of the Kotlin compiler by adding custom processing to the compilation. This means that the compiler plugin code runs at compile-time, and, since this is a feature of \textit{kotlinc}, it only works on Kotlin source code.
+
+Compiler plugins allow automating tasks and enforce coding standards. For example, they can be used to generate boilerplate code, such as accessor methods, or to enforce specific naming conventions or coding styles. Compiler plugins can also be used to perform code analysis and modification, such as adding custom checks and warnings, or refactoring the code automatically.
+
+Kotlin compiler provides a powerful API, which makes it possible to even modify the internals of functions and classes. This enables to solve metaprogramming problems that were impossible using annotation processors, for example with KSP. Another advantage is that compiler plugins work on every Kotlin target, without having to write multiple plugin.
+
+However, it is important to be aware of the potential downsides of using Kotlin compiler plugins. One of the main cons is that to write even a really simple plugin, it is necessary to have compiler background knowledge. Because of the high learning curve, it is important to consider very carefully if it is necessary to develop a plugin. The investment of time and work can be significant: other than understanding how a compiler plugin works, it is necessary to develop:
+\begin{itemize}
+    \item An IntelliJ plugin: whenever they are used synthetics members, such as functions that are going to be created by the plugin at compile time, the IntelliJ plugin is used to avoid error highlights, making it understand what is going on;
+    \item A Gradle or Maven plugin: in order to make the user able to use and configure the compiler plugin;
+    \item The actual compiler plugin.
+\end{itemize}
+
+Moreover, compiler plugins can slow down the compilation process and make it more complex. Additionally, they can have compatibility issues with different versions of the Kotlin compiler, and may require significant effort to maintain and update. It is also worth mentioning that because compiler plugins modify the behavior of the compiler, they can potentially introduce bugs and cause compatibility issues with other plugins.
+
+Finally, another aspect that must be taken in consideration is the fact that the Kotlin compiler API is not documented. This means that working with it and understanding the function's behaviors is not an easy task, and it requires even more time.
+
+% write that THERE IS ANY DOCUMENTATION
 \subsubsection{Basics}
 \subsubsection{Advanced features}
 \subsubsection{Example}
