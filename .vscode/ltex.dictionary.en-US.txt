@@ -34,3 +34,4 @@ gradle
 CommandLineProcessor
 ComponentRegistrar
 inlining
+IrElement
