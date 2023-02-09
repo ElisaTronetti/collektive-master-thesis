@@ -29,3 +29,7 @@ SymbolProcessorProvider
 SymbolProcessor
 accessor
 kotlinc
+subplugin
+gradle
+CommandLineProcessor
+ComponentRegistrar
