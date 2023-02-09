@@ -213,6 +213,30 @@ The IR backend is designed to provide a high-level, platform-agnostic representa
 Kotlin IR backend is an important part of the Kotlin compiler as it enables the compiler to target different platforms, such as the JVM, JavaScript, and Native code, while still providing a high-level representation of the code. This makes it easier to maintain and evolve the compiler and provides a more flexible way to target new platforms in the future.
 
 \subsubsection{Basics}\label{section:compiler_plugin_basics}
+In order to be able to build a Kotlin compiler plugin it is necessary to understand how the Kotlin IR syntax tree looks like.
+
+First, one important information is that every node in the tree implements the \textbf{IrElement} interface. IrElement has an extension function, called \textbf{dump()}, that allows to get as output the IR tree from any point.\newline
+This feature is extremely useful when trying to generate code, because, in the case of errors, the exception thrown does not indicate what caused the problem. The message is just the following:
+\begin{lstlisting}[caption={Kotlin IR lowering Exception}, language=Kotlin, captionpos=b, label={code:ir_lowering_exception}]
+org.jetbrains.kotlin.backend.common.BackendException: Backend Internal error: Exception during IR lowering
+\end{lstlisting}
+Typically, this is symptom of the generation of not well-formed elements, that are caught during compilation. This can be verified by writing the code that wants to be generated and comparing its \textit{dump()} output against the one created by the compiler plugin, finding the necessary changes that needs to be done.
+
+For example, it is going to be analyzed the generated IR tree of this snippet of code:
+\begin{lstlisting}[caption={Kotlin basic code to demostrate the Kotlin IR representation}, language=Kotlin, captionpos=b, label={code:kotlin_for_ir_tree}]
+fun main() {
+    println("test")
+}
+\end{lstlisting}
+
+This is the complete Kotlin IR syntax tree that is generated from the source code of Listing \ref{code:kotlin_for_ir_tree}:
+\begin{lstlisting}[caption={Kotlin IR tree of Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, basicstyle=\small, label={code:kotlin_ir_tree_example}]
+FILE fqName:<root> fileName:Main.kt
+FUN name:main visibility:public modality:FINAL <> () returnType:kotlin.Unit
+ BLOCK_BODY
+  CALL `public final fun println (message: kotlin.String): kotlin.Unit [external] declared in kotlin.io' type=kotlin.Unit origin=null
+   message: CONST String type=kotlin.String value="test"
+\end{lstlisting}
 
 \subsubsection{Advanced features}\label{section:compiler_plugin_advaced}
 \subsubsection{Example}\label{section:compiler_plugin_example}
