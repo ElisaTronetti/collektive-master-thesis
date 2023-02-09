@@ -151,7 +151,6 @@ Moreover, compiler plugins can slow down the compilation process and make it mor
 
 Finally, another aspect that must be taken in consideration is the fact that the Kotlin compiler API is not documented. This means that working with it and understanding the function's behaviors is not an easy task, and it requires even more time.
 
-\subsubsection{Basics}
 A Kotlin compiler plugin architecture is organized as it can be seen in Figure \ref{fig:kotlin_compiler_plugin_architecture}.
 
 \begin{figure}[!ht]
@@ -161,5 +160,25 @@ A Kotlin compiler plugin architecture is organized as it can be seen in Figure \
     \label{fig:kotlin_compiler_plugin_architecture}
 \end{figure}
 
-\subsubsection{Advanced features}
-\subsubsection{Example}
+In the architecture can be distinguished two different modules: a Gradle module and a Kotlin module.
+
+The \textbf{Gradle module} is a wrapper around the Kotlin module, and it is an entry point for Gradle. The Gradle module is composed by:
+\begin{itemize}
+    \item \textbf{plugin}: this part unrelated to Kotlin and it is based on the Gradle API. It provides an entry point from a build.gradle script, and it makes possible to configure the plugin via Gradle extensions;
+    \item \textbf{subplugin}: this is the bridge that allows the interaction between Gradle and the Kotlin APIs. It reads the Gradle extension options, and it defines the compiler plugin's identifier, which is a unique key, in order to avoid collision with other plugins. The subplugin defines also the location of the compiler plugin, which is going to be used to download it at compile time. The location can be local or a Maven coordinate.
+\end{itemize}
+
+The \textbf{Kotlin module} is dived in three main parts:
+\begin{itemize}
+    \item \textbf{CommandLineProcessor}: the options created in the Gradle subplugin are loaded and used by the CommandLineProcessor. Whenever launching a Kotlin program, kotlinc is invoked: the arguments that are set in the subplugin are passed to the Kotlin compiler;
+    \item \textbf{ComponentRegistrar}: it registers the extension components, which are going to be used when the project is compiled;
+    \item \textbf{Extensions}: they are used to actually generate code. There are a lot of different extensions, which are used based on the use case.
+\end{itemize}
+
+Since the components of a plugin architecture are now explained from a general point of view, the focus is going to be now on the Kotlin module.
+Specifically, the following sections are organized as follows: in Section \ref{section:compiler_plugin_basics} it is going to be explained how to inspect and navigate Kotlin IR, in Section \ref{section:compiler_plugin_advaced} are going to be covered advanced features, such as how to transform the Kotlin IR.
+
+\subsubsection{Basics}\label{section:compiler_plugin_basics}
+
+\subsubsection{Advanced features}\label{section:compiler_plugin_advaced}
+\subsubsection{Example}\label{section:compiler_plugin_example}
