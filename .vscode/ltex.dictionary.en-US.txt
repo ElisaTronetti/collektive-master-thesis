@@ -33,3 +33,4 @@ subplugin
 gradle
 CommandLineProcessor
 ComponentRegistrar
+inlining
