@@ -42,3 +42,9 @@ println
 CONST
 EXPRESSIONBODY
 BLOCKBODY
+acceptChildren
+IrBranch
+IrConst
+IrCall
+IrClass
+IrFunction
