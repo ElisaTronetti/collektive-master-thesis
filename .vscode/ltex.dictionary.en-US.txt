@@ -35,3 +35,10 @@ CommandLineProcessor
 ComponentRegistrar
 inlining
 IrElement
+kotlin
+returnType
+io
+println
+CONST
+EXPRESSIONBODY
+BLOCKBODY
