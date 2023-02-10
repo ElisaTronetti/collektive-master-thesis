@@ -266,6 +266,30 @@ CALL `public final fun println (message: kotlin.String): kotlin.Unit [external] 
 \end{lstlisting}
 Similarly to \textit{FUN} keyword, \textbf{CALL} is used to indicate that a function it is being called. Specifically, it declares the call of the \textit{println} function, alongside with information about where to find its declaration, which is in this case in \textit{kotlin.io}, since the print is a kotlin library function. Moreover, the function has one parameter, which is called message. The second line in Listing \ref{code:kotlin_ir_tree_main_body_example} gives all the details about it: it is a constant, defined by the \textbf{CONST} keyword, it is a \textit{String} and its value is \textit{test}.
 
+Another basic feature that needs to be explained is how to actually visit the IR syntax tree from the code point of view. One key concept that is necessary to cover before diving into it, is the \textbf{visitor design pattern} \cite{visitor_design_pattern}.
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.6]{document/chapters/2-metaprogramming/images/visitor_pattern_uml.png}
+    \caption{The Visitor design pattern UML \cite{visitor_design_pattern}}
+    \label{fig:visitor_uml}
+\end{figure}
+This is a behavioral design pattern which purpose is to add new operation to existing classes without modifying the classes themselves. 
+The operation defined can be performed on elements of an object structure, and it is defined in a separate class, called the \textbf{Visitor}, that implements the desired behavior. The elements of the object structure are updated to accept the Visitor instance, allowing it to traverse the structure and perform the operation on each element. The structure of the design pattern just described can be analyzed in the UML in Figure \ref{fig:visitor_uml}.
+
+In the context of the Kotlin compiler, the visitor pattern is applied as in Figure \ref{fig:visitor_uml_kotlin_compiler}. The \textit{IrElement} interface represents the object structure that needs to be visited. As anticipated previously in this section, this interface is implemented by all the node of the IR syntax tree, which means that every element can be visited through this pattern.
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.55]{document/chapters/2-metaprogramming/images/visitor_uml_kotlin_compiler.png}
+    \caption{The Visitor design pattern UML applied in the Kotlin compiler plugin context in order to visit the IR syntax tree}
+    \label{fig:visitor_uml_kotlin_compiler}
+\end{figure}
+For example, the two implementations of \textit{IrElement} shown in Figure \ref{fig:visitor_uml_kotlin_compiler} are \textit{IrClass} and \textit{IrFunction}, which represents class declarations and function declarations respectively. A lot of other different elements exists that are not specified in the UML in order to increase its readability, such as \textit{IrConst} for constant, \textit{IrCall} for function calls, \textit{IrBranch} that includes if-else blocks, etc.\newline
+The \textit{IrElement} has two functions that enable the visitor pattern that have two completely different behaviors:
+\begin{itemize}
+    \item \textbf{accept}: its role allows the visit of only the current element. For example, if trying to visit a class, only the class element is going to be analyzed and returned;
+    \item \textbf{acceptChildren}: this function implementation consists on calling the \textit{accept} function on each child of the current element, including itself.
+\end{itemize} 
+
 
 \subsubsection{Advanced features}\label{section:compiler_plugin_advaced}
 \subsubsection{Example}\label{section:compiler_plugin_example}
