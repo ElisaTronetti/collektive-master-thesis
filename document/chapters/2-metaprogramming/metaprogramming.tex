@@ -237,6 +237,35 @@ FUN name:main visibility:public modality:FINAL <> () returnType:kotlin.Unit
   CALL `public final fun println (message: kotlin.String): kotlin.Unit [external] declared in kotlin.io' type=kotlin.Unit origin=null
    message: CONST String type=kotlin.String value="test"
 \end{lstlisting}
+The indentation of the IR allows to understand the relationship between each node, increasing its readability. In order to provide more clarity, they are going to be analyzed the most significant nodes of the IR.\newline
+Starting from the following node:
+\begin{lstlisting}[caption={Kotlin IR tree of the main function in Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_example}]
+FUN name:main visibility:public modality:FINAL <> () returnType:kotlin.Unit
+\end{lstlisting}
+This represents the definition of the \textit{main()} function and the IR tree representation provides a lot of information about it:
+\begin{itemize}
+    \item \textbf{FUN} indicates that the current node is a declaration of a function;
+    \item \textbf{name} is used to express how the function is called;
+    \item \textbf{visibility} shows that the main function visibility is public;
+    \item \textbf{modality} declares that main is final;
+    \item \textbf{<>} refers to the fact that the function does not have a generic type;
+    \item \textbf{()} means that main does not take parameters;
+    \item \textbf{returnType} indicates that the return type of the main function is \textit{kotlin.Unit}.
+\end{itemize}
+
+The children of the function IR element is the initialization of its body, which is made like this:
+\begin{lstlisting}[caption={Kotlin IR tree of the body block of the main function in Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_body_init_example}]
+BLOCK_BODY
+\end{lstlisting}
+When analyzing the IR tree, they are going to be found two different keywords for bodies. The first one is \textbf{BLOCK\_BODY}, which is used in this specific case in Listing \ref{code:kotlin_ir_tree_main_body_init_example}: this means that the body is expected to have multiple statements. The second one is \textbf{EXPRESSION\_BODY}, which is indicated when the body holds a single expression, such as a variable assignment.
+
+Finally, the Listing \ref{code:kotlin_ir_tree_main_body_example} shows the \textit{println()} function call and its parameter:
+\begin{lstlisting}[caption={Kotlin IR tree of the body block content of the main function in Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_body_example}]
+CALL `public final fun println (message: kotlin.String): kotlin.Unit [external] declared in kotlin.io' type=kotlin.Unit origin=null
+  message: CONST String type=kotlin.String value="test"
+\end{lstlisting}
+Similarly to \textit{FUN} keyword, \textbf{CALL} is used to indicate that a function it is being called. Specifically, it declares the call of the \textit{println} function, alongside with information about where to find its declaration, which is in this case in \textit{kotlin.io}, since the print is a kotlin library function. Moreover, the function has one parameter, which is called message. The second line in Listing \ref{code:kotlin_ir_tree_main_body_example} gives all the details about it: it is a constant, defined by the \textbf{CONST} keyword, it is a \textit{String} and its value is \textit{test}.
+
 
 \subsubsection{Advanced features}\label{section:compiler_plugin_advaced}
 \subsubsection{Example}\label{section:compiler_plugin_example}
