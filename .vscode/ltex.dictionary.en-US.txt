@@ -48,3 +48,9 @@ IrConst
 IrCall
 IrClass
 IrFunction
+IrElementVisitor
+visitFunction
+visitBody
+visitClass
+visitDeclaration
+visitVariable
