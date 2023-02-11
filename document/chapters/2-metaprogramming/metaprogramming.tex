@@ -176,7 +176,7 @@ The \textbf{Kotlin module} is dived in three main parts:
 \end{itemize}
 
 Since the components of a plugin architecture are now explained from a general point of view, the focus is going to be now on the Kotlin module.
-Specifically, the following sections are organized as follows: Section \ref{section:kotlin_ir} goes into details of the \textbf{IR} (\textbf{I}ntermediate \textbf{R}epresentation) that is the foundation that makes a compiler plugin possible, in Section \ref{section:compiler_plugin_basics} it is explained how to inspect and navigate Kotlin IR, in Section \ref{section:compiler_plugin_advaced} are covered advanced features, such as how to transform the Kotlin IR, and Section \ref{section:compiler_plugin_example} brings all together, showing the highlights of a working example of a simple Kotlin compiler plugin.
+Specifically, the following sections are organized as follows: Section \ref{section:kotlin_ir} goes into details of the \textbf{IR} (\textbf{I}ntermediate \textbf{R}epresentation) that is the foundation that makes a compiler plugin possible, in Section \ref{section:compiler_plugin_basics} it is explained how to inspect and navigate Kotlin IR, in Section \ref{section:compiler_plugin_advaced} are covered advanced features, such as how to build new elements and how to transform the Kotlin IR, and Section \ref{section:compiler_plugin_example} brings all together, showing the highlights of a working example of a simple Kotlin compiler plugin.
 
 \subsubsection{Kotlin IR}\label{section:kotlin_ir}
 The Kotlin compiler is organized in two parts: the \textit{frontend} is used to analyze the code, and the \textit{backend} is the one that generates the executables.\newline
@@ -312,4 +312,32 @@ As previously said, the \textbf{IrElementVisitor} is the interface that has to b
 The \textbf{IrElement} and the \textbf{IrElementVisitor}, with the understanding of the IR syntax tree, allows creating basic Kotlin compiler plugins, without modifying the existing source code.
 
 \subsubsection{Advanced features}\label{section:compiler_plugin_advaced}
+There are two advanced aspects that need to be introduced, which are the building of new IR elements and the transformation of the IR syntax tree.
+
+In order to understand how to build IR elements, it is important to keep in mind that the Kotlin compiler entry point provides the \textbf{IrPluginContext}, which contains the information about the context of the plugin. This is a critical element because it can be used to obtain an instance of the \textbf{IrFactory}, which is a factory that can create IR elements, such as \textit{IrClass} for creating new classes or \textit{IrSimpleFunction} used for creating function.\newline
+For example, the code in Listing \ref{code:build_main_function_with_factory} shows how to use the factory to create a function called \textit{main} and that does not have a return type:
+\begin{lstlisting}[caption={Main function IR building by using the IrFactory \cite{building_koltin_compiler}}, captionpos=b, language=Kotlin, label={code:build_main_function_with_factory}]
+pluginContext.irFactory.buildFun {
+    name = Name.identifier("main")
+    visibility = DescriptorVisibilities.PUBLIC
+    modality = Modality.FINAL
+    returnType = typeUnit
+}        
+\end{lstlisting}
+
+The factory can only be used to create new element declarations, so it is necessary another way in order to build statements and expressions. This is provided by the \textbf{IrBuilder} and by the \textbf{IrBuilderWithScope}, which is really convenient when, for example, a new statement is created in a specific function scope.
+
+The transformation of the IR can be done similarly to the navigation seen in Section \ref{section:compiler_plugin_basics}, but it performed by another interface that extends \textit{IrElementVisitor}, which is called \textbf{IrElementTransformer}. The UML that shows the organization of the interfaces in this context can be seen in Figure \ref{fig:transformer_uml_kotlin_compiler}.\newline
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.5]{document/chapters/2-metaprogramming/images/transformer_uml_kotlin_compiler.png}
+    \caption{The Visitor design pattern UML applied in the Kotlin compiler plugin context in order to transform the IR syntax tree}
+    \label{fig:transformer_uml_kotlin_compiler}
+\end{figure}
+Considering the \textit{IrElement}, there are two transforming functions, that matches the navigating functions:
+\begin{itemize}
+    \item \textbf{transform}: it is like the \textit{accept} function considered for the visiting of the IR tree, and it is used to transform only a specific element;
+    \item \textbf{transformChildren}: similarly to \textit{acceptChildren}, it transforms recursively all the children of the element, including itself.
+\end{itemize}
+
 \subsubsection{Example}\label{section:compiler_plugin_example}
