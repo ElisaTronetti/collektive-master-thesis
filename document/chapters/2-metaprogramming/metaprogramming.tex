@@ -339,5 +339,8 @@ Considering the \textit{IrElement}, there are two transforming functions, that m
     \item \textbf{transform}: it is like the \textit{accept} function considered for the visiting of the IR tree, and it is used to transform only a specific element;
     \item \textbf{transformChildren}: similarly to \textit{acceptChildren}, it transforms recursively all the children of the element, including itself.
 \end{itemize}
+Regarding the \textit{IrElementTransformer}, it provides the same methods of the \textit{IrElementVisitor}, such as \textit{visitClass} and \textit{visitDeclaration}, but the return type is always set as the element itself. Basically, when wanting to transform a function it is sufficient to create an \textit{IrElementTransformer} and to override the \textit{visitFunction} methods, implementing whatever transformation needed. For example the element can be modified by using the \textit{IrFactory} or the \textit{IrBuilder}, new elements can be created, or existing elements can be deleted.
+
+As a whole, all these functionalities discussed constitute powerful tools that allow all kind of compiler-time modifications, that can be encapsulated in a Kotlin compiler plugin.
 
 \subsubsection{Example}\label{section:compiler_plugin_example}
