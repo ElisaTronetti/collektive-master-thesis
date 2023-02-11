@@ -286,10 +286,30 @@ In the context of the Kotlin compiler, the visitor pattern is applied as in Figu
 For example, the two implementations of \textit{IrElement} shown in Figure \ref{fig:visitor_uml_kotlin_compiler} are \textit{IrClass} and \textit{IrFunction}, which represents class declarations and function declarations respectively. A lot of other different elements exists that are not specified in the UML in order to increase its readability, such as \textit{IrConst} for constant, \textit{IrCall} for function calls, \textit{IrBranch} that includes if-else blocks, etc.\newline
 The \textit{IrElement} has two functions that enable the visitor pattern that have two completely different behaviors:
 \begin{itemize}
-    \item \textbf{accept}: its role allows the visit of only the current element. For example, if trying to visit a class, only the class element is going to be analyzed and returned;
+    \item \textbf{accept}: it allows the visit of only the current element. For example, if trying to visit a class, only the class element is going to be analyzed and returned;
     \item \textbf{acceptChildren}: this function implementation consists on calling the \textit{accept} function on each child of the current element, including itself.
-\end{itemize} 
+\end{itemize}
+Both functions have two parameters, where the first one is the \textit{IrElementVisitor}, the second one is \textit{data}, which is used to pass information about the context to the IR visitor.\newline
+The return type in the \textit{accept} function can be used to get as output the elements visited, and it is useful when the navigation aims to find a specific element for example. Otherwise, the return can just be set as \textit{Unit}.\newline
+In the case of \textit{acceptChildren}, its return type is \textit{Unit}, which means that when visiting recursively the children of an element, no data can be returned. Whenever it is necessary to collect information from a recursive visitor, it is usually created a builder object that can be updated and then returned. In Listing \ref{code:accept_children_collect_example} the role of the \textit{collect} function is to create a mutable list that is updated on the visit of each child of the root element.
+\begin{lstlisting}[caption={Example of a custom visitor and a function that supports the collection of elements \cite{visitor_koltin_compiler}}, captionpos=b, language=Kotlin, label={code:accept_children_collect_example}]
+class CustomVisitor(
+  private val elements: MutableList<IrElement>
+) : IrElementVisitor<Unit, Nothing?> {
+  override fun visitElement(element: IrElement,data: Nothing?){
+    elements.add(element)
+    element.acceptChildren(this, data)
+  }
+}
 
+fun collect(element: IrElement) = buildList<IrElement> {
+  element.accept(CustomVisitor(this), null)
+}
+\end{lstlisting}
+
+As previously said, the \textbf{IrElementVisitor} is the interface that has to be implemented in order to create a custom visitor. It requires two type parameters: the first one indicates the return type of the visit functions, the second one the type of the data that can be used to pass contextual information. The interface provides a lot of different visit methods, that can be used based on the wanted behavior. In Figure \ref{fig:visitor_uml_kotlin_compiler} are reported \textit{visitFunction} and \textit{visitClass}, but other examples are \textit{visitBody}, \textit{visitVariable}, \textit{visitDeclaration}, etc.
+
+The \textbf{IrElement} and the \textbf{IrElementVisitor}, with the understanding of the IR syntax tree, allows creating basic Kotlin compiler plugins, without modifying the existing source code.
 
 \subsubsection{Advanced features}\label{section:compiler_plugin_advaced}
 \subsubsection{Example}\label{section:compiler_plugin_example}
