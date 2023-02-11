@@ -54,3 +54,10 @@ visitBody
 visitClass
 visitDeclaration
 visitVariable
+IrSimpleFunction
+IrPluginContext
+IrFactory
+IrBuilder
+IrBuilderWithScope
+IrElementTransformer
+transformChildren
