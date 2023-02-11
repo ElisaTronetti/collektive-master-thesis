@@ -92,7 +92,7 @@ This limitation can be overcome by extending the field calculus with a new const
 \end{figure}
 
 \subsubsection{Domain restriction: alignment}\label{subsection:alignment}
-The expected consequence of a branch construct is to determine the portion of code that is going to be computed. In the field calculus, the branch construct has also an unusual behavior, which is called domain restriction.
+The expected consequence of a branch construct is to determine the portion of code that is going to be computed. In the field calculus, the branch construct also has an unusual behavior, which is called domain restriction.
 
 Taking in consideration this portion of pseudocode
 \begin{lstlisting}
@@ -106,20 +106,20 @@ For example, if a device is in the domain $D_{true}$, the following are the impl
     \item if the device evaluated $e2$ instead of $e1$ in its previous round, then all the rep-expressions in $e2$ are going to be computed using the initialization value.
 \end{itemize}
 
-Given this behavior, the result is that devices that operate in different subdomains are computing in isolation. This means that they can not communicate with each other, unless they are in the same domain. For this reason, this characteristic is called \textit{clustering}, which is an important feature: it allows restricting computations in subdomains in an easy and efficient way, which is extremely useful in many use-cases.
+Given this behavior, the result is that devices operating in different subdomains are computing in isolation. As a direct consequence of that they can not communicate with each other unless they are in the same domain. This characteristic is called \textit{clustering}, which is an important feature: it allows restricting computations in subdomains in an easy and efficient way, which is extremely useful in many use-cases.
 
-The domain restriction is a crucial trait of aggregate programming, and it introduces to a problem that has to be taken in consideration. Different devices that operate in a highly distributed system do not have a shared memory that can be used to keep track of the computation of each device. On the other hand, the domain restriction characteristic requires that each device has to communicate only with devices in the same subdomain, which means that they are computing the same operation.\newline
+The domain restriction is a crucial trait of aggregate programming, and it introduces a problem that, necessarily, has to be taken in consideration: different devices that operate in a highly distributed system do not possess a shared memory that can be used to keep track of the computation being executed on each device. On the other hand, this domain restriction characteristic requires that each device must communicate only with devices in the same subdomain, which means that they are computing the same operation.\newline
 This is defined as the \textbf{alignment problem}, and it is necessary to explore all the information of the system in order to find a solution. First, it is important to keep in mind that each device has its own identifier, which can be used to define the author of a message. Second, when dealing with a computational field, such as when retrieving neighboring values using a nbr-expression, the device is currently computing the operation that it is actually looking for in the field.\newline
 In order to explain this concept better, here is a snippet of pseudocode:
 \begin{lstlisting}
     if (e0) {nbr(e1)} else {nbr(e2)}
 \end{lstlisting}
-When a device $\delta_1$ is in the domain $D_{true}$, it computes $nbr(e1)$: this means that it is retrieving from the neighbors that computed $e1$, while being evaluating $e1$ itself.\newline
+When a device $\delta_1$ is in the domain $D_{true}$, it computes $nbr(e1)$: this means that it is retrieving from the neighbors that computed $e1$, while evaluating $e1$ itself.\newline
 Consequently, $\delta_1$ and the other devices have to be aligned in order to exchange information: they are all in the same subdomain, in which $e0$ is evaluated as true, and they are computing $nbr(e1)$.\newline
 Given these concepts, it is possible to understand how to deal with the alignment problem: thanks to the current computational location of a device, it is possible to understand which values it is currently trying to retrieve, and, since each device has an identifier, the values can be mapped to those identifiers. Then, combining all the information together, a computational field is obtained.
 
 \section{State of the art}
-The aim of this section is to give an introduction about the state-of-the-art technologies that has been developed in the field of aggregate programming. This overview is going to take in consideration how each implementation works and the choices that led their development, in order to depict a representation of the context in which the project of this thesis is going to be set in.
+The aim of this section is to give an introduction about the state-of-the-art technologies that have been developed in the field of aggregate programming. This overview is going to take in consideration how each implementation works and the choices that led their development, with the goal of depicting a representation of the context in which the project of this thesis is going to be set in.
 
 \subsection{Protelis}\label{subsection:protelis}
 Protelis \cite{protelis_introduction} is a functional language inspired by Proto. It implements the field calculus providing a modern specification language.\newline
@@ -131,8 +131,7 @@ The architecture is based on Java, and the reasons are multiple:
     \item Java optimizations in terms of speed and resources consumption are making it a valid alternative to low-level languages, such as C.
 \end{itemize}
 
-Since Protelis is a functional language, but its syntax is Java-like, its adoption is not difficult.
-For example, the following is a snippet of Protelis code, which is used to calculate the distance between each device and the source, creating a gradient base on said distance:
+Since Protelis is a functional language, but its syntax is Java-like, its adoption is not difficult. For example, the following is a snippet of code written in Protelis, which is used to calculate the distance between each device and the source, creating a gradient base on said distance:
 \begin{lstlisting}[language=Python, caption=Protelis example, captionpos=b]
 def myPosition() = self.getDevicePosition()
 def nbrRange() = nbr(myPosition()).distanceTo(myPosition())
@@ -150,7 +149,7 @@ share (d <- POSITIVE_INFINITY) {
 Protelis is very versatile, and it can be used in a wide range of application domains. It is possible to create Protelis modules and execute them in simulations using Alchemist \cite{alchemist}, which is a simulator for pervasive computing and distributed systems.
 
 \subsection{ScaFi}\label{subsection:scafi}
-ScaFi \cite{scafi_introduction} is a programming language and framework for Aggregate Programming. Its name stands for \textit{\textbf{Sca}la \textbf{Fi}elds}, because it is built on top of the Scala programming language, which provides the functional programming paradigm and type-safe features. It also uses the Akka framework for actor-based concurrency and the Java Virtual Machine (JVM) for execution.
+ScaFi \cite{scafi_introduction} is a programming language and framework for Aggregate Programming. Its name stands for \textit{\textbf{Sca}la \textbf{Fi}elds}, since it is built on top of the Scala programming language, which provides the functional programming paradigm and type-safe features. It also uses the Akka framework for actor-based concurrency and the Java Virtual Machine (JVM) for execution.
 
 ScaFi implements a variant of field calculus, providing a domain-specific language (DSL) and API in order to allow writing, testing and running aggregate programs.
 
@@ -167,10 +166,10 @@ It provides tools for simulation of distributed systems, and its extensible comp
 Differently from Protelis and ScaFi, FCPP does not rely on the Java Virtual Machine (JVM). It is implemented in C++, which choice gives the following advantages:
 \begin{itemize}
     \item numerous devices support C++ architectures, making it possible deploy FCPP on systems of any sort, which includes microcontrollers;
-    \item C++ is performance-oriented, which means that there are low system requirements, increasing the variety of devices that can use FCCP.
+    \item C++ is performance-oriented, which means that the system requirements are very low, increasing the variety of devices that can use FCCP.
 \end{itemize}
 
-These two features allow covering multiple use-cases that were not possible to handle with Protelis and ScaFi: for example the deployment on microcontroller-based systems or cloud applications that have strict parallelism requirements in order to scale correctly, which is guaranteed by the performance improvements.
+These two features allow the coverage of multiple use-cases that were not possible to handle utilizing Protelis and ScaFi: for example the deployment on microcontroller-based systems or cloud applications that have strict parallelism requirements in order to scale correctly, which is guaranteed by the performance improvements.
 
 \section{Motivation and goal}
 When talking about aggregate computing, there are several important features that must be considered when comparing different aggregate programming frameworks, such as ScaFi, Protelis, and FCPP.\newline
@@ -181,15 +180,15 @@ After the analysis of the previous sections, it is possible to conclude that:
     \item \textbf{ScaFi}\newline
     It has a strong focus on programmability and support for Scala, which can make the system more complex and difficult to understand for developers who are not familiar with the language or the functional programming paradigm. Additionally, ScaFi may have a higher overhead compared to other frameworks due to its use of a more expressive programming model;
     \item \textbf{FCPP}\newline
-    The key aspects taken in consideration from FCPP are scalability and performance, providing efficient algorithms and data structures for large-scale data processing. These features can make the framework more complex and difficult to understand, since it has a low-level programming model that requires a deep understanding of algorithms and data structures.
+    The key aspects taken in consideration from FCPP are scalability and performance, providing efficient algorithms and data structures for large-scale data processing. These features can make the framework more complex and difficult to understand, since it utilize a low-level programming model that requires a deep understanding of algorithms and data structures.
 \end{itemize}
 
-These considerations highlight crucial weaknesses of the already existent frameworks that the project of this thesis tries to overcome. Specifically, the project is an aggregate programming Domain-Specific Language (DSL) in Kotlin and the crucial features to achieve are the following:
+These considerations highlight crucial weaknesses of the already existent frameworks that the project of this thesis tries to overcome. Specifically, the project is an aggregate programming Domain-Specific Language (DSL) in Kotlin and the main features to achieve are the following:
 \begin{itemize}
     \item \textbf{Transparency}: refers to the ability of the DSL to provide clear and concise information about the underlying system's behavior, such as how data is processed, stored, and communicated between nodes in a distributed system. Transparency helps to reduce the complexity of the system and makes it easier to understand and maintain, especially in the case of large and complex systems;
-    \item \textbf{Minimality}: refers to the design of the DSL to have as few constructs and abstractions as possible while still providing all the necessary functionality. This makes the system easier to understand, maintain, and debug. Minimality also helps to minimize the overhead associated with the use of the DSL, which is especially important for systems that require high performance and scalability;
+    \item \textbf{Minimality}: refers to the design of the DSL to have as few constructs and abstractions as possible while still providing all the necessary functionality. This makes the system easier to understand, maintain, and debug. Minimality also helps to lower the overhead associated with the use of the DSL, which is especially important for systems that require high performance and scalability;
     \item \textbf{Portability}: refers to the ability of the DSL to run on different platforms and environments, such as different operating systems, cloud platforms, and hardware architectures. Portability helps to ensure that the systems built using the DSL can be easily deployed and run in different environments, which is especially important for systems that need to be deployed in multiple locations or need to scale to meet changing demands.
 \end{itemize}
 
 The goal of this thesis is the study and the implementation of the aggregate programming paradigm, facing the alignment problem discussed in Section \ref{subsection:alignment}, focussing on transparency, minimality and portability.\newline
-The reminder of this thesis is organized as follows. Chapter \ref{chapter:metaprogramming} debates all the possibility of metaprogramming in Kotlin, and Chapter \ref{chapter:alignment} explains in details the solution of the alignment problem. Chapter \ref{chapter:collektive} describes how the DSL is implemented and shows the end usage result. Finally, Chapter \ref{chapter:conclusion} summarizes the work done in this thesis, adding the plans for the future development.
+The reminder of this thesis is organized as follows. Chapter \ref{chapter:metaprogramming} debates all the possibilities of metaprogramming in Kotlin, and Chapter \ref{chapter:alignment} explains in details the solution of the alignment problem. Chapter \ref{chapter:collektive} describes how the DSL is implemented and shows the end usage result. Finally, Chapter \ref{chapter:conclusion} summarizes the work done in this thesis, adding plans for future development.
