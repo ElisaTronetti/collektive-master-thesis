@@ -344,3 +344,138 @@ Regarding the \textit{IrElementTransformer}, it provides the same methods of the
 As a whole, all these functionalities discussed constitute powerful tools that allow all kind of compiler-time modifications, that can be encapsulated in a Kotlin compiler plugin.
 
 \subsubsection{Example}\label{section:compiler_plugin_example}
+The complexities involved in Kotlin compiler plugins discussed in the previous sections need a further exploration. For this reason, it has been developed a simple plugin, which aims to dive deeply into the details of basic and advanced features implementation.
+
+For example, considering the following code:
+\begin{lstlisting}[caption={Kotlin code without the modification of the compiler plugin created as an example}, captionpos=b, language=Kotlin, label={code:main_compiler_plugin_example}]
+fun test() {
+    println("Hello!")
+}
+    
+fun main() {
+    test()
+}
+\end{lstlisting}
+When executing the code in Listing \ref{code:main_compiler_plugin_example}, this is the result shown in the console:
+\begin{lstlisting}[caption={Output of the execution of Listing \ref{code:main_compiler_plugin_example} with the application of the compiler plugin created as an example}, captionpos=b, language=Kotlin, label={code:output_main_compiler_plugin_example}]
+main declaration
+test declaration
+Hello!
+\end{lstlisting}
+The goal of this compiler plugin is to modify at compile time every function declaration, inserting a print of the function name. This means that after the compilation, the code in Listing \ref{code:main_compiler_plugin_example} is going to be transformed as in the code in Listing \ref{code:main_compiler_plugin_example_after_compilation}. The arrows added are used to identify the lines of code created by the compiler plugin.
+\begin{lstlisting}[caption={Kotlin code with the modification of the compiler plugin created as an example}, captionpos=b, language=Kotlin, escapechar=\$, label={code:main_compiler_plugin_example_after_compilation}]
+fun test() {
+    -> println("test declaration")
+    println("Hello!")
+}
+
+fun main() {
+    -> println("main declaration")
+    test()
+}
+\end{lstlisting}
+One thing to notice is that, typically, the functions' names are not passed from compilation time to run time, this information would be usually lost. By the intervention of the plugin, that information is not lost, but inserted in the print function and shown to the user.
+
+Moreover, the module of the project that contains the code that is going to use the compiler plugin, is a \textbf{Kotlin Multiplatform} project. The reasons behind this choice are going to be explained afterwards in Section \ref{section:technology_choices}, but this example is going to be also a \textbf{proof of concept} of the feasibility of creating Kotlin compiler plugins for multiplatform projects.
+
+This project example is composed by three modules:
+\begin{itemize}
+    \item \textit{gradle-ir-plugin}: it creates the subplugin, identifying the location of the compiler plugin, which is in the same Gradle project but in a different submodule;
+    \item \textit{compiler-ir-plugin}: the actual compiler plugin, that is going to be discussed in details;
+    \item \textit{kmp-sample}: it is the Kotlin multiplatform project, which uses the Gradle plugin to include the compiler plugin;
+\end{itemize}
+
+Since the Gradle module is just based on mandatory  but standard settings, it is only going to be analyzed the compiler module.\newline
+The first component of the compiler plugin is the \textbf{CommandLineProcessor}, which sets the only one command line option that can be used: when including the plugin to a project, it can be specified a boolean parameter that enables or disable the plugin, making it easier to use.\newline
+The creation of this parameter consists on building an option using the \textit{CliOption} class, which is used to inform the compiler plugin what parameters to expect and what is their role. The option created for this example is shown in the code in Listing \ref{code:cli_option_example}.
+\begin{lstlisting}[caption={Creation of compiler option that enables or disables the plugin}, captionpos=b, language=Kotlin, label={code:cli_option_example}]
+CliOption(
+    optionName = ARG_ENABLED,
+    valueDescription = "bool <true | false>",
+    description = "If the compiler plugin should be applied",
+    required = false
+)
+\end{lstlisting}
+
+The entry point of the compiler plugin is the \textbf{ComponentRegistrar}. It checks whether the plugin is enabled or not, and, in case it is, it registers a generation extension, which is going to actually perform code changes. In the \textit{ComponentRegistrar} implementation, the function that perform this feature is the following:
+\begin{lstlisting}[caption={Example of registration of extension if the plugin is enabled performed by the \textit{ComponentRegistrar}}, captionpos=b, language=Kotlin, label={code:component_registrar_example}]
+override fun registerProjectComponents(
+    project: MockProject,
+    configuration: CompilerConfiguration
+) {
+    if (configuration.get(ARG_ENABLED)) {
+        IrGenerationExtension.registerExtension(
+            project,
+            IrGenerationExtensionImpl()
+        )
+    }
+}
+\end{lstlisting}
+In Listing \ref{code:component_registrar_example} it is shown how to register the extension that is going to generate code. The \textbf{IrGenerationExtension} implemented method is \textit{generate}, and it is shown in Listing \ref{code:generation_extension_example}.
+\begin{lstlisting}[caption={Example of \textit{IrGenerationExtension} implementation of methos generate}, captionpos=b, language=Kotlin, label={code:generation_extension_example}]
+override fun generate(
+    moduleFragment: IrModuleFragment,
+    pluginContext: IrPluginContext
+) {
+    val funPrintln = pluginContext.referenceFunctions(
+        FqName("kotlin.io.println")
+    ).first()
+
+    moduleFragment.transform(
+        TransformerImpl(pluginContext, funPrintln),
+        null
+    )
+}
+\end{lstlisting}
+The \textit{generate} method just shown has two different purposes:
+\begin{itemize}
+    \item it aims to find the reference of the Kotlin print function, which is going to be used in the generation of code. This is done by defining the name of the function and its package, then it is going to be searched in the whole plugin context;
+    \item it creates an instance of the transformer implementation, giving it as argument the plugin context and the print function found, which are all the information that is going to be used to modify the code.
+\end{itemize}
+
+The most important element of all, that actually perform the code transformation, is the \textbf{TrasformerImpl}, which implements the \textbf{IrElementTransformer} interface.\newline
+Since the modification are applied to all the function declaration bodies, it needs to be overridden \textit{visitFunction} in the following way:
+\begin{lstlisting}[caption={Example of \textit{visitFunction} implementation of the transformer, used to visit all the function declarations}, captionpos=b, language=Kotlin, label={code:visit_function_declaration_example}]
+override fun visitFunction(
+    declaration: IrFunction
+): IrStatement {
+    val body = declaration.body
+    if (body != null) {
+        declaration.body = irDebug(declaration, body)
+    }
+    return super.visitFunction(declaration)
+}
+\end{lstlisting}
+This works in the following way: for each function declaration found in the context, verify if it has a body and, in that case, modify it passing it to the \textit{irDebug} function.
+\begin{lstlisting}[caption={Example of implementation of a function that adds a new element into the function body}, captionpos=b, language=Kotlin, label={code:ir_debug_example}]
+private fun irDebug(
+    function: IrFunction,
+    body: IrBody
+): IrBlockBody {
+    return DeclarationIrBuilder(
+            pluginContext,
+            function.symbol
+        ).irBlockBody {
+            +irEnter(function)
+            for (statement in body.statements) +statement
+        }
+}
+\end{lstlisting}
+The implementation \textit{irDebug} is shown in Listing \ref{code:ir_debug_example}, and it is used to add a \textit{irEnter} element and then all the statements in the body of the function are inserted again in the function body, in order to maintain the previous behavior.
+
+\begin{lstlisting}[caption={Example of creation of a new function call and adding to it arguments}, captionpos=b, language=Kotlin, label={code:ir_enter_example}]
+private fun IrBuilderWithScope.irEnter(
+    function: IrFunction
+): IrFunctionAccessExpression {
+    return irCall(logFunction).also { call ->
+        call.putValueArgument(
+            0,
+            irString("${function.name} declaration")
+        )
+    }
+}
+\end{lstlisting}
+In the code in Listing \ref{code:ir_enter_example} it is shown the extension function \textit{irEnter}, which is used to build a new \textit{IrCall}. The \textit{IrCall} aims to create a new function call, specifically of the print function retrieved previously. It also adds a new argument, which is a string of the name of the function it is going to be created into.
+
+In conclusion, this transformation, applied to all the function declarations, creates the behavior that this project example wanted to achieve.\newline
+It proves that the source code can be modified completely and that the compiler plugin can be also applied smoothly to multiplatform projects.
