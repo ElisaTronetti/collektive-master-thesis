@@ -66,3 +66,7 @@ compiler-ir-plugin
 kmp-sample
 IrGenerationExtension
 TrasformerImpl
+irDebug
+irEnter
+DeclarationIrBuilder
+CliOption
