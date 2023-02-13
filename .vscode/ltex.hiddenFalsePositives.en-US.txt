@@ -2,3 +2,5 @@
 {"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QThe main constructs provided by the field calculus are the following: nbr-expression \\E(?:Dummy|Ina|Jimmy-)[0-9]+$"}
 {"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QThis allows the field to change dynamically: if in the previous round the rep expression has not been evaluated, the initialization value is \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q, otherwise it is the value obtained in the last computation of rep; Nbr-expression \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q\\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Qif(e_0)e_1 else e_2 \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Qe(e_1, ..., e_n)\\E$"}
 {"rule":"SENTENCE_WHITESPACE","sentence":"^\\QUnit.\\E$"}
+{"rule":"BEEN_PART_AGREEMENT","sentence":"^\\QThe IrGenerationExtension implemented method is generate, which is\\E$"}
+{"rule":"BEEN_PART_AGREEMENT","sentence":"^\\QThe IrGenerationExtension implemented method is generate, and it is shown in Listing \\E(?:Dummy|Ina|Jimmy-)[0-9]+\\Q.\\E$"}
