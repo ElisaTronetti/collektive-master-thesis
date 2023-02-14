@@ -118,6 +118,19 @@ When a device $\delta_1$ is in the domain $D_{true}$, it computes $nbr(e1)$: thi
 Consequently, $\delta_1$ and the other devices have to be aligned in order to exchange information: they are all in the same subdomain, in which $e0$ is evaluated as true, and they are computing $nbr(e1)$.\newline
 Given these concepts, it is possible to understand how to deal with the alignment problem: thanks to the current computational location of a device, it is possible to understand which values it is currently trying to retrieve, and, since each device has an identifier, the values can be mapped to those identifiers. Then, combining all the information together, a computational field is obtained.
 
+One thing to notice is that the alignment is not a concern of the branch construct only. In general, the alignment feature is necessary all along an aggregate program, but it can be more clearly noticed in the branch occurrences, which is the reason it has been discussed as the first example.\newline
+Considering this pseudocode:
+\begin{lstlisting}
+fun f1() {nbr(e1)}
+fun f2() {nbr(e1)}
+
+f1()
+f2()
+\end{lstlisting}
+Even though the body of the functions $f1$ and $f2$ is the same, they are two different expressions. This means that the neighboring expression in $f1$ is not the same of the one in $f2$, and when one of the neighboring expression is retrieving the values computed by the neighbors, it has to consider only its current computational location. For example if the neighboring expression in $f1$ is executing, it has to get the neighbors' evaluation of the $nbr(e1)$ inside the body of $f1$. The resolution of this problem is the same explained for the branch expression.
+
+Concluding, the alignment is provided by keeping track of the computational location, which must be done every time an aggregate programming expression is involved. In this way it is possible to solve any ambiguity that might appear during the computational field construction.
+
 \section{State of the art}
 The aim of this section is to give an introduction about the state-of-the-art technologies that have been developed in the field of aggregate programming. This overview is going to take in consideration how each implementation works and the choices that led their development, with the goal of depicting a representation of the context in which the project of this thesis is going to be set in.
 
