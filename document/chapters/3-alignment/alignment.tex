@@ -1,15 +1,21 @@
 \chapter{Transparent alignment in Kotlin}\label{chapter:alignment}
-The alignment, discussed in Section \ref{subsection:alignment}, is a crucial feature that is necessary to solve in order to create a working implementation of the \textbf{Aggregate computing} paradigm. Different approaches have been tried to find a solution, and, in each attempt a different problem has been found. The following sections analyze all the possibilities taken in consideration: Section \ref{section:stacktraces_hashes} goes into details of the attempts with the stacktraces and the hashes, Section \ref{section_annotation_ksp} exploit the problem with annotations and KSP, understanding their limits. Finally, Section \ref{section:compiler_plugin_solution} describes in details the solution adopted.
+The alignment, discussed in Section \ref{subsection:alignment}, is a crucial feature that is necessary to solve in order to create a working implementation of the \textbf{Aggregate programming} paradigm. 
 
-\section{Stacktraces and hashes}\label{section:stacktraces_hashes}
 The first step in order to find a solution of a problem is to define a simple use case, which is going to be the base of the resolution attempts. The following code was also discussed in Section \ref{subsection:alignment}, and it is a good starting point. In order to be coherent with the final solution, the code in Listing \ref{code:first_alignment_code_example} is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
-\begin{lstlisting}[caption={Creation of compiler option that enables or disables the plugin}, captionpos=b, language=Kotlin, label={code:first_alignment_code_example}]
+\begin{lstlisting}[caption={Starting point to resolve the alignment problem}, captionpos=b, language=Kotlin, label={code:first_alignment_code_example}]
 fun f1() {neighboring(e1)}
 fun f2() {neighboring(e1)}
         
 f1()
 f2()
 \end{lstlisting}
+The goal that needs to be achieved is to find an alignment solution that is able to keep track of the current computational state of a device, making it possible to align only the correct expressions with each other. In this case, it is necessary to find a unique way to identify the execution of the neighboring expression in the body of the \textit{f1} function from the one in the \textit{f2} function.\newline
+Once this is solved, then further alignment cases are going to be analyzed.
+
+Different approaches have been tried to find a solution, and, in each attempt a different problem has been found. The following sections analyze all the possibilities taken in consideration: Section \ref{section:stacktraces_hashes} goes into details of the attempts with the stacktraces and the hashes, Section \ref{section_annotation_ksp} exploit the problem with annotations and KSP, understanding their limits. Finally, Section \ref{section:compiler_plugin_solution} describes in details the solution adopted.
+
+\section{Stacktraces and hashes}\label{section:stacktraces_hashes}
+
 
 
 \section{Annotations and KSP}\label{section_annotation_ksp}
