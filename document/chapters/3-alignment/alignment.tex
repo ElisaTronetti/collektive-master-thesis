@@ -1,22 +1,31 @@
 \chapter{Transparent alignment in Kotlin}\label{chapter:alignment}
 The alignment, discussed in Section \ref{subsection:alignment}, is a crucial feature that is necessary to solve in order to create a working implementation of the \textbf{Aggregate programming} paradigm. 
 
-The first step in order to find a solution of a problem is to define a simple use case, which is going to be the base of the resolution attempts. The following code was also discussed in Section \ref{subsection:alignment}, and it is a good starting point. In order to be coherent with the final solution, the code in Listing \ref{code:first_alignment_code_example} is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
-\begin{lstlisting}[caption={Starting point to resolve the alignment problem}, captionpos=b, language=Kotlin, label={code:first_alignment_code_example}]
+The first step in order to find a solution of a problem is to define a simple use case, which is going to be the base of the resolution attempts. A good starting point is code in Listing \ref{code:first_alignment_code_example}, which was also discussed in Section \ref{subsection:alignment}. In order to be coherent with the final solution, the code is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
+\begin{lstlisting}[caption={Starting point code to resolve the alignment problem}, captionpos=b, language=Kotlin, label={code:first_alignment_code_example}]
 fun f1() {neighboring(e1)}
 fun f2() {neighboring(e1)}
         
 f1()
 f2()
 \end{lstlisting}
-The goal that needs to be achieved is to find an alignment solution that is able to keep track of the current computational state of a device, making it possible to align only the correct expressions with each other. In this case, it is necessary to find a unique way to identify the execution of the neighboring expression in the body of the \textit{f1} function from the one in the \textit{f2} function.\newline
-Once this is solved, then further alignment cases are going to be analyzed.
+The goal that needs to be achieved is to find an alignment solution that is able to keep track of the current computational state of a device, making it possible to align only the correct expressions with each other. In this example, it is necessary to find a unique way to identify the execution of the neighboring expression in the body of the \textit{f1} function from the one in the \textit{f2} function.\newline
+It is not considered in the data structure the computing device identification, since it is not a core problem in the attempts. Once the base case is solved, then further complexities of the alignment problem are going to be analyzed, such as the branch construct.
 
-Different approaches have been tried to find a solution, and, in each attempt a different problem has been found. The following sections analyze all the possibilities taken in consideration: Section \ref{section:stacktraces_hashes} goes into details of the attempts with the stacktraces and the hashes, Section \ref{section_annotation_ksp} exploit the problem with annotations and KSP, understanding their limits. Finally, Section \ref{section:compiler_plugin_solution} describes in details the solution adopted.
+The key aspects of this study are transparency and portability. It is important to keep in mind that DSL is developed by using \textbf{Kotlin multiplatform}, which choice is discussed in Section \ref{section:technology_choices}. This means that the alignment solution has to work for all the targeted platforms, which are Native, JavaScript and Java. Moreover, one additional feature that should be achieved is the platforms' interoperability.
+
+Different approaches have been tried to find a solution, and, in each attempt a different problem has been found. The following sections analyze all the possibilities taken in consideration: Section \ref{section:stacktraces_hashes} goes into details of the attempts with stacktraces and hashes, Section \ref{section_annotation_ksp} exploit the problem with annotations and KSP, understanding their limits. Finally, Section \ref{section:compiler_plugin_solution} describes in details the solution adopted, by developing a Kotlin compiler plugin.
 
 \section{Stacktraces and hashes}\label{section:stacktraces_hashes}
+Since the alignment problem is quite complex, the firsts attempts regards simple strategies without the concern of efficiency.
 
-
+One way of keeping track of the functions called in a program execution is by checking the \textbf{stacktrace}. This leads to one of the possible solution, which is throwing exceptions whenever an aggregate programming constructs is used, and then using the generated exception stacktrace as identifier.\newline
+The stacktraces can be generated in all the platforms that the DSL aims to target. On each platform, the stacktrace is identical for every program execution, meaning that it is possible to align different devices that are executing the same program on the same target.\newline
+On the other hand, this option presents two main problems that can not be avoided:
+\begin{enumerate}
+    \item The first problem regards the efficiency problem of this solution. Since an aggregate program runs continuously on each computing device, an enormous amount of exception would be thrown, causing delays that in a distributed system can cause issues;
+    \item The second problem refers to the interoperability of device computing on different target platforms. The stacktraces generated by the Native target are completely different from the one generated by JavaScript and Java, and they represent information in a non-identical way. This means that devices running on different platforms can not align, since the identifier generated for the sequence of the function called does not match.
+\end{enumerate}
 
 \section{Annotations and KSP}\label{section_annotation_ksp}
 \section{KCP: solution with total transparency and portability}\label{section:compiler_plugin_solution}
