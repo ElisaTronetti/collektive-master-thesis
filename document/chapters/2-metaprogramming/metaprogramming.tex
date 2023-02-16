@@ -12,7 +12,7 @@ Metaprogramming in Kotlin is a powerful feature that allows for the manipulation
 \section{Metaprogramming techniques}
 There are different techniques that can be used in Kotlin in order to create metaprograms. In the following sections they are going to be analyzed in details the main approaches provided by Kotlin, in order to give an overview of the possible alternatives when coming into terms with metaprogramming.
 
-\subsection{Annotations}
+\subsection{Annotations}\label{section:annotation}
 Annotations \cite{annotation_documentation} in Kotlin are a type of metadata that can be added to provide additional information about the code, as well as to automate certain tasks.
 
 To create a custom annotation in Kotlin, first it is necessary to declare the annotation type, using the \textbf{annotation} keyword, in the same way shown in the following code:
@@ -53,7 +53,7 @@ fun myFunction() {
 \end{lstlisting}
 In this example, the \textbf{MyAnnotation} annotation is applied to both a class and a function. The annotations can be used by other code, either at compile time or at runtime, to provide additional information about the annotated elements.
 
-\subsection{KSP}
+\subsection{KSP}\label{section:ksp}
 KSP stands for \textbf{Kotlin Symbol Processing}, and it is an API that can be used to build lightweight compiler plugins \cite{ksp_documentation}. It offers an easier compiler plugin API that takes advantage of Kotlin's capabilities, but it keeps the learning curve low.
 
 KSP has been developed as an alternative technology to kapt \cite{kapt_documentation}, which was used to allow annotation processing. Currently, kapt is in maintenance mode; it is being kept up-to-date with the new Kotlin and Java releases, without adding any features.\newline
