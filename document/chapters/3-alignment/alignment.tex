@@ -69,6 +69,12 @@ This issue is present also when try to align devices running on different platfo
 Considering these attempts and their characteristics, it is possible to conclude that they are not suitable as resolution of the alignment problem. In order to give a clear view of their pros and cons, the characteristics of the alternative just discussed are recapped in Table \ref{tab:stacktrace_hash_table}.
 
 \section{Annotations and KSP}\label{section:annotation_ksp}
+Since simple Kotlin functionalities are not feasible for solving the alignment problem, another possibility is to try different metaprogramming alternative, such as the ones discussed in Chapter \ref{chapter:metaprogramming}.
+
+The first metaprogramming technique taken in consideration is \textbf{annotations}. As explained in Section \ref{section:annotation}, annotations can be used to create additional metadata to elements in the code, that can be used to create specific behaviors.\newline
+This alternative can not be used for a simple reason: the key aspect of this project is the interoperability, achieved by using Kotlin multiplatform, and the chosen targets are Native, JavaScript and JVM; while this thesis is being redacted, Kotlin\\JS does not support annotations, creating a problem that can not be ignored.\newline
+Consequently, annotations are excluded from the possible solutions, without concerning about the other necessary characteristics they may provide.
+
 \begin{table}[!ht]
     \small
     \centering
@@ -82,7 +88,7 @@ Considering these attempts and their characteristics, it is possible to conclude
       \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
     \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
     \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
-    \textbf{Annotation} & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \textbf{Annotation} & no  & -                     & -                     & -   & -   \\ \hline
     \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
     \end{tabular}
     \caption{Comparison between stacktrace and hash for solving the alignment problem}
@@ -103,7 +109,7 @@ Considering these attempts and their characteristics, it is possible to conclude
       \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
     \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
     \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
-    \textbf{Annotation} & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \textbf{Annotation} & no  & -                     & -                     & -   & -   \\ \hline
     \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
     \textbf{KCP}        & yes & yes                   & yes                   & yes & yes \\ \hline
     \end{tabular}
