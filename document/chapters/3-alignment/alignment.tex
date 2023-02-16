@@ -75,6 +75,23 @@ The first metaprogramming technique taken in consideration is \textbf{annotation
 This alternative can not be used for a simple reason: the key aspect of this project is the interoperability, achieved by using Kotlin multiplatform, and the chosen targets are Native, JavaScript and JVM; while this thesis is being redacted, Kotlin\\JS does not support annotations, creating a problem that can not be ignored.\newline
 Consequently, annotations are excluded from the possible solutions, without concerning about the other necessary characteristics they may provide.
 
+The next alternative that involves metaprogramming is \textbf{KSP}, which is described in details in Section \ref{section:ksp}. Starting from KSP 1.0.1, it is possible to use KSP on multiplatform projects \cite{ksp_multiplatform}, which includes also the targets necessary for the successful outcome desired.\newline
+KSP allows the creating of lightweight compilers, providing an API that hides all the complexities that a complete compiler plugin would involve. While designing a possible solution, it is necessary to keep in mind the biggest limitation that this technology brings within, which is the impossibility to modify the source code.\newline
+Since KSP can access the code at compile time, it can be used to extract information that can be used to build a custom stacktrace that keeps track of the sequence of functions called. Then, this custom stack can be used as identifier when needed. For this reason, it has been created a class \textit{Stack}, which interface is in Listing \ref{code:stack_interface_ksp}.
+\begin{lstlisting}[caption={Stack interface for KSP}, captionpos=b, language=Kotlin, label={code:stack_interface_ksp}]
+interface Stack {
+    fun currentPath(): String
+    fun align(token: String): Unit
+}
+\end{lstlisting}
+By using the \textit{Stack} it is possible to add to a data structure everything necessary for the alignment, which might be for example function calls. Considering the base case cited previously in Listing \ref{code:first_alignment_code_example}, when executing \textit{f1}, the list should contain \textit{[f1, neighboring]}, and when computing \textit{f2} would be \textit{[f2, neighboring]}, making it possible to uniquely identify the two different expressions.\newline
+Trying to obtain the result just described, it can be divided in two smaller steps:
+\begin{enumerate}
+    \item The aggregate programming constructs are part of the DSL functions exposed to the final user, meaning that it is not possible for the user to change their implementation in any way while using it. Moreover, the name of these functions is known in advanced. This leads to create a simple solution for handling them, which consists on changing their implementations and adding a line of code that it is responsible to insert in the \textit{Stack} data structure the function name. For example, in the \textit{neighboring} implementation there is a function call to align that add its name to the stack.
+    \item The second problem, which is more complex, can not be solved by in the same way, since it would be the final user to manually solve the alignment problem. The solution would be to modify the functions \textit{f1} and \textit{f2} using KSP and adding the same line of code discussed for the previous case. On the other hand, the direct modification of the source code is not allowed by KSP, which means that the only solution would be to recreate the same code of the user, with the added function calls. This solution would be feasible for simple use cases, but it is not efficient when dealing with complex systems.
+\end{enumerate}
+This leads to the conclusion that it is crucial for the solution of the alignment problem the possibility to modify the source code. KSP can be used as a temporary solution for some use cases, also taking advantage of the simple and powerful API that it provides, but the downsides are important factors to consider.
+
 \begin{table}[!ht]
     \small
     \centering
@@ -89,11 +106,13 @@ Consequently, annotations are excluded from the possible solutions, without conc
     \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
     \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
     \textbf{Annotation} & no  & -                     & -                     & -   & -   \\ \hline
-    \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & no  & no  \\ \hline
     \end{tabular}
-    \caption{Comparison between stacktrace and hash for solving the alignment problem}
+    \caption{Comparison between stacktrace, hash, annotation and KSP for solving the alignment problem}
     \label{tab:annotation_ksp_table}
 \end{table}
+
+Concluding, the characteristics of annotation and KSP are added in Table \ref{tab:annotation_ksp_table} align side with the stacktrace and hash ones, summarizing the considerations made on all the alternatives considered up until this point.
 
 \section{KCP: solution with total transparency and portability}\label{section:compiler_plugin_solution}
 \begin{table}[!ht]
