@@ -1,7 +1,7 @@
 \chapter{Transparent alignment in Kotlin}\label{chapter:alignment}
-The alignment, discussed in Section \ref{subsection:alignment}, is a crucial feature that is necessary to solve in order to create a working implementation of the \textbf{Aggregate programming} paradigm. 
+The alignment, discussed in Section \ref{subsection:alignment}, is a crucial feature that is necessary to provide in order to create a working implementation of the \textbf{Aggregate programming} paradigm. 
 
-The first step in order to find a solution of a problem is to define a simple use case, which is going to be the base of the resolution attempts. A good starting point is code in Listing \ref{code:first_alignment_code_example}, which was also discussed in Section \ref{subsection:alignment}. In order to be coherent with the final solution, the code is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
+The first step for finding a solution of a problem is to define a simple use case, which is going to be the base of the resolution attempts. A good starting point is code in Listing \ref{code:first_alignment_code_example}, which was also discussed previously in Section \ref{subsection:alignment}. In order to be coherent with the final solution, the code is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
 \begin{lstlisting}[caption={Starting point code to resolve the alignment problem}, captionpos=b, language=Kotlin, label={code:first_alignment_code_example}]
 fun f1() {neighboring(e1)}
 fun f2() {neighboring(e1)}
@@ -10,52 +10,103 @@ f1()
 f2()
 \end{lstlisting}
 The goal that needs to be achieved is to find an alignment solution that is able to keep track of the current computational state of a device, making it possible to align only the correct expressions with each other. In this example, it is necessary to find a unique way to identify the execution of the neighboring expression in the body of the \textit{f1} function from the one in the \textit{f2} function.\newline
-It is not considered in the data structure the computing device identification, since it is not a core problem in the attempts. Once the base case is solved, then further complexities of the alignment problem are going to be analyzed, such as the branch construct.
+It is not considered right now the computing device identification, since it is not a core problem in these attempts. Once the base case is solved, then further complexities of the alignment problem are going to be analyzed, such as the branch construct.
 
-The key aspects of this study are transparency and portability. It is important to keep in mind that DSL is developed by using \textbf{Kotlin multiplatform}, which choice is discussed in Section \ref{section:technology_choices}. This means that the alignment solution has to work for all the targeted platforms, which are Native, JavaScript and Java. Moreover, one additional feature that should be achieved is the platforms' interoperability.
+There are key aspects that are considered for this study and that are used to compare the different approaches:
+\begin{itemize}
+    \item \textbf{Availability for Kotlin multiplatform}: it is important to keep in mind that DSL is developed by using Kotlin multiplatform, which choice is discussed in Section \ref{section:technology_choices}. The approaches chosen must be available for a Kotlin multiplatform architecture;
+    \item \textbf{Portability}: the alignment solution has to work for all the targeted platforms by Kotlin Multiplatform, which are Native, JavaScript and JVM. Multiple device computing on the same platform have to be able to align correctly;
+    \item \textbf{Interoperability}: the solution should allow devices executing on different platform to align;
+    \item \textbf{Efficiency}: one aspect to consider is the efficiency, because it can not be produced an elaborated solution that has high computational requirements;
+    \item \textbf{Transparency}: finally, this feature has to be transparent to the final user, without making the developer write ulterior code to make the alignment work.
+\end{itemize}
 
-Different approaches have been tried to find a solution, and, in each attempt a different problem has been found. The following sections analyze all the possibilities taken in consideration: Section \ref{section:stacktraces_hashes} goes into details of the attempts with stacktraces and hashes, Section \ref{section_annotation_ksp} exploit the problem with annotations and KSP, understanding their limits. Finally, Section \ref{section:compiler_plugin_solution} describes in details the solution adopted, by developing a Kotlin compiler plugin.
+Different approaches have been tried to find a solution, and, in each attempt a different problem has been found. The following sections analyze all the possibilities taken in consideration: Section \ref{section:stacktraces_hashes} goes into details of the attempts with stacktraces and hashes, Section \ref{section:annotation_ksp} exploit the problem with annotations and KSP, understanding their limits. Finally, Section \ref{section:compiler_plugin_solution} describes in details the solution adopted, by developing a Kotlin compiler plugin. In each section there is a table that recaps the characteristics for each technology tried for the alignment based on the key aspects highlighted previously.
 
 \section{Stacktraces and hashes}\label{section:stacktraces_hashes}
-Since the alignment problem is quite complex, the firsts attempts regards simple strategies without the concern of efficiency.
+Since the alignment problem is quite complex, the firsts attempts regards simple strategies without the concern of efficiency, trying to use already existing Kotlin functionalities to generate a unique identifier.
 
-One way of keeping track of the functions called in a program execution is by checking the \textbf{stacktrace}. This leads to one of the possible solution, which is throwing exceptions whenever an aggregate programming constructs is used, and then using the generated exception stacktrace as identifier.\newline
+One way of keeping track of the functions called during a program execution is by checking the \textbf{stacktrace}. This leads to one of the possible solutions, which is throwing exceptions whenever an aggregate programming construct is computed, and then using the generated exception stacktrace as identifier.\newline
 The stacktraces can be generated in all the platforms that the DSL aims to target. On each platform, the stacktrace is identical for every program execution, meaning that it is possible to align different devices that are executing the same program on the same target.\newline
+Moreover, this solution is offers transparency to the final user, because the alignment can work without having the developer to write additional code.\newline
 On the other hand, this option presents two main problems that can not be avoided:
 \begin{enumerate}
-    \item The first problem regards the efficiency problem of this solution. Since an aggregate program runs continuously on each computing device, an enormous amount of exception would be thrown, causing delays that in a distributed system can cause issues;
-    \item The second problem refers to the interoperability of device computing on different target platforms. The stacktraces generated by the Native target are completely different from the one generated by JavaScript and Java, and they represent information in a non-identical way. This means that devices running on different platforms can not align, since the identifier generated for the sequence of the function called does not match.
+    \item The first problem regards the efficiency of this solution. Since an aggregate program runs continuously on each computing device, an enormous amount of exception would be thrown, causing delays that in a distributed system can cause issues;
+    \item The second problem refers to the interoperability of device computing on different targeted platforms. The stacktraces generated by the Native target are completely different from the one generated by JavaScript and JVM, and they represent information in a non-identical way. This means that devices running on different platforms can not align correctly, since the identifier generated for the sequence of the functions called does not match.
 \end{enumerate}
-This attempt tried to use already existing functionalities of Kotlin to generate a unique identifier, but the stacktraces can not be used to solve the alignment problem.
 
-Following a similar line of reasoning, the next attempt involved the \textbf{hash-codes}. Kotlin provides a method that given an object returns its hash-code, and it is guaranteed that the hash-code generate is always the same whenever two objects are equal to each other. In order to take advantage of this feature, it was created a new class called \textit{Event}, which has the role to encapsulate the DSL expression that was currently being computed by a device, and then use its hash-code as identifier. In general, this is not a suitable solution: the hash generated is the same during a single execution, but it is not when running multiple devices that have to communicate, meaning that the alignment can not be achieved, since the identifier can be different even though they should not be.\newline
+Following a similar line of reasoning, the next attempt involved the \textbf{hash-codes}. Kotlin provides a method that given an object returns its hash-code, and it is guaranteed that the hash-code generated is always the same whenever two objects are equal to each other. In order to take advantage of this feature, it was created a new class called \textit{Event}, which has the role to encapsulate the DSL expression that was currently being computed by a device, and then use the object hash-code as identifier. In general, this is not a suitable solution: the hash generated is the same during a single execution, but it is not when running multiple devices that have to communicate, meaning that the alignment can not be achieved, since the identifiers can be different even though they should not be.\newline
 This issue is present also when try to align devices running on different platforms, but there is an additional problem: the hash-code generated from a target is not the same in another target, creating a discrepancy impossible to overcome.
 
-\begin{table}[ht!]
+\begin{table}[!ht]
+    \small
     \centering
-    \begin{tabular}{|l|c|c|c|c|}
+    \begin{tabular}{|l|c|c|c|c|c|}
     \hline
     \textbf{} &
       \begin{tabular}[c]{@{}c@{}}Available for\\ Kotlin \\ Multiplatform\end{tabular} &
       \begin{tabular}[c]{@{}c@{}}Allows\\ same target\\ interoperability\end{tabular} &
       \begin{tabular}[c]{@{}c@{}}Allows\\ different targets\\ interoperability\end{tabular} &
-      \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Acceptable\\ efficiency\end{tabular}} \\ \hline
+      \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Acceptable\\ efficiency\end{tabular}} &
+      \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
     \textbf{Stacktrace} &
       yes &
       yes &
       no &
-      no \\ \hline
+      no &
+      yes \\ \hline
     \textbf{Hash} &
       yes &
       no &
       no &
+      yes &
       yes \\ \hline
     \end{tabular}
     \caption{Comparison between stacktrace and hash for solving the alignment problem}
     \label{tab:stacktrace_hash_table}
 \end{table}
 
-Considering these attempts and their characteristics, it is possible to conclude that they are not suitable as resolution of the alignment problem. In order to give a clear view of their pros and cons, they are recap in Table \ref{tab:stacktrace_hash_table}.
+Considering these attempts and their characteristics, it is possible to conclude that they are not suitable as resolution of the alignment problem. In order to give a clear view of their pros and cons, the characteristics of the alternative just discussed are recapped in Table \ref{tab:stacktrace_hash_table}.
 
-\section{Annotations and KSP}\label{section_annotation_ksp}
+\section{Annotations and KSP}\label{section:annotation_ksp}
+\begin{table}[!ht]
+    \small
+    \centering
+    \begin{tabular}{|l|c|c|c|c|c|}
+    \hline
+    \textbf{} &
+      \begin{tabular}[c]{@{}c@{}}Available for\\ Kotlin \\ Multiplatform\end{tabular} &
+      \begin{tabular}[c]{@{}c@{}}Allows\\ same target\\ interoperability\end{tabular} &
+      \begin{tabular}[c]{@{}c@{}}Allows\\ different targets\\ interoperability\end{tabular} &
+      \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Acceptable\\ efficiency\end{tabular}} &
+      \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
+    \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
+    \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
+    \textbf{Annotation} & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \end{tabular}
+    \caption{Comparison between stacktrace and hash for solving the alignment problem}
+    \label{tab:annotation_ksp_table}
+\end{table}
+
 \section{KCP: solution with total transparency and portability}\label{section:compiler_plugin_solution}
+\begin{table}[!ht]
+    \small
+    \centering
+    \begin{tabular}{|l|c|c|c|c|c|}
+    \hline
+    \textbf{} &
+      \begin{tabular}[c]{@{}c@{}}Available for\\ Kotlin \\ Multiplatform\end{tabular} &
+      \begin{tabular}[c]{@{}c@{}}Allows\\ same target\\ interoperability\end{tabular} &
+      \begin{tabular}[c]{@{}c@{}}Allows\\ different targets\\ interoperability\end{tabular} &
+      \multicolumn{1}{l|}{\begin{tabular}[c]{@{}l@{}}Acceptable\\ efficiency\end{tabular}} &
+      \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
+    \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
+    \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
+    \textbf{Annotation} & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \textbf{KCP}        & yes & yes                   & yes                   & yes & yes \\ \hline
+    \end{tabular}
+    \caption{Comparison between stacktrace and hash for solving the alignment problem}
+    \label{tab:kcp_table}
+\end{table}
