@@ -108,7 +108,7 @@ This leads to the conclusion that it is crucial for the solution of the alignmen
       \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
     \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
     \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
-    \textbf{Annotation} & no  & yes (manually)        & yes (manually)        & -   & no  \\ \hline
+    \textbf{Annotation} & no  & yes (manually)        & yes (manually)        & yes & no  \\ \hline
     \textbf{KSP}        & yes & yes                   & yes                   & no  & yes \\ \hline
     \end{tabular}
     \caption{Comparison between stacktrace, hash, annotation and KSP for solving the alignment problem}
@@ -118,6 +118,16 @@ This leads to the conclusion that it is crucial for the solution of the alignmen
 Concluding, the characteristics of annotation and KSP are added in Table \ref{tab:annotation_ksp_table} align side with the stacktrace and hash ones, summarizing the considerations made on all the alternatives considered up until this point.
 
 \section{KCP: solution with total transparency and portability}\label{section:compiler_plugin_solution}
+\textbf{Kotlin compiler plugins} are another metaprogramming alternatives. As discussed previously in Section \ref{section:compiler_plugin_explanation}, the development of a compiler plugin requires a lot of time and study, but they also provide a total freedom when trying to modify the code at compile time.
+
+The following considerations prove that a plugin can be used to solve the alignment problem:
+\begin{itemize}
+    \item When developing project using Kotlin multiplatform, under the hood the compiler translate the Kotlin code into the code of the targets. Before doing that, it is transformed into an \textit{Intermediate Representation}, called \textbf{IR}, which as been discussed in Section \ref{section:kotlin_ir}. This representation allows the creation of multiplatform compiler plugins, without the need to distinguish the plugin between the different platforms;
+    \item Since the source code is completely available at compile time, it is possible to analyze it in order to make the plugin understand when the alignment is needed. Then, new code can be generated to guarantee the correct alignment, which can be similar to the stack discussed for KSP. Moreover, since the generation is based on the intermediate representation, this allows the interoperability between the different project targets;
+    \item Finally, the plugin modifications are applied at compile time, which does not impact in a relevant way the execution time. The code generation is also totally transparent to the user, that does not have to worry about the alignment.
+\end{itemize}
+
+The Kotlin compiler plugin solution is the chosen one for creating this crucial feature, because, comparing it with the other alternatives, it is the one that respects all the requirements. All the characteristics of the analyzed possibilities are summarized in Table \ref{tab:kcp_table}.
 \begin{table}[!ht]
     \small
     \centering
@@ -131,10 +141,41 @@ Concluding, the characteristics of annotation and KSP are added in Table \ref{ta
       \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
     \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
     \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
-    \textbf{Annotation} & no  & yes (manually)        & yes (manually)        & -   & no  \\ \hline
-    \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \textbf{Annotation} & no  & yes (manually)        & yes (manually)        & yes & no  \\ \hline
+    \textbf{KSP}        & yes & yes                   & yes                   & no  & yes \\ \hline
     \textbf{KCP}        & yes & yes                   & yes                   & yes & yes \\ \hline
     \end{tabular}
-    \caption{Comparison between stacktrace and hash for solving the alignment problem}
+    \caption{Comparison between stacktrace, hash, annotation, KSP and Kotlin compiler plugin for solving the alignment problem}
     \label{tab:kcp_table}
 \end{table}
+
+Before analyzing how to generate code using the compiler plugin, it is necessary to define what the solution should do.\newline
+The chosen approach is similar to the one discussed for KSP in Section \ref{section:annotation_ksp}: the best way to understand if two different devices are aligned is by using a custom stack, which is used to push the function name into the data structure when a function is called, and then it is popped when the control flow exits that function.\newline
+This data structure is called \textbf{Stack} and its interface is the following:
+\begin{lstlisting}[caption={Stack interface for Kotlin compiler plugin solution}, captionpos=b, language=Kotlin, label={code:stack_interface_compiler_plugin}]
+interface Stack<X> {
+    fun currentPath(): Path
+    fun alignRaw(token: X?): Unit
+    fun dealign(): Unit
+}
+\end{lstlisting}
+The stack has an internal mutable list that updated when calling the method \textit{alignRaw} and \textit{dealign}. Specifically, \textit{alignRaw} is used to push an identifier into the stack, \textit{dealign} is used to pop it.\newline
+When a device needs to know its current computational state, it can retrieve the path using the function \textit{currentPath}. A \textbf{Path} is a data class that is used as a wrapper of the current stack state, in order to return the immutable list, following Kotlin best practice. Its implementation is in Listing \ref{code:path_compiler_plugin}.
+\begin{lstlisting}[caption={Path dataclass for Kotlin compiler plugin solution}, captionpos=b, language=Kotlin, label={code:path_compiler_plugin}]
+data class Path(val path: List<Any?>)
+\end{lstlisting}
+
+The data structure that can be used to store the information about the computation has been defined. It is now necessary to provide a method that can be used that actually update the stack correctly, without having to do it manually. This is also going to be the function call generated by the compiler plugin to perform the alignment.
+\begin{lstlisting}[caption={Stack interface for KSP}, captionpos=b, language=Kotlin, label={code:alignedOn_compiler_plugin}]
+fun <R> alignedOn(pivot: Any?, body: () -> R): R {
+    stack.alignRaw(pivot)
+    return body().also { stack.dealign() }
+}
+\end{lstlisting}
+The method \textit{alignedOn} in Listing \ref{code:alignedOn_compiler_plugin} needs to be explained further.\newline
+Considering the base example reported at the beginning of this chapter in Listing \ref{code:first_alignment_code_example} it is possible to explain the behavior of this function.
+
+TODO spiega esempio allineando su f1. Perché voglio allineare e come allineo. Ad alto livello proprio.
+\begin{itemize}
+    \item The method accepts two parameters: the first one is the \textit{pivot}, which is the identifier that is going to be pushed in the stack, the second one is \textit{body}, which is the element that is going to be computed;
+\end{itemize}
