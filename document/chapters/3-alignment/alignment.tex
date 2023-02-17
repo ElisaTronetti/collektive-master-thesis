@@ -71,11 +71,14 @@ Considering these attempts and their characteristics, it is possible to conclude
 \section{Annotations and KSP}\label{section:annotation_ksp}
 Since simple Kotlin functionalities are not feasible for solving the alignment problem, another possibility is to try different metaprogramming alternative, such as the ones discussed in Chapter \ref{chapter:metaprogramming}.
 
-The first metaprogramming technique taken in consideration is \textbf{annotations}. As explained in Section \ref{section:annotation}, annotations can be used to create additional metadata to elements in the code, that can be used to create specific behaviors.\newline
-This alternative can not be used for a simple reason: the key aspect of this project is the interoperability, achieved by using Kotlin multiplatform, and the chosen targets are Native, JavaScript and JVM; while this thesis is being redacted, Kotlin\\JS does not support annotations, creating a problem that can not be ignored.\newline
-Consequently, annotations are excluded from the possible solutions, without concerning about the other necessary characteristics they may provide.
+The first metaprogramming technique taken in consideration is \textbf{annotations}. As explained in Section \ref{section:annotation}, annotations can be used to attach additional metadata to elements in the code, which can be used to create specific behaviors. For example, it is possible to use them to define that a function should be causing the alignment and specify through the annotations how to handle it.\newline
+Before diving in the technical details of how the alignment could be performed, a few considerations must be made:
+\begin{itemize}
+    \item A key aspect of this project is the interoperability, achieved by using Kotlin multiplatform, and the chosen targets are Native, JavaScript and JVM. While this thesis is being redacted, Kotlin\\JS does not support annotations, creating a compatibility issue that is difficult to overcome;
+    \item in order to take advantage of the metadata provided by annotations, the developer should annotate manually every element in the source code whenever the alignment is required. This is not acceptable, since a requirement of the solution is the transparency for the final user.
+\end{itemize}
 
-The next alternative that involves metaprogramming is \textbf{KSP}, which is described in details in Section \ref{section:ksp}. Starting from KSP 1.0.1, it is possible to use KSP on multiplatform projects \cite{ksp_multiplatform}, which includes also the targets necessary for the successful outcome desired.\newline
+The next alternative that involves metaprogramming is \textbf{KSP} (Kotlin Symbol Processing), which is described in details in Section \ref{section:ksp}. Starting from KSP 1.0.1, it is possible to use KSP on multiplatform projects \cite{ksp_multiplatform}, which includes also the targets necessary for the successful outcome desired.\newline
 KSP allows the creating of lightweight compilers, providing an API that hides all the complexities that a complete compiler plugin would involve. While designing a possible solution, it is necessary to keep in mind the biggest limitation that this technology brings within, which is the impossibility to modify the source code.\newline
 Since KSP can access the code at compile time, it can be used to extract information that can be used to build a custom stacktrace that keeps track of the sequence of functions called. Then, this custom stack can be used as identifier when needed. For this reason, it has been created a class \textit{Stack}, which interface is in Listing \ref{code:stack_interface_ksp}.
 \begin{lstlisting}[caption={Stack interface for KSP}, captionpos=b, language=Kotlin, label={code:stack_interface_ksp}]
@@ -105,8 +108,8 @@ This leads to the conclusion that it is crucial for the solution of the alignmen
       \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
     \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
     \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
-    \textbf{Annotation} & no  & -                     & -                     & -   & -   \\ \hline
-    \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & no  & no  \\ \hline
+    \textbf{Annotation} & no  & yes (manually)        & yes (manually)        & -   & no  \\ \hline
+    \textbf{KSP}        & yes & yes                   & yes                   & no  & yes \\ \hline
     \end{tabular}
     \caption{Comparison between stacktrace, hash, annotation and KSP for solving the alignment problem}
     \label{tab:annotation_ksp_table}
@@ -128,7 +131,7 @@ Concluding, the characteristics of annotation and KSP are added in Table \ref{ta
       \begin{tabular}[c]{@{}c@{}}Transparent\\ to the\\ final user\end{tabular} \\ \hline
     \textbf{Stacktrace} & yes & yes                   & no                    & no  & yes \\ \hline
     \textbf{Hash}       & yes & no                    & no                    & yes & yes \\ \hline
-    \textbf{Annotation} & no  & -                     & -                     & -   & -   \\ \hline
+    \textbf{Annotation} & no  & yes (manually)        & yes (manually)        & -   & no  \\ \hline
     \textbf{KSP}        & yes & yes (manually)        & yes (manually)        & yes & no  \\ \hline
     \textbf{KCP}        & yes & yes                   & yes                   & yes & yes \\ \hline
     \end{tabular}
