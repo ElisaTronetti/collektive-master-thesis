@@ -172,10 +172,46 @@ fun <R> alignedOn(pivot: Any?, body: () -> R): R {
     return body().also { stack.dealign() }
 }
 \end{lstlisting}
-The method \textit{alignedOn} in Listing \ref{code:alignedOn_compiler_plugin} needs to be explained further.\newline
-Considering the base example reported at the beginning of this chapter in Listing \ref{code:first_alignment_code_example} it is possible to explain the behavior of this function.
+The method \textit{alignedOn} in Listing \ref{code:alignedOn_compiler_plugin} needs to be explained further, since its behavior is central in the solution proposed.\newline
+The function signature accepts two parameters: the first one is the \textit{pivot}, which is the identifier that is going to be pushed in the stack, the second one is \textit{body}, which is the element that is going to be computed. For example, considering the base example reported at the beginning of this chapter in Listing \ref{code:first_alignment_code_example} and supposing the computation of \textit{f1}, the \textit{pivot} would be the name of the function \textit{f1}, and the body would be \textit{neighboring(e1)}.\newline
+The implementation of \textit{alignedOn} is entitled update the stack pushing the pivot, then it executes the body of the function taken as parameter and returns as output the value computed. Once the computation of the function is completed, it also resets the stack at its previous state.
 
-TODO spiega esempio allineando su f1. Perché voglio allineare e come allineo. Ad alto livello proprio.
+Listing \ref{code:generation_first_alignment_code_example} shows how Listing \ref{code:first_alignment_code_example} is going to be modified during the compilation by the compiler plugin.
+\begin{lstlisting}[caption={Generation goal to handle the alignment of Listing \ref{code:first_alignment_code_example}}, captionpos=b, language=Kotlin, label={code:generation_first_alignment_code_example}]
+fun f1() {
+    alignedOn("neighboring"){
+        neighboring(e1)
+    }
+}
+fun f2() {
+    alignedOn("neighboring"){
+        neighboring(e1)
+    }
+}
+            
+alignedOn("f1"){
+    f1()
+}
+alignedOn("f2"){
+    f2()
+}
+\end{lstlisting}
+To each function call now corresponds a new call to \textit{alignedOn} function, creating the mechanism of alignment.\newline
+While executing the code in Listing \ref{code:generation_first_alignment_code_example}, this is what happen to the stack:
 \begin{itemize}
-    \item The method accepts two parameters: the first one is the \textit{pivot}, which is the identifier that is going to be pushed in the stack, the second one is \textit{body}, which is the element that is going to be computed;
+    \item First, the \textit{alignedOn} on line 12 is executed and the state of the stack is now \textit{[f1]};
+    \item Then, \textit{f1} is computed, which causes another \textit{alignedOn} call. The stack is updated, and its current value is now \textit{[f1, neighboring]};
+    \item While executing the neighboring function, the device looks into the messages received by its neighbors in order to find fields that match the current stack value \textit{[f1, neighboring]}. Those neighbors are the one aligned with the considered computing device;
+    \item Then the \textit{alignedOn} call at line 2 has completed its execution, so there is another update on the stack, which dealign from the current state. The stack is \textit{[f1]};
+    \item Also the \textit{alignedOn} on line 12 is finished, causing the stack to be empty again;
+    \item The exact behavior happens when computing \textit{f2}, with the difference that the stack when computing the neighboring function is \textit{[f2, neighboring]}. In this way, only the neighbors values found that executed \textit{f2} and then \textit{neighboring} are considered.
 \end{itemize}
+
+Now that the end result that wants to be achieved for this base case is clear, the compiler plugin can be explained in details. Since most of a basic plugin implementation has been explained in the example in Section \ref{section:compiler_plugin_example}, only the crucial part of the transformation of the code are going to be discussed.
+
+The \textbf{IrGenerationExtension}, before registering the transformer necessary to perform the code modification, needs to retrieve two elements, which absence would preclude the execution of the plugin. The user would be informed that during the compilation the required elements were not found.\newline
+The referred elements are:
+\begin{enumerate}
+    \item \textbf{The alignedOn function declaration}: in order to be able to call an already existent function, it is necessary to specify to the compiler to look for that function. In this case it is necessary the reference to \textit{alignedOn}, discussed in Listing \ref{code:alignedOn_compiler_plugin};
+    \item \textbf{The aggregate context}: the functions exposed by the DSL are encapsulated in the \textbf{AggregateContext} class, which also contains the reference to the stack instance. Since it is possible to modify the stack only through its instance, the aggregate context class retrieved here can be used to get the instance of the object when calling the \textit{alignedOn} function. More details about the \textit{AggregateContext} class are going to be Chapter \ref{chapter:collektive}.
+\end{enumerate}
