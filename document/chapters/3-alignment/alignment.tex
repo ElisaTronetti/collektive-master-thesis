@@ -304,3 +304,53 @@ The Figure \ref{fig:ir_trasformation_with_code_elements} shows how the various e
     \label{fig:ir_trasformation_with_code_elements}
 \end{figure}
 The \textit{AggregateCallTransformer} finds the aggregate call, the \textit{AlignmentTransformer} is able to understand which function needs to be aligned, which in this example is \textit{neighboring}. Then the new function call is created, with the two parameters: the name of the original function and its call.
+
+As anticipated in Section \ref{subsection:alignment}, also the branch construct creates a domain restriction that needs to be handled by the alignment feature.\newline
+Again, it is necessary to define the required result that has to be achieved by the compiler plugin.
+\begin{lstlisting}[caption={Generation goal to handle the alignment of Listing \ref{code:first_alignment_code_example}}, captionpos=b, language=Kotlin, label={code:branches_alignment_code_example}]
+val number = (0..10).random()
+if (number > 5) {
+    neighboring("higher")
+} else {
+    neighboring("lower")
+}
+\end{lstlisting}
+Given the example in Listing \ref{code:branches_alignment_code_example} its transformation would be the one reported in Listing \ref{code:generation_branches_alignment_code_example}.
+\begin{lstlisting}[caption={Generation goal to handle the alignment of Listing \ref{code:first_alignment_code_example}}, captionpos=b, language=Kotlin, label={code:generation_branches_alignment_code_example}]
+val number = (0..10).random()
+if (number > 5) {
+    alignedOn("[number > 5, true]"){
+        alignedOn(neighboring){
+            neighboring("higher")
+        }
+    }
+} else {
+    alignedOn("[constant, false]"){
+        alignedOn(neighboring){
+            neighboring("lower")
+        }
+    }
+}
+\end{lstlisting}
+The \textit{alignedOn} function calls at line 4 and 10 are created by the mechanism explain previously for the function, and at line 3 and 9 there are the alignment functions for the branches.
+
+It is the \textbf{AlignmentTransformer} that, as well as the functions' alignment, handles the branches. It used two different functions:
+\begin{itemize}
+    \item \textbf{visitBranch}: it represents the \textit{if} and the \textit{else if} condition;
+    \item \textbf{visitElseBranch}: it is used for the \textit{else} branch;
+\end{itemize}
+The way these two types of elements are handled is the same, so just the normal branch is discussed.\newline
+The result of a branch is divided in the IR in blocks or expressions:
+\begin{itemize}
+    \item \textbf{IrBlock}: in this case the \textit{if} result consists of a block, like this:
+\begin{lstlisting}
+if(condition){
+    function()
+    function()
+}
+\end{lstlisting} 
+    \item \textbf{IrExpression}: the result of the \textit{if} it is not encapsulated in brackets, it is a composed by one expression:
+\begin{lstlisting}
+if(condition) function()
+\end{lstlisting}
+\end{itemize}
