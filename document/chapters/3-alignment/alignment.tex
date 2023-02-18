@@ -213,5 +213,94 @@ The \textbf{IrGenerationExtension}, before registering the transformer necessary
 The referred elements are:
 \begin{enumerate}
     \item \textbf{The alignedOn function declaration}: in order to be able to call an already existent function, it is necessary to specify to the compiler to look for that function. In this case it is necessary the reference to \textit{alignedOn}, discussed in Listing \ref{code:alignedOn_compiler_plugin};
-    \item \textbf{The aggregate context}: the functions exposed by the DSL are encapsulated in the \textbf{AggregateContext} class, which also contains the reference to the stack instance. Since it is possible to modify the stack only through its instance, the aggregate context class retrieved here can be used to get the instance of the object when calling the \textit{alignedOn} function. More details about the \textit{AggregateContext} class are going to be Chapter \ref{chapter:collektive}.
+    \item \textbf{The aggregate context}: the functions exposed by the DSL are encapsulated in the \textbf{AggregateContext} class, which also contains the reference to the stack instance. Since it is possible to modify the stack only through its instance, the aggregate context class retrieved here can be used to get the instance of the object when calling the \textit{alignedOn} function. More details about the \textit{AggregateContext} class are going to be given in Chapter \ref{chapter:collektive}.
 \end{enumerate}
+
+In order to provide some optimization, not every element of the source code is going to be modified by the compiler plugin, but only the necessary ones. If the final user needs a particular alignment not covered by the developed plugin, he can use the \textit{alignedOn} function manually.\newline
+The entry point of the DSL is the function \textbf{aggregate}, which takes as parameter a function type with receiver. The receiver is the \textit{AggregateContext}, meaning that all the call members of the receiver can be used inside the \textit{aggregate} function call.\newline
+After retrieving the necessary elements, the \textit{IrGenerationExtension} registers the \textbf{AggregateCallTransformer}, which visits through the visitor pattern all the function calls looking for all the \textit{aggregate} call. Thanks to that, to compiler plugin knows that inside that function call there might be the necessity to modify the code to provide the alignment feature.
+
+For each aggregate function call the transformation is then delegated to the \textbf{AlignmentTransformer}, which handles the alignment required by the function calls and the branch constructs.\newline
+Starting from the function calls, this is what happen:
+\begin{itemize}
+    \item The \textit{visitCall} provided by the transformer's interfaced is overridden, providing access to all the children of the aggregate function call that are also calls;
+    \item Then the behavior can be divided in three different cases:
+    \begin{enumerate}
+        \item If the function call has been already aligned, any modification is applied to the code;
+        \item Otherwise, in order to provide another optimization, it is checked if the considered function call or any of its children has a reference to the \textit{AggregateContext}. Only the function of the DSL, which are \textbf{neighboring}, \textbf{repeating} and \textbf{sharing} have a reference to that context. This means that everything not related to the DSL does not require to be modified for the alignment problem. This research is performed by checking the current function call's receivers and by the \textbf{AggregateRefChildrenVisitor} whenever it is necessary to visit the children.\newline
+        If any of the elements analyzed have a reference to the \textit{AggregateContext}, then the code is not transformed;
+        \item If the \textit{AggregateContext} reference is found, then the transformation proceeds. 
+    \end{enumerate}
+    Of the three possible outcomes, only the third one makes the computation continue, in all the other cases the function call not modified is returned. For this reason, it is necessary to assume that an \textit{AggregateContext} reference has been found in order to continue to explain how the transformation works;
+    \item In order to be able to create a new function call in the source code, it has to be declared inside an \textbf{irStatement}, which is used to define also the scope where the function is created;
+    \item Inside the \textit{irStatement} is then created the \textit{alignedOn} function call.
+    \item Finally, the transformed function call is returned.
+\end{itemize}
+
+The creation of the \textit{alignedOn} function call is crucial for this transformation, and it is going to be described in more details. Once created the \textit{irStatement} it is possible to create a new \textbf{irCall} like shown in Listing \ref{code:aligned_on_creation}.
+\begin{lstlisting}[caption={Generation goal to handle the alignment of Listing \ref{code:first_alignment_code_example}}, captionpos=b, language=Kotlin, label={code:aligned_on_creation}]
+irCall(alignedOnFunction).apply {
+    // Set generics type
+    putTypeArgument(expression.type)
+    // Set aggregate context
+    putArgument(
+        alignedOnFunction.dispatchReceiverParameter!!,
+        aggregateContextReference
+    )
+    // Set the argument that is going to be pushed in the stack
+    putValueArgument(
+        irString(
+            expression.symbol.owner.kotlinFqName.asString()
+        )
+    )
+    // Create the lambda that is going to call expression
+    val lambda = buildLambdaArgument(
+        pluginContext,
+        aggregateLambdaBody,
+        expression
+    )
+    putValueArgument(1, lambda)
+}
+\end{lstlisting}
+The \textit{irCall} builds a new \textit{alignedOnFunction}, which is the reference to the \textit{alignedOn} function responsible for the alignment. It is set the type argument and the dispatch receiver, which are both necessary to create a correct element. Then, the value argument is the first parameter of the \textit{alignedOn} function, and it is created using the name of the originating expression. Finally, the second value argument is the body of the call of the original function, which is recreated as a lambda.\newline
+The lambda as argument is created in another function, which is implemented as follows:
+\begin{lstlisting}[caption={Generation goal to handle the alignment of Listing \ref{code:first_alignment_code_example}}, captionpos=b, language=Kotlin, label={code:lambda_creation}]
+pluginContext.irFactory.buildFun {
+    name = Name.special("<anonymous>")
+    this.returnType = expression.type
+    this.origin = IrDeclarationOrigin.LOCAL_FUNCTION_FOR_LAMBDA
+    this.visibility = DescriptorVisibilities.LOCAL
+}.apply {
+    this.patchDeclarationParents(this@buildLambda.parent)
+    if (expression.symbol.owner.returnType.isUnit()) {
+        this.body = context.
+                        irBuiltIns.
+                        createIrBuilder(symbol).
+                        irBlockBody {+expression}
+    } else {
+        this.body = context.
+                        irBuiltIns.
+                        createIrBuilder(symbol).
+                        irBlockBody {+irReturn(expression)}
+    }
+}
+\end{lstlisting}
+From line 2 to 5 of Listing \ref{code:lambda_creation} standard parameters are set, such as the return type, the lambda parent and information that inform the compiler that it is dealing with an anonymous function. Then, if the original expression return type is unit, then the body of the lambda is just the expression itself. Otherwise, a return block is added, which contains the original function call.
+
+To recap the process it is possible to start from the simple code in Listing \ref{code:base_for_transformation_example}.
+\begin{lstlisting}[caption={Generation goal to handle the alignment of Listing \ref{code:first_alignment_code_example}}, captionpos=b, language=Kotlin, label={code:base_for_transformation_example}]
+aggregate {
+    println("do not align")
+    fun calculate() {
+        neighboring("test")
+    }
+}
+\end{lstlisting}
+The Figure \ref{fig:ir_trasformation_with_code_elements} shows how the various elements developed for the compiler plugin work together.
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.65]{document/chapters/3-alignment/images/ir_trasformation_with_code_elements.png}
+    \caption{The Kotlin compiler plugin architecture \cite{compiler_plugins_jetbrains}}
+    \label{fig:ir_trasformation_with_code_elements}
+\end{figure}
+The \textit{AggregateCallTransformer} finds the aggregate call, the \textit{AlignmentTransformer} is able to understand which function needs to be aligned, which in this example is \textit{neighboring}. Then the new function call is created, with the two parameters: the name of the original function and its call.
