@@ -80,3 +80,14 @@ dealign
 currentPath
 alignedOn
 AggregateContext
+AggregateCallTransformer
+AlignmentTransformer
+AggregateRefChildrenVisitor
+visitCall
+irStatement
+irCall
+alignedOnFunction
+visitBranch
+visitElseBranch
+IrBlock
+IrExpression
