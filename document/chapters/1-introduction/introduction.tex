@@ -1,5 +1,5 @@
 \chapter{Introduction}\label{chapter:introduction}
-In the last few decades, there has been a significant technological development in various fields.
+In the last few decades, there has been a significant technological development in various fields \cite{techological_evolution}.
 Computing technology has advanced rapidly, with the introduction of faster and more powerful processors, and the widespread adoption of cloud computing.\newline
 The Internet has also become an integral part of modern life, connecting people and devices across the globe; in addition, the development of faster and more reliable connectivity networks has made it possible to transfer and share data at an even faster rate.\newline
 Mobile technology has grown exponentially, thanks to the adoption of smartphones and other mobile devices.\newline
@@ -11,31 +11,33 @@ The general growth just discussed brought new challenges, such as the need of en
 
 In order to face the new complexities it is necessary to rethink and renovate the process of software development.
 
-\textit{Aggregate Programming} is a paradigm which aims to address these requirements. It allows for the easy manipulation of data across devices, making it possible to perform operation on the data of distributed systems, in a simple and efficient manner.\newline
-This paradigm has been implemented in different programming languages and platforms: for example Protelis, Scafi and FCPP.\newline
-All of them present strengths, but also weaknesses: in order to address those, a new framework can be a solution.\newline
-In the following sections of this chapter, these themes are described in details, in order to define the goal of this thesis.
+\textbf{Aggregate Programming} is a paradigm which aims to address these requirements. It allows for the easy manipulation of data across devices, making it possible to perform operation on the data of distributed systems, in a simple and efficient manner.
 
-\section{Context}
+This paradigm has been implemented in different programming languages and platforms: for example \textbf{Protelis}, \textbf{Scafi} and \textbf{FCPP}. All of them present strengths, but also weaknesses: in order to address those, a new framework can be a solution.
+
+In the following sections of this chapter, these themes are described in details, in order to define the goal of this thesis. Specifically Section \ref{section:aggregate_programming_introduction} describes the aggregate programming characteristics and its main complexities, in Section \ref{section:state_of_the_art} are introduced the implementation of the aggregate paradigm that constitute the current state of the art, and Section \ref{section:motivation_goal} presents the motivations behind this work and the goals that aims to achieve.
+
+\section{Context}\label{section:aggregate_programming_introduction}
 In this section it is going to be discussed in details the paradigm of Aggregate Programming, in order to provide the context of its development and an overview about how the paradigm works.
 
 \subsection{Aggregate Programming}
-Since the last few decades have witnessed technological advances, the traditional way of engineering software is, in some cases, suboptimal.
-The systems developed are becoming more and more complex, with requirements that are difficult to achieve. 
+Since the last few decades have witnessed technological advances, the traditional way of engineering software is, in some cases, suboptimal.\newline
+The systems developed are becoming more and more complex, with requirements that are sometimes difficult to achieve. 
 
-These challenges are enhanced when coming to terms with distributed systems, because there is the need to handle the always increasing number of connected devices, that share and compute data.\newline
+These challenges are enhanced when coming into terms with distributed systems, because there is the need to handle the always increasing number of connected devices, that share and compute data.\newline
 Some relevant complexities are the following \cite{distributed_systems_challenges}:
 \begin{itemize}
-    \item Scalability: as the number of devices in a distributed system grows, the coordination becomes increasingly complex. This requires the development of scalable algorithms and protocols that can handle large numbers of devices;
-    \item Heterogeneity and interoperability: in a distributed system, devices may be made by different manufacturers and use different protocols, which can make it difficult for them to communicate with each other. The interoperability between heterogeneous devices and systems is a major challenge;
-    \item Synchronization: devices are usually not connected to a common clock, which can make it difficult to synchronize their activities. This can lead to inconsistencies and errors within the system;
-    \item Latency: the distance between devices in a distributed system can lead to high latency, which can affect the performance of the system. Managing and reducing latency is a challenge while coordinating numerous devices;
-    \item Consistency: devices may have different views of the system state, which can lead to inconsistencies. Guarantee consistency across devices can be challenging and requires the development of distributed algorithms and protocols;
-    \item Fault tolerance and error control: devices may fail or become disconnected, which can disrupt the system. Ensuring fault tolerance and the ability to detect and recover from failures is essential in this kind of systems;
-    \item Security and privacy: coordinating devices in a distributed system requires the sharing of sensitive information, which can create security risks.
+    \item \textbf{Scalability}: as the number of devices in a distributed system grows, the coordination becomes increasingly complex. This requires the development of scalable algorithms and protocols that can handle large numbers of devices;
+    \item \textbf{Heterogeneity and interoperability}: in a distributed system, devices may be made by different manufacturers and use different protocols, which can make it difficult for them to communicate with each other. The interoperability between heterogeneous devices and systems is a major challenge;
+    \item \textbf{Synchronization}: devices are usually not connected to a common clock, which can make it difficult to synchronize their activities. This can lead to inconsistencies and errors within the system;
+    \item \textbf{Latency}: the distance between devices in a distributed system can lead to high latency, which can affect the performance of the system. Managing and reducing latency is a challenge while coordinating numerous devices;
+    \item \textbf{Consistency}: devices may have different views of the system state, which can lead to inconsistencies. Guarantee consistency across devices can be challenging and requires the development of distributed algorithms and protocols;
+    \item \textbf{Fault tolerance and error control}: devices may fail or become disconnected, which can disrupt the system. Ensuring fault tolerance and the ability to detect and recover from failures is essential in this kind of systems;
+    \item \textbf{Security and privacy}: coordinating devices in a distributed system requires the sharing of sensitive information, which can create security risks.
 \end{itemize}
 
-Traditionally, the development in this kind of architectures is focused on the single device, instead of the system as a whole. This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures, such as the one represented in Figure \ref{fig:iot_connected_things}.
+Traditionally, the development of this kind of architectures is focused on the single device, instead of the system as a whole. This means that the developers need to concern about all the aspects just discussed, such as the coordination between devices, creating specific algorithms, but also about security, consistency, fault tolerance, which creates unnecessary complexities during the engineering of a system.\newline
+This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures, such as the one represented in Figure \ref{fig:iot_connected_things}, which shows an example of a real life environment, with numerous heterogeneous devices that needs to communicate with each others.
 
 \begin{figure}[!ht]
     \centering
@@ -44,18 +46,18 @@ Traditionally, the development in this kind of architectures is focused on the s
     \label{fig:iot_connected_things}
 \end{figure}
 
-Aggregate programming is a paradigm that focuses on the manipulation of complex data structures as a whole, rather than their individual components. The focus is on what a system is required to do, rather than on how is going to achieve it.\newline
-This paradigm is closely related to the \textit{field calculus}, a mathematical framework for modeling and reasoning about distributed systems.\newline
+Aggregate programming is a paradigm that focuses on the manipulation of complex data structures as a whole, rather than their individual components \cite{aggregate_programmig_iot}. The focus is on what a system is required to do, rather than on how is going to achieve it.\newline
+This paradigm is closely related to the \textbf{field calculus} \cite{field_calculus}, a mathematical framework for modeling and reasoning about distributed systems.\newline
 Aggregate programming in combination with field calculus, provides a powerful tool for modeling, reasoning, and programming distributed systems. It allows for the efficient manipulation of large and complex data in distributed systems, and facilitates the representation of relationships and interactions between devices. It is a useful approach to adopt for IoT and other distributed systems where scalability, coordination, and security are critical concerns.
 
 The basic concept used in aggregate programming is the \textbf{computational field}, which is a mathematical function that assigns a value to each point in a space, and it is used to represent and manipulate the state of a distributed system.
 
 In order to explain better what a computational field is and how it is used, it is necessary to discuss the assumed computational model \cite{computational_fields_theory}.\newline
-Supposed a program P, it is executed by a network of devices, which is defined by a dynamic neighboring relationship. The computation of P can be analyzed by a local and a global point of view.\newline
-Considering the local perspective, P is computing on a round-based scheme in single devices. A round is executed in the following steps:
+Supposing a program P executed by a network of devices defined by a dynamic neighboring relationship. The computation of P can be analyzed by a local and a global point of view.\newline
+Considering the \textbf{local} perspective, P is computing on a round-based scheme in single devices. A round is executed in the following steps:
 \begin{itemize}
     \item the device sleeps for a delta of time and at some point it wakes up;
-    \item it retrieves information received from neighbors while it was sleeping. The messages sent by the neighbors are in fields, and they map the neighbor device identifier with the values computed;
+    \item it retrieves the information received from neighbors while it was sleeping. The messages sent by the neighbors are fields, and they map the neighbor device identifier with the values computed;
     \item it gathers information about its context;
     \item it retrieves the information stored locally in the previous round about the context;
     \item it executes P, which might manipulate the data of the current context, the data retrieved in the previous round and the neighbors values;
@@ -63,7 +65,7 @@ Considering the local perspective, P is computing on a round-based scheme in sin
     \item at the end of the round, the device returns to sleep, until another round begins.
 \end{itemize}
 
-On the other hand, the global point of view is the key that makes aggregate computing a powerful tool. In this case, the computation considers the entire network of interconnected devices as a single, unified entity.\newline
+On the other hand, the \textbf{global} point of view is the key that makes aggregate computing a powerful tool. In this case, the computation considers the entire network of interconnected devices as a single, unified entity.\newline
 The data is represented as a distributed space-time field evolution, which maps the computation events to values computed by devices.\newline
 A computational field is a snapshot of the state of the distributed system's network at a certain moment in time, which maps device identifiers to their values.
 
@@ -82,7 +84,7 @@ The main constructs provided by the field calculus are the following:
 As previously said, the data structures manipulated are distributed over space, and they evolve over time. These two aspects are handled, in the case of field calculus, by two separate constructs: the evolution in time is manipulated by \textit{rep-expression}, the space management, which provide neighbors interactions, is provided by the \textit{nbr-expression}.\newline
 The use of time evolution and neighbor interaction operators in the traditional way leads to a slowdown in the efficient spread of information. This is due to the separation of state sharing (nbr) and state updates (rep), which requires information received through nbr to be stored through rep in the local memory of the device before it can be passed on during the next execution of nbr \cite{share_operator}. 
 
-This limitation can be overcome by extending the field calculus with a new construct, which has been called \textbf{share} \cite{share_operator}. The share operator allows to observe the neighbors' field, updated the local values and sharing immediately the updated state in a single computation. It is possible to observe the differences between the behavior of the share operator and the combination of rep and nbr in Figure \ref{fig:share_operator_introduction}.
+It is possible to overcome this limitation by extending the field calculus with a new construct, which has been called \textbf{share} \cite{share_operator}. The share operator allows to observe the neighbors' field, updated the local values and sharing immediately the updated state in a single computation. It is possible to observe the differences between the behavior of the share operator and the combination of rep and nbr in Figure \ref{fig:share_operator_introduction}.
 
 \begin{figure}[!ht]
     \centering
@@ -94,11 +96,14 @@ This limitation can be overcome by extending the field calculus with a new const
 \subsubsection{Domain restriction: alignment}\label{subsection:alignment}
 The expected consequence of a branch construct is to determine the portion of code that is going to be computed. In the field calculus, the branch construct also has an unusual behavior, which is called domain restriction.
 
-Taking in consideration this portion of pseudocode
 \begin{lstlisting}
     if (e0) {e1} else {e2}
 \end{lstlisting}
-it is possible to identify two different restricted subdomains: the first one it where $e0$ is true, which is going to be called $D_{true}$, the second one is defined by $e0$ equals to false, which is $D_{false}$.
+Taking in consideration this portion of pseudocode, it is possible to identify two different restricted subdomains: 
+\begin{enumerate}
+    \item \textbf{$D_{true}$}: this is how the domain is called when $e0$ is true;
+    \item \textbf{$D_{false}$}: the name of the domain in the case that the condition $e0$ is false.
+\end{enumerate}
 For example, if a device is in the domain $D_{true}$, the following are the implications \cite{computational_fields_theory}:
 \begin{itemize}
     \item it does not compute $e2$, which is the typical branch behavior;
@@ -106,10 +111,15 @@ For example, if a device is in the domain $D_{true}$, the following are the impl
     \item if the device evaluated $e2$ instead of $e1$ in its previous round, then all the rep-expressions in $e2$ are going to be computed using the initialization value.
 \end{itemize}
 
-Given this behavior, the result is that devices operating in different subdomains are computing in isolation. As a direct consequence of that they can not communicate with each other unless they are in the same domain. This characteristic is called \textit{clustering}, which is an important feature: it allows restricting computations in subdomains in an easy and efficient way, which is extremely useful in many use-cases.
+Given this behavior, the result is that devices operating in different subdomains are computing in isolation. As a direct consequence of that they can not communicate with each other unless they are in the same domain. This characteristic is called \textbf{clustering}, which is an important feature: it allows restricting computations in subdomains in an easy and efficient way, which is extremely useful in many use-cases.
 
-The domain restriction is a crucial trait of aggregate programming, and it introduces a problem that, necessarily, has to be taken in consideration: different devices that operate in a highly distributed system do not possess a shared memory that can be used to keep track of the computation being executed on each device. On the other hand, this domain restriction characteristic requires that each device must communicate only with devices in the same subdomain, which means that they are computing the same operation.\newline
-This is defined as the \textbf{alignment problem}, and it is necessary to explore all the information of the system in order to find a solution. First, it is important to keep in mind that each device has its own identifier, which can be used to define the author of a message. Second, when dealing with a computational field, such as when retrieving neighboring values using a nbr-expression, the device is currently computing the operation that it is actually looking for in the field.\newline
+The domain restriction is a crucial trait of aggregate programming, and it introduces to a problem that, necessarily, has to be taken in consideration: different devices that operate in a highly distributed system do not possess a shared memory that can be used to keep track of the computation being executed on each device. On the other hand, this domain restriction characteristic requires that each device must communicate only with devices in the same subdomain, which means that they are computing the same operation.
+
+This is defined as the \textbf{alignment problem}, and it is necessary to explore all the information of the system in order to find a solution.
+
+First, it is important to keep in mind that each device has its own identifier, which can be used to define the author of a message.\newline
+Second, when dealing with a computational field, such as when retrieving neighboring values using a nbr-expression, the device is currently computing the operation that it is actually looking for in the field.
+
 In order to explain this concept better, here is a snippet of pseudocode:
 \begin{lstlisting}
     if (e0) {nbr(e1)} else {nbr(e2)}
@@ -131,7 +141,7 @@ Even though the body of the functions $f1$ and $f2$ is the same, they are two di
 
 Concluding, the alignment is provided by keeping track of the computational location, which must be done every time an aggregate programming expression is involved. In this way it is possible to solve any ambiguity that might appear during the computational field construction.
 
-\section{State of the art}
+\section{State of the art}\label{section:state_of_the_art}
 The aim of this section is to give an introduction about the state-of-the-art technologies that have been developed in the field of aggregate programming. This overview is going to take in consideration how each implementation works and the choices that led their development, with the goal of depicting a representation of the context in which the project of this thesis is going to be set in.
 
 \subsection{Protelis}\label{subsection:protelis}
@@ -139,8 +149,8 @@ Protelis \cite{protelis_introduction} is a functional language inspired by Proto
 The architecture is based on Java, and the reasons are multiple:
 \begin{itemize}
     \item Java is portable across different systems and devices;
-    \item it is easy to import libraries and APIs;
-    \item the variety of low-cost embedded devices that are able to support Java is increasing;
+    \item It is easy to import libraries and APIs;
+    \item The variety of low-cost embedded devices that are able to support Java is increasing;
     \item Java optimizations in terms of speed and resources consumption are making it a valid alternative to low-level languages, such as C.
 \end{itemize}
 
@@ -182,9 +192,10 @@ Differently from Protelis and ScaFi, FCPP does not rely on the Java Virtual Mach
     \item C++ is performance-oriented, which means that the system requirements are very low, increasing the variety of devices that can use FCCP.
 \end{itemize}
 
-These two features allow the coverage of multiple use-cases that were not possible to handle utilizing Protelis and ScaFi: for example the deployment on microcontroller-based systems or cloud applications that have strict parallelism requirements in order to scale correctly, which is guaranteed by the performance improvements.
+These two features allow the coverage of multiple use-cases that were not possible to handle utilizing Protelis and ScaFi: for example the deployment on microcontroller-based systems or cloud applications that have strict parallelism requirements in order to scale correctly, which is guaranteed by the performance improvements.\newline
+Since it is based on a lower level language that Protelis and Scafi, programs written in FCCP might be difficult to understand when dealing with complex systems.
 
-\section{Motivation and goal}
+\section{Motivation and goal}\label{section:motivation_goal}
 When talking about aggregate computing, there are several important features that must be considered when comparing different aggregate programming frameworks, such as ScaFi, Protelis, and FCPP.\newline
 After the analysis of the previous sections, it is possible to conclude that:
 \begin{itemize}
