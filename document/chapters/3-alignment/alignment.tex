@@ -395,4 +395,30 @@ if(condition) function()
 \end{itemize}
 
 The way the \textit{IrBlock} and the \textit{IrExpression} requires a slightly different implementation: if a branch was constituted by an \textit{IrBlock}, when creating the \textit{alignedOn} function call it is necessary to keep in mind that the second parameter is going to be a block and not a single expression.\newline
-The creation of the \textit{alignedOn} function call is the same of the code shown in Listing \ref{code:lambda_creation}, the difference is the creation of the parameters.
+The building of the \textit{alignedOn} function call is the same of the code shown in Listing \ref{code:lambda_creation}, the only difference is the creation of the parameters. 
+
+The first parameter is the name of the element that is going to be put in the stack. As seen before, just the name of the condition is not sufficient, since the alignment is based on the name and the condition value. For this reason, the first parameter is a pair constituted by the condition name and its value, like this: \textit{[condition, true]}.\newline
+When the condition is a variable, a function call or an anonymous function, the stack will contain the exact name of the element. In the case of a constant, for example just the value \textit{true}, then it is used the placeholder \textit{constant}.
+
+The second parameter is constituted by a lambda that contains the body of the \textit{if}. Since it is considered in this discussion that the body is an \textit{IrBlock}, then it is necessary to create a new block that is going to create the lambda.
+\begin{lstlisting}[caption={Creation of the lambda body when modifying a \textit{IrBranch}}, captionpos=b, language=Kotlin, label={code:ir_block_branch_example}]
+this.returnType = getReturnType(lastExpression)
+this.body = context.
+            irBuiltIns.
+            createIrBuilder(symbol).
+            irBlockBody {
+                for (bodyStatement in expression.statements) { 
+                    +bodyStatement 
+                }
+                +irReturn(lastExpression)
+            }
+\end{lstlisting}
+There are three main things need to be done when creating the lambda body, and they are shown in Listing \ref{code:ir_block_branch_example}:
+\begin{enumerate}
+    \item \textbf{Setting the return type}: since the body of the \textit{if} is a block, it is constituted by multiple expression. The last expression return type defines the return type of the block. In order to be able to get the result of the \textit{if} construct, it is necessary to set it correctly;
+    \item \textbf{Creating the IrBlock}: the block created contains all the expressions of the previous block but the last one. In this way, the behavior of the block is not going to change;
+    \item \textbf{Setting the return type}: finally, the last element to add to the block is the return, which is defined by the last expression. It must be created inside the \textit{irReturn} element, which is used to create a special block that is expected to match the return type.
+\end{enumerate}
+
+This constituted the whole behavior of the compiler plugin when dealing with a \textit{IrBranch}, but the transformation is similar when dealing with an \textit{IrElseBranch}.\newline
+One final details of the transformation of the branches is in common with the function handling: the alignment is required if and only if there are aggregate programming construct calls, which means that modifying a block of an \textit{IrBranch} when its body does not involve any aggregate function it is useless. For this reason, the same control performed for the function calls is performed here, which means that, when visiting any branch, only if the \textit{AggregateContext} reference is found in any of it body expression or expressions' children, then the alignment transformation is actuated. This enhances the performances of the Kotlin compiler plugin created.
