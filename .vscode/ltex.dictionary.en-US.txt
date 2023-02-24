@@ -96,3 +96,5 @@ metaprogram
 KotlinCompilerPluginSupportPlugin
 buildconfig
 bytecode
+IrElseBranch
+irReturn
