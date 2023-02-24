@@ -1,5 +1,6 @@
 \chapter{Metaprogramming in Kotlin}\label{chapter:metaprogramming}
-A typical program computation can be summarized as follows: it reads data as input, computes that data and generates an output. Metaprograms \cite{metaprogramming_introduction} are able to take as input another program, sometime even itself, manipulate it and return it with a modified behavior.\newline
+A typical program computation can be summarized as follows: it reads data as input, computes that data and generates an output. Metaprograms \cite{metaprogramming_introduction} are able to take as input another program, sometime even itself, manipulate it and return it with a modified behavior.
+
 Metaprogramming in Kotlin is a powerful feature that allows for the manipulation and generation of code at compile time. The possible benefits of this technique are:
 \begin{itemize}
     \item \textbf{Code generation}: it generates repetitive or boilerplate code automatically, reducing the amount of code that needs to be written and maintained by hand. Consequently, this can increase code readability and maintainability, as well as reducing the risk of introducing bugs or errors;
@@ -59,7 +60,7 @@ KSP stands for \textbf{Kotlin Symbol Processing}, and it is an API that can be u
 KSP has been developed as an alternative technology to kapt \cite{kapt_documentation}, which was used to allow annotation processing. Currently, kapt is in maintenance mode; it is being kept up-to-date with the new Kotlin and Java releases, without adding any features.\newline
 In comparison to kapt, annotation processors that utilize KSP can be executed two times faster.
 
-Kotlin Symbol Processing is a feature of the Kotlin compiler that allows to manipulate the code at compile time by processing the symbols of the code. Because of that, it is possible to write metaprogramming code that analyze, transform, and generate other code, without the need to access the code at runtime.
+Kotlin Symbol Processing is a feature of the Kotlin compiler that allows to manipulate the code at compile time by processing the symbols of the code. Because of that, it is possible to write metaprogramming code that analyzes, transforms, and generates other code, without the need to access the code at runtime.
 
 This API allows processing Kotlin programs in a native way, with an understanding of Kotlin-specifc features, which includes extension functions, local functions and declaration-site variance. It models types explicitly, which enables type checking.
 
@@ -134,17 +135,17 @@ On the other hand, since the goal of KSP is to be a simple solution for common p
 \end{itemize}
 
 \subsection{Kotlin compiler plugins}\label{section:compiler_plugin_explanation}
-Kotlin compiler plugins \cite{compiler_plugins_jetbrains} are a way to extend the functionality of the Kotlin compiler by adding custom processing to the compilation. This means that the compiler plugin code runs at compile-time, and, since this is a feature of \textit{kotlinc}, it only works on Kotlin source code.
+Kotlin compiler plugins \cite{compiler_plugins_jetbrains} are a way to extend the functionalities of the Kotlin compiler by adding custom processing to the compilation. This means that the compiler plugin code runs at compile-time, and, since this is a feature of \textit{kotlinc}, it only works on Kotlin source code.
 
 Compiler plugins allow automating tasks and enforce coding standards. For example, they can be used to generate boilerplate code, such as accessor methods, or to enforce specific naming conventions or coding styles. Compiler plugins can also be used to perform code analysis and modification, such as adding custom checks and warnings, or refactoring the code automatically.
 
-Kotlin compiler provides a powerful API, which makes it possible to even modify the internals of functions and classes. This enables to solve metaprogramming problems that were impossible using annotation processors, for example with KSP. Another advantage is that compiler plugins work on every Kotlin target, without having to write multiple plugin.
+Kotlin compiler provides a powerful API, which makes it possible to even modify the internals of functions and classes. This enables to solve metaprogramming problems that were impossible using annotation processors, for example with KSP. Another advantage is that compiler plugins work on every Kotlin target, without having to write multiple plugins.
 
 However, it is important to be aware of the potential downsides of using Kotlin compiler plugins. One of the main cons is that to write even a really simple plugin, it is necessary to have compiler background knowledge. Because of the high learning curve, it is important to consider very carefully if it is necessary to develop a plugin. The investment of time and work can be significant and, beside understanding how a compiler plugin works, it is necessary to develop:
 \begin{itemize}
-    \item An IntelliJ plugin: whenever they are used synthetics members, such as functions that are going to be created by the plugin at compile time, the IntelliJ plugin is used to avoid errors highlights, making the IDE understand what is going on;
-    \item A Gradle or Maven plugin: in order to make the user able to use and configure the compiler plugin;
-    \item The actual compiler plugin.
+    \item \textbf{An IntelliJ plugin}: whenever they are used synthetics members, such as functions that are going to be created by the plugin at compile time, the IntelliJ plugin is used to avoid errors highlights, making the IDE understand what is going on;
+    \item \textbf{A Gradle or Maven plugin}: in order to make the user able to use and configure the compiler plugin;
+    \item \textbf{The actual compiler plugin}.
 \end{itemize}
 
 Moreover, compiler plugins can slow down the compilation process and make it more complex. Additionally, they can have compatibility issues with different versions of the Kotlin compiler, and may require significant effort to maintain and update. It is also worth mentioning that because compiler plugins modify the behavior of the compiler, they can potentially introduce bugs and cause compatibility issues with other plugins.
@@ -160,7 +161,7 @@ A Kotlin compiler plugin architecture is organized as it can be seen in Figure \
     \label{fig:kotlin_compiler_plugin_architecture}
 \end{figure}
 
-In the architecture can be distinguished two different modules: a Gradle module and a Kotlin module.
+In the architecture two different modules can be distinguished: a Gradle module and a Kotlin module.
 
 The \textbf{Gradle module} is a wrapper for the Kotlin module, and it is an entry point for Gradle. The Gradle module is composed by:
 \begin{itemize}
@@ -170,13 +171,43 @@ The \textbf{Gradle module} is a wrapper for the Kotlin module, and it is an entr
 
 \noindent The \textbf{Kotlin module} is dived in three main parts:
 \begin{itemize}
-    \item \textbf{CommandLineProcessor}: the options created in the Gradle subplugin are loaded and used by the CommandLineProcessor. Whenever launching a Kotlin program, kotlinc is invoked: the arguments that are set in the subplugin are passed to the Kotlin compiler;
+    \item \textbf{CommandLineProcessor}: the options created in the Gradle subplugin are loaded and used by the CommandLineProcessor. Whenever launching a Kotlin program, kotlinc is invoked and the arguments that are set in the subplugin are passed to the Kotlin compiler;
     \item \textbf{ComponentRegistrar}: it registers the extension components, which are going to be used when the project is compiling;
     \item \textbf{Extensions}: they are used to actually generate code. There are a lot of different extensions, which are used based on the use case.
 \end{itemize}
 
-Since the components of a plugin architecture have been explained from a general point of view, the focus is going to be now on the Kotlin module.
-Specifically, the following sections are organized as follows: Section \ref{section:kotlin_ir} goes into details of the \textbf{IR} (\textbf{I}ntermediate \textbf{R}epresentation) that is the foundation that makes a compiler plugin possible, in Section \ref{section:compiler_plugin_basics} it is explained how to inspect and navigate Kotlin IR, in Section \ref{section:compiler_plugin_advaced} are covered advanced features, such as how to build new elements and how to transform the Kotlin IR, and Section \ref{section:compiler_plugin_example} brings all together, showing the highlights of a working example of a simple Kotlin compiler plugin.
+Since the components of a plugin architecture have been explained from a general point of view, the focus is going to be now on the Kotlin module.\newline
+Specifically, the following sections are organized as follows: Section \ref{section:gradle_plugin} introduces how to create a Gradle plugin necessary to use a compiler plugin, Section \ref{section:kotlin_ir} goes into details of the \textbf{IR} (\textbf{I}ntermediate \textbf{R}epresentation) that is the foundation that makes a compiler plugin possible, in Section \ref{section:compiler_plugin_basics} it is explained how to inspect and navigate Kotlin IR, in Section \ref{section:compiler_plugin_advaced} are covered advanced features, such as how to build new elements and how to transform the Kotlin IR, and Section \ref{section:compiler_plugin_example} brings all together, showing the highlights of a working example of a simple Kotlin compiler plugin.
+
+\subsubsection{Gradle Plugin}\label{section:gradle_plugin}
+A Gradle plugin \cite{gradle_plugin_guide} is typically used to handle a set of tasks that extend the project's capabilities.\newline
+In the context of Kotlin compiler plugin, the Gradle plugin is responsible for:
+\begin{itemize}
+    \item Give the \textbf{artifact coordinates} of the compiler plugin: this is used to download the artifact from Maven Central or another location, which might be a local submodule;
+    \item Define the \textbf{identification string} of the compiler plugin: used to avoid conflicts with other compiler plugins options, because the identification string of the plugin is used to separate the command line options;
+    \item Translate the Gradle configuration to \textbf{command line options}.
+\end{itemize}
+
+In order to create the artifact coordinates and the ID it is possible to use the \textit{buildconfig} plugin \cite{build_config_plugin}.
+\begin{lstlisting}[caption={Pseudocode of a simple assignment and expression}, language=Kotlin, captionpos=b, label={code:build_config_example}]
+buildConfig {
+    val project = project(":compiler-plugin")
+    packageName(project.group.toString())
+        buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${project.group}.${project.name}\"")
+    ...
+}
+\end{lstlisting}
+The code in Listing \ref{code:build_config_example} shows how to create references to a subproject called \textit{compiler-plugin} and how to create the identification string. Similarly, it is possible to reference the name, the version and the project group of the compiler plugin, creating a unique reference to its artifact.
+
+After creating the configuration just presented, it is possible to create the actual Gradle plugin. Gradle exposes an interface that is specifically created for Kotlin compiler plugins, which is called \textbf{KotlinCompilerPluginSupportPlugin}, such as in Listing \ref{code:gradle_plugin_example}.
+\begin{lstlisting}[caption={Pseudocode of a simple assignment and expression}, language=Kotlin, captionpos=b, label={code:gradle_plugin_example}]
+class GradlePlugin : KotlinCompilerPluginSupportPlugin {
+    ...
+}
+\end{lstlisting}
+From this class they can be defined the compiler artifact, the identification string and any needed extension. For example, a Gradle Extension can be used to accept a command line parameter that enable and disable the plugin.
+
+Basically, the creation of a Gradle plugin when dealing with Kotlin compiler plugins is always the same, and based on the notions just discussed in this section.
 
 \subsubsection{Kotlin IR}\label{section:kotlin_ir}
 The Kotlin compiler is organized in two parts: the \textit{frontend} is used to analyze the code, and the \textit{backend} is the one that generates the executables.\newline
