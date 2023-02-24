@@ -91,3 +91,8 @@ visitBranch
 visitElseBranch
 IrBlock
 IrExpression
+Metaprogram
+metaprogram
+KotlinCompilerPluginSupportPlugin
+buildconfig
+bytecode
