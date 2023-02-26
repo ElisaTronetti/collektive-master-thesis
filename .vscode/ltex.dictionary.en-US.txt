@@ -100,3 +100,4 @@ IrElseBranch
 irReturn
 Collektive
 coroutines
+desktopMain
