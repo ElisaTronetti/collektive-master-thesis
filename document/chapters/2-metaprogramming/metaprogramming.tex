@@ -1,7 +1,7 @@
 \chapter{Metaprogramming in Kotlin}\label{chapter:metaprogramming}
 A typical program computation can be summarized as follows: it reads data as input, computes that data and generates an output.\newline
-Metaprograms \cite{metaprogramming_introduction} are able to take as input another program, sometime even itself, manipulate it and return it with a modified behavior.\newline 
-In Figure \ref{fig:programming_vs_metaprogramming} it is shown this difference with a representation of a simple program that transforms the input data, and a metaprogram, that modifies an entire input program generating an output program.
+Metaprograms \cite{metaprogramming_introduction} are able to take as input another program, sometimes even the metaprogram itself, manipulate it and return a new version of it expressing a modified behavior.\newline 
+In Figure \ref{fig:programming_vs_metaprogramming} it is shown this difference with a representation of a simple program which transforms the input data, and a metaprogram which, on the other hand, modifies an entire input program generating an output program.
 \begin{figure}[ht!]
     \centering
     \subfloat[\centering Simple program]{{\includegraphics[scale=1.3]{document/chapters/2-metaprogramming/images/programming_vs_metaprogramming-programming.pdf} }}
@@ -13,27 +13,27 @@ In Figure \ref{fig:programming_vs_metaprogramming} it is shown this difference w
 
 Metaprogramming in Kotlin \cite{metaprogramming_in_kotlin} is a powerful feature that allows for the manipulation and generation of code at compile time. The possible benefits of this technique are:
 \begin{itemize}
-    \item \textbf{Code generation}: it generates repetitive or boilerplate code automatically, reducing the amount of code that needs to be written and maintained by hand. Consequently, this can increase code readability and maintainability, as well as reducing the risk of introducing bugs or errors;
+    \item \textbf{Code generation}: it generates repetitive or boilerplate code automatically, reducing the amount of code that needs to be written and maintained by hand. Consequently, this can increase code readability and maintainability, as well as reducing the risk of introducing bugs or errors, that can be easily done by humans during the executions of repetitive tasks;
     \item \textbf{Readability}: it provides a higher level of abstraction, allowing to abstract away complex logic and make code more readable and easier to understand. This can also help to simplify the implementation of elaborated algorithms and data structures;
     \item \textbf{Reusability}: by generating code automatically, it is possible reuse the same logic across multiple parts of applications, increasing overall code reuse and maintainability;
     \item \textbf{Supports Domain-Specific Languages} (DSLs): it enables to create custom domain-specific languages (DSLs) that are optimized for specific tasks or use cases, which can help to simplify complex operations and make the code more readable and intuitive;
-    \item \textbf{Custom annotations}: it allows creating custom annotations, which can be used to provide additional information about the code and to automate tasks such as code generation. This can improve code quality and make it easier to understand the intention behind the code.
+    \item \textbf{Custom annotations}: it allows creating custom annotations, which can be used to provide additional information about the code and to automate tasks such as code generation. This can improve code quality and make it easier to understand intentions and goals behind the code.
 \end{itemize}
 
-The main cost that has to be paid when dealing with metaprogramming is the increasing of the \textbf{language complexity}.
+The main cost that has to be paid when dealing with metaprogramming is the increased \textbf{language complexity}.
 
 \section{Metaprogramming techniques}
-There are different techniques that can be used in Kotlin in order to create metaprograms. In the following sections they are going to be analyzed in details the main approaches provided by Kotlin, in order to give an overview of the possible alternatives when coming into terms with metaprogramming.
+A multitude of different techniques can be used in Kotlin in order to create metaprograms. In the following sections the main approaches provided by Kotlin are going to be analyzed in details, in order to give an overview of the possible alternatives when coming into terms with metaprogramming.
 
 \subsection{Annotations}\label{section:annotation}
 Annotations \cite{annotation_documentation} in Kotlin are a type of metadata that can be added to provide additional information about the code, as well as to automate certain tasks.
 
-To create a custom annotation in Kotlin, first it is necessary to declare the annotation type, using the \textbf{annotation} keyword, in the same way shown in the following code:
+To create a custom annotation in Kotlin, first it is necessary to declare the annotation type, using the \textbf{annotation} keyword, as shown in the following snippet of code:
 \begin{lstlisting}[caption={Example of creation of a custom annotation in Kotlin}, language=Kotlin, captionpos=b, label={code:kotlin_annotations_creation}]
 annotation class MyAnnotation
 \end{lstlisting}
 
-Kotlin provides the option to use additional attributes by annotating the annotation class with \textbf{meta-annotation}. The alternatives of meta-annotation are:
+Kotlin provides the option to use additional attributes by annotating the annotation class with \textbf{meta-annotation}. The available meta-annotation alternatives are:
 \begin{itemize}
     \item \textbf{@Target}: it is used to specify the elements that can be annotated, which can be classes, functions, properties and expressions;
     \item \textbf{@Retention}: it defines if an annotation is stored in the compiled class files and if it is visible at runtime using reflections;
@@ -51,7 +51,7 @@ In this snippet of code in Listing \ref{code:kotlin_annotations_customization}, 
 
 Annotations can be used to provide metadata, such as the purpose of a function, the intended usage of a class, or the preferred behavior of a method. One possible use case is to use annotations to specify that a certain method should only be called on a background thread, or that a certain class is serializable.
 
-Another feature provided by annotations, which is considered metaprogramming, is the possibility to used them to automate tasks, such as code generation. For example, annotations can be used to automatically generate code for serializing and deserializing objects.
+Another feature provided by annotations, which is considered metaprogramming, is the possibility to use them to automate tasks, such as code generation. For example, annotations can be used to automatically generate code for serializing and deserializing objects.
 
 It is possible to use the annotation in the code by placing the \textbf{@} (at) symbol, followed by the annotation type before the element that is going to be annotated, such as a class, function, or property.\newline
 The following snippet of code shows how to actually use a custom annotation, specifically the one created in Listing \ref{code:kotlin_annotations_customization}:
@@ -69,10 +69,10 @@ In this example, the \textbf{MyAnnotation} annotation is applied to both a class
 \subsection{KSP}\label{section:ksp}
 KSP stands for \textbf{Kotlin Symbol Processing}, and it is an API that can be used to build lightweight compiler plugins \cite{ksp_documentation}. It offers an easier compiler plugin API that takes advantage of Kotlin's capabilities, but it keeps the learning curve low.
 
-KSP has been developed as an alternative technology to \textbf{kapt} \cite{kapt_documentation}, which was used to allow annotation processing. Currently, kapt is in maintenance mode, which means that it is being kept up-to-date with the new Kotlin and Java releases, but without adding any features.\newline
+KSP has been developed as an alternative technology to \textbf{kapt} \cite{kapt_documentation}, which was used to allow annotation processing. Currently, kapt is in maintenance mode, meaning that it is being kept up-to-date with the new Kotlin and Java releases, but without adding any features.\newline
 In comparison to kapt, annotation processors that utilize KSP can be executed two times faster.
 
-Kotlin Symbol Processing is a feature of the Kotlin compiler that allows to manipulate the code at compile time by processing the symbols of the code. Because of that, it is possible to write metaprogramming code that analyzes, transforms, and generates other code, without the need to access the code at runtime.\newline
+Kotlin Symbol Processing is a feature of the Kotlin compiler that allows to manipulate the code at compile time by processing the symbols contained in the code. As a consequence of that, it is possible to write metaprogramming code that analyzes, transforms, and generates other code, without the need to access the code at runtime.\newline
 KSP reads the source code, generates new modules, and during the compilation the Kotlin compiler uses the original code and the generated source without distinctions, as it is shown in Figure \ref{fig:ksp_diagram}, creating one executing program.
 
 \begin{figure}[!ht]
@@ -82,10 +82,10 @@ KSP reads the source code, generates new modules, and during the compilation the
     \label{fig:ksp_diagram}
 \end{figure}
 
-This API allows processing Kotlin programs in a native way, with an understanding of Kotlin-specifc features, which includes extension functions, local functions and declaration-site variance. It models types explicitly, which enables type checking.
+This API allows processing Kotlin programs in a native way, with an understanding of Kotlin-specifc features, which includes extension functions, local functions and declaration-site variance. The API also models types explicitly, enabling type checking.
 
 KSP models the structure of Kotlin programs, making class declarations, class members, functions and parameters accessible for processing, while elements such as if blocks and for loops are not.\newline
-It can also be seen as a preprocessor framework, which makes a KSP plugin a symbol processor that follow three main steps:
+It can also be seen as a preprocessor framework, making a KSP plugin a symbol processor that follow three main steps:
 \begin{enumerate}
     \item it analyzes the source program and its resources;
     \item it generates an output, which might be code or in another form;
@@ -94,7 +94,7 @@ It can also be seen as a preprocessor framework, which makes a KSP plugin a symb
 
 Differently from a typical compiler plugin, KSP restricts processors from modifying the source code, as it is considered read-only. This choice can be justified by the intention to prevent confusion that may arise from a plugin that modifies the language semantics.
 
-When analyzing the source code, from the KSP perspective, it looks like this:
+The source code, from the KSP perspective looks like this when being analyzed:
 \begin{lstlisting}[caption={The source code from KSP perspective \cite{ksp_documentation}}, captionpos=b, label={code:ksp_source_code}]
 KSFile
   packageName: KSName
@@ -112,18 +112,18 @@ KSFile
         //contains inner classes, functions, properties
         declarations: List<KSDeclaration>    
 \end{lstlisting}
-The Listing \ref{code:ksp_source_code} shows the data structure that is accessible using KSP. Specifically, in this code there is a class declaration (\textit{KSClassDeclaration}), and it is possible to get its name, type, parameters, inner declarations, and so on.\newline
+The Listing \ref{code:ksp_source_code} shows the data structure that is accessible using KSP. Specifically, in this code it is contained a class declaration (\textit{KSClassDeclaration}), and it is possible to get its name, type, parameters, inner declarations, and so on.\newline
 This representation allows to have a complete overview of the code structure.
 
-Two are the elements that KSP expects to be implemented: the \textbf{SymbolProcessorProvider} and the \textbf{SymbolProcessor}.\newline
-The \textit{SymbolProcessorProvider} interface is define like in Listing \ref{code:symbol_processor_provider_interface}.
+KSP expects two elements to be implemented: the \textbf{SymbolProcessorProvider} and the \textbf{SymbolProcessor}.\newline
+The \textit{SymbolProcessorProvider} interface is defined like shown in Listing \ref{code:symbol_processor_provider_interface}.
 \begin{lstlisting}[caption={SymbolProcessorProvider interface \cite{ksp_documentation}}, language=Kotlin, captionpos=b, label={code:symbol_processor_provider_interface}]
 interface SymbolProcessorProvider {
     fun create(environment: SymbolProcessorEnvironment):
         SymbolProcessor
 }
 \end{lstlisting}
-The \textit{create} function is invoked when KSP creates an instance of the \textit{SymbolProcessor}: this means that without the \textit{SymbolProcessorProvider} it would not be possible to instantiate a \textit{SymbolProcessor}. The \textit{SymbolProcessorProvider} is separated from the \textit{SymbolProcessor} to give more freedom during the development.
+The \textit{create} function is invoked when KSP creates an instance of the \textit{SymbolProcessor}: this means that, without the \textit{SymbolProcessorProvider}, it would not be possible to instantiate a \textit{SymbolProcessor}. The \textit{SymbolProcessorProvider} is separated from the \textit{SymbolProcessor} to allow more freedom during the development.
 
 In Listing \ref{code:symbol_processor_interface} is shown the interface of the \textit{SymbolProcessor}.
 \begin{lstlisting}[caption={SymbolProcessor interface \cite{ksp_documentation}}, language=Kotlin, captionpos=b, label={code:symbol_processor_interface}]
@@ -132,9 +132,9 @@ interface SymbolProcessor {
 }
 \end{lstlisting}
 The only function that needs to be overridden is \textit{process}, which is typically used to read files and pass the elements to the visitors.\newline
-The \textit{Resolver} is the entry point of the functionalities provided by KSP: it can be used, for example, to get all the files of the source code, the symbols with annotation, a class or a function declaration by name.\newline
+The \textit{Resolver} is the entry point of the functionalities provided by KSP: it can be used, for example, to get all the files of the source code, the symbols with annotation, a class, or a function declaration by name.\newline
 As many other compiler related APIs, KSP supports the \textbf{visitor pattern}, allowing to examine each element in an object-oriented way.\newline
-For example, in the code in Listing \ref{code:ksp_visitor} it is reported an implementation of a visitor that inspects the declarations, and it collects the function names in a list.
+For example, the code in Listing \ref{code:ksp_visitor} reports an implementation of a visitor that inspects the declarations and collects the function names in a list.
 \begin{lstlisting}[caption={Visitor that collects function declarations \cite{ksp_documentation}}, language=Kotlin, captionpos=b, label={code:ksp_visitor}]
 class FindFunctionsVisitor: KSTopDownVisitor<Unit, Unit>() {
     override fun visitFunctionDeclaration(
@@ -151,7 +151,7 @@ On the other hand, since the goal of KSP is to be a simple solution for common p
 \begin{itemize}
     \item it can not examine expression-level information;
     \item it can not modify the source code, but it can only generate new code;
-    \item it is not integrated with the IDE, meaning that the IDE has any information about the code generated.
+    \item it is not integrated within the IDE, meaning that the IDE does not have any information about the code generated.
 \end{itemize}
 
 \subsection{Kotlin compiler plugins}\label{section:compiler_plugin_explanation}
@@ -161,18 +161,18 @@ Compiler plugins allow automating tasks and enforce coding standards. For exampl
 
 Kotlin compiler provides a powerful API, which makes it possible to even modify the internals of functions and classes. This enables to solve metaprogramming problems that were impossible using annotation processors, for example with KSP. Another advantage is that compiler plugins work on every Kotlin target, without having to write multiple plugins.
 
-However, it is important to be aware of the potential downsides of using Kotlin compiler plugins. One of the main cons is that to write even a really simple plugin, it is necessary to have compiler background knowledge. Because of the high learning curve, it is important to consider very carefully if it is necessary to develop a plugin. The investment of time and work can be significant and, beside understanding how a compiler plugin works, it is necessary to develop:
+However, it is important to be aware of the potential downsides of using Kotlin compiler plugins. One of the main cons is that in order to write even a really simple plugin, it is necessary to have compiler background knowledge. Because of the high learning curve, it is important to consider very carefully if it is necessary to develop a plugin. The investment of time and work can be significant and, beside understanding how a compiler plugin works, it is necessary to develop:
 \begin{itemize}
     \item \textbf{An IntelliJ plugin}: whenever they are used synthetics members, such as functions that are going to be created by the plugin at compile time, the IntelliJ plugin is used to avoid errors highlights, making the IDE understand what is going on;
     \item \textbf{A Gradle or Maven plugin}: in order to make the user able to use and configure the compiler plugin;
     \item \textbf{The actual compiler plugin}.
 \end{itemize}
 
-Moreover, compiler plugins can slow down the compilation process and make it more complex. Additionally, they can have compatibility issues with different versions of the Kotlin compiler, and may require significant effort to maintain and update. It is also worth mentioning that because compiler plugins modify the behavior of the compiler, they can potentially introduce bugs and cause compatibility issues with other plugins.
+Moreover, compiler plugins can slow down the compilation process and make it more complex. Additionally, this can cause compatibility issues with different versions of the Kotlin compiler, and may require significant effort to maintain and update. It is also worth mentioning that because compiler plugins modify the behavior of the compiler, they can potentially introduce bugs and cause compatibility issues with other plugins.
 
 Finally, another aspect that must be taken in consideration is the fact that the Kotlin compiler API is not documented. This means that working with it and understanding the function's behaviors is not an easy task, and it requires even more time.
 
-A Kotlin compiler plugin architecture is organized as it can be seen in Figure \ref{fig:kotlin_compiler_plugin_architecture}.
+A Kotlin compiler plugin architecture is organized as shown in Figure \ref{fig:kotlin_compiler_plugin_architecture}.
 
 \begin{figure}[!ht]
     \centering
@@ -181,17 +181,17 @@ A Kotlin compiler plugin architecture is organized as it can be seen in Figure \
     \label{fig:kotlin_compiler_plugin_architecture}
 \end{figure}
 
-In the architecture two different modules can be distinguished: a Gradle module and a Kotlin module.
+Two different modules can be distinguished in the architecture: a Gradle module and a Kotlin module.
 
 The \textbf{Gradle module} is a wrapper for the Kotlin module, and it is an entry point for Gradle. The Gradle module is composed by:
 \begin{itemize}
-    \item \textbf{plugin}: this part unrelated to Kotlin and it is based on the Gradle API. It provides an entry point from a build.gradle script, and it makes possible to configure the plugin via Gradle extensions;
-    \item \textbf{subplugin}: this is the bridge that allows the interaction between Gradle and the Kotlin APIs. It reads the Gradle extension options, and it defines the compiler plugin's identifier, which is a unique key used in order to avoid collision with other plugins. The subplugin defines also the location of the compiler plugin artifact, which is going to be used to download it at compile time. The location can be local or a Maven coordinate.
+    \item \textbf{plugin}: this part is unrelated to Kotlin, and it is based on the Gradle API. It provides an entry point from a \textit{build.gradle} script, and it makes possible to configure the plugin via Gradle extensions;
+    \item \textbf{subplugin}: this is the bridge that allows the interaction between Gradle and the Kotlin APIs. It reads the Gradle extension options and defines the compiler plugin's identifier, which is a unique key used in order to avoid collision with other plugins. The subplugin defines also the location of the compiler plugin artifact, which is going to be used to download it at compile time. The location can be local or a Maven coordinate.
 \end{itemize}
 
 \noindent The \textbf{Kotlin module} is dived in three main parts:
 \begin{itemize}
-    \item \textbf{CommandLineProcessor}: the options created in the Gradle subplugin are loaded and used by the CommandLineProcessor. Whenever launching a Kotlin program, kotlinc is invoked and the arguments that are set in the subplugin are passed to the Kotlin compiler;
+    \item \textbf{CommandLineProcessor}: the options created in the Gradle subplugin are loaded and used by the CommandLineProcessor. Whenever a Kotlin program is launched, kotlinc is invoked and the arguments that are set in the subplugin are passed to the Kotlin compiler;
     \item \textbf{ComponentRegistrar}: it registers the extension components, which are going to be used when the project is compiling;
     \item \textbf{Extensions}: they are used to actually generate code. There are a lot of different extensions, which are used based on the use case.
 \end{itemize}
@@ -203,9 +203,9 @@ Specifically, the following sections are organized as follows: Section \ref{sect
 A Gradle plugin \cite{gradle_plugin_guide} is typically used to handle a set of tasks that extend the project's capabilities.\newline
 In the context of Kotlin compiler plugins, the Gradle plugin is responsible for:
 \begin{itemize}
-    \item Give the \textbf{artifact coordinates} of the compiler plugin: this is used to download the artifact from Maven Central or another location, which might be a local submodule;
-    \item Define the \textbf{identification string} of the compiler plugin: used to avoid conflicts with other compiler plugins options, because the identification string of the plugin is used to separate the command line options;
-    \item Translate the Gradle configuration to \textbf{command line options}.
+    \item Giving the \textbf{artifact coordinates} of the compiler plugin: this is used to download the artifact from Maven Central or another location, which might be a local submodule;
+    \item Defining the \textbf{identification string} of the compiler plugin: used to avoid conflicts with other compiler plugins options, since the identification string of the plugin is used to separate the command line options;
+    \item Translating the Gradle configuration to \textbf{command line options}.
 \end{itemize}
 
 In order to create the artifact coordinates and the ID it is possible to use the \textit{buildconfig} plugin \cite{build_config_plugin}.
@@ -276,7 +276,7 @@ Kotlin IR backend is an important part of the Kotlin compiler as it enables the 
 In order to be able to build a Kotlin compiler plugin it is necessary to understand how the Kotlin IR syntax tree looks like.
 
 First, one important information is that every node in the tree implements the \textbf{IrElement} interface. IrElement has an extension function, called \textbf{dump()}, that allows to get as output the IR tree from any point.\newline
-This feature is extremely useful when trying to generate code, because, in the case of errors, the exception thrown does not indicate what caused the problem. The message is just the following:
+This feature is extremely useful when trying to generate code, because, in the case of errors, the exception thrown does not indicate what caused the problem. The message associated to a thrown exception just says the following:
 \begin{lstlisting}[caption={Kotlin IR lowering Exception}, language=Kotlin, captionpos=b, label={code:ir_lowering_exception}]
 org.jetbrains.kotlin.backend.common.BackendException: Backend Internal error: Exception during IR lowering
 \end{lstlisting}
@@ -317,7 +317,7 @@ The child of the function IR element is the initialization of its body, which is
 \begin{lstlisting}[caption={Kotlin IR tree of the body block of the main function in Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_body_init_example}]
 BLOCK_BODY
 \end{lstlisting}
-When analyzing the IR tree, they are going to be found two different keywords for bodies. The first one is \textbf{BLOCK\_BODY}, which is used in this specific case in Listing \ref{code:kotlin_ir_tree_main_body_init_example}: this means that the body is expected to have multiple statements. The second one is \textbf{EXPRESSION\_BODY}, which is indicated when the body holds a single expression, such as a variable assignment.
+When analyzing the IR tree, two different keywords are going to be found for bodies. The first one is \textbf{BLOCK\_BODY}, which is used in this specific case in Listing \ref{code:kotlin_ir_tree_main_body_init_example}: this means that the body is expected to have multiple statements. The second one is \textbf{EXPRESSION\_BODY}, which is indicated when the body holds a single expression, such as a variable assignment.
 
 Finally, the Listing \ref{code:kotlin_ir_tree_main_body_example} shows the \textit{println()} function call and its parameter:
 \begin{lstlisting}[caption={Kotlin IR tree of the body block content of the main function in Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_body_example}]
@@ -333,23 +333,23 @@ Another basic feature that needs to be explained is how to actually visit the IR
     \caption{The Visitor design pattern UML \cite{visitor_design_pattern}}
     \label{fig:visitor_uml}
 \end{figure}
-This is a behavioral design pattern which purpose is to add new operations to existing classes without modifying the classes themselves. 
-The operation defined can be performed on elements of an object structure, and it is defined in a separate class, called the \textbf{Visitor}, that implements the desired behavior. The elements of the object structure are updated to accept the Visitor instance, allowing it to traverse the structure and perform the operation on each element. The structure of the design pattern just described is reported in the UML in Figure \ref{fig:visitor_uml}.
+This is a behavioral design pattern which purpose is to add new operations to existing classes without modifying the classes themselves.\newline
+The operation defined can be performed on elements of an object structure, which is defined in a separate class, called the \textbf{Visitor}, that implements the desired behavior. The elements of the object structure are updated to accept the Visitor instance, allowing it to traverse the structure and perform the operation on each element. The structure of the design pattern just described is reported in the UML in Figure \ref{fig:visitor_uml}.
 
-In the context of the Kotlin compiler, the visitor pattern is applied as in Figure \ref{fig:visitor_uml_kotlin_compiler}. The \textit{IrElement} interface represents the object structure that needs to be visited. As anticipated previously in this section, this interface is implemented by all the node of the IR syntax tree, which means that every element can be visited through this pattern.
+In the context of the Kotlin compiler, the visitor pattern is applied as in Figure \ref{fig:visitor_uml_kotlin_compiler}. The \textit{IrElement} interface represents the object structure that needs to be visited. As anticipated previously in this section, this interface is implemented by all the node of the IR syntax tree, which means that every element can be visited through this pattern.\newline
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.55]{document/chapters/2-metaprogramming/images/visitor_uml_kotlin_compiler.png}
     \caption{The Visitor design pattern UML applied in the Kotlin compiler plugin context in order to visit the IR syntax tree}
     \label{fig:visitor_uml_kotlin_compiler}
 \end{figure}
-For example, the two implementations of \textit{IrElement} shown in Figure \ref{fig:visitor_uml_kotlin_compiler} are \textit{IrClass} and \textit{IrFunction}, which represents class declarations and function declarations respectively. A lot of other different elements exists that are not specified in the UML in order to increase its readability, such as \textit{IrConst} for constant, \textit{IrCall} for function calls, \textit{IrBranch} that includes if-else blocks, etc.\newline
+For example, the two implementations of \textit{IrElement}, shown in Figure \ref{fig:visitor_uml_kotlin_compiler}, are \textit{IrClass} and \textit{IrFunction}, which represents class declarations and function declarations respectively. A lot of other different elements that are not specified in the UML exists; this omission is done in order to increase its readability. Examples of the omitted elements are: \textit{IrConst} for constant, \textit{IrCall} for function calls, \textit{IrBranch} that includes if-else blocks, etc.\newline
 The \textit{IrElement} has two functions that enable the visitor pattern that have two completely different behaviors:
 \begin{itemize}
     \item \textbf{accept}: it allows the visit of only the current element. For example, if trying to visit a class, only the class element is going to be analyzed and returned;
     \item \textbf{acceptChildren}: this function implementation consists on calling the \textit{accept} function on each child of the current element, including itself.
 \end{itemize}
-Both functions have two parameters, where the first one is the \textit{IrElementVisitor}, the second one is \textit{data}, which is used to pass information about the context to the IR visitor.\newline
+Both functions possess two parameters, where the first one is the \textit{IrElementVisitor}, the second one is \textit{data}, which is used to pass information about the context to the IR visitor.\newline
 The return type in the \textit{accept} function can be used to get as output the elements visited, and it is useful, for example, when the navigation aims to find a specific element. Otherwise, the return can just be set as \textit{Unit}.\newline
 In the case of \textit{acceptChildren}, its return type is \textit{Unit}, which means that when visiting recursively the children of an element, no data can be returned. Whenever it is necessary to collect information from a recursive visitor, it is usually created a builder object that can be updated and then returned. In Listing \ref{code:accept_children_collect_example} the role of the \textit{collect} function is to create a mutable list that is updated on the visit of each child of the root element.
 \begin{lstlisting}[caption={Example of a custom visitor and a function that supports the collection of elements \cite{visitor_koltin_compiler}}, captionpos=b, language=Kotlin, label={code:accept_children_collect_example}]
@@ -399,12 +399,12 @@ Considering the \textit{IrElement}, there are two transforming functions, that m
     \item \textbf{transform}: it is like the \textit{accept} function considered for the visiting of the IR tree, and it is used to transform only a specific element;
     \item \textbf{transformChildren}: similarly to \textit{acceptChildren}, it transforms recursively all the children of the element, including itself.
 \end{itemize}
-Regarding the \textit{IrElementTransformer}, it provides the same methods of the \textit{IrElementVisitor}, such as \textit{visitClass} and \textit{visitDeclaration}, but the return type is always set as the element itself. Basically, when wanting to transform a function it is sufficient to create an \textit{IrElementTransformer} and to override the \textit{visitFunction} method, implementing whatever transformation needed. For example the element can be modified  or created by using the \textit{IrFactory} or the \textit{IrBuilder}, or existing elements can be deleted.
+The \textit{IrElementTransformer} provides the same methods of the \textit{IrElementVisitor}, such as \textit{visitClass} and \textit{visitDeclaration}, but the return type is always set as the element itself. Basically, when wanting to transform a function it is sufficient to create an \textit{IrElementTransformer} and to override the \textit{visitFunction} method, implementing whatever transformation needed. For example the element can be modified  or created by using the \textit{IrFactory} or the \textit{IrBuilder}, or existing elements can be deleted.
 
 As a whole, all these functionalities discussed constitute powerful tools that allow all kind of compile-time modifications, that can be encapsulated in a Kotlin compiler plugin.
 
 \subsubsection{Example}\label{section:compiler_plugin_example}
-The complexities involved in Kotlin compiler plugins discussed in the previous sections need a further exploration. For this reason, it has been developed a simple plugin, which aims to dive deeply into the details of basic and advanced features implementation.
+The complexities involved in Kotlin compiler plugins, discussed in the previous sections, need a further exploration. For this reason, it has been developed a simple plugin \cite{km_compiler_plugin_example}, which aims to dive deeply into the details of basic and advanced features implementation.
 
 For example, considering the following code:
 \begin{lstlisting}[caption={Kotlin code without the modification of the compiler plugin created as an example}, captionpos=b, language=Kotlin, label={code:main_compiler_plugin_example}]
@@ -434,7 +434,7 @@ fun main() {
     test()
 }
 \end{lstlisting}
-One thing to notice is that, typically, the functions' names are not passed from compilation time to run time, this information would be usually lost. By the intervention of the plugin, that information is not lost, but inserted in the print function and shown to the user.
+One thing to notice is that, typically, the functions' names are not passed from compilation time to run time, this information would be usually lost. By the intervention of the plugin, that information is not lost, but it is inserted in the print function and shown to the user.
 
 Moreover, the module of the project that contains the code that is going to use the compiler plugin is a \textbf{Kotlin Multiplatform} project. The reasons behind this choice are going to be explained afterwards in Section \ref{section:technology_choices}, but this example is also a \textbf{proof of concept} of the feasibility of creating Kotlin compiler plugins for multiplatform projects.
 
