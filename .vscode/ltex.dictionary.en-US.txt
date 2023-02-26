@@ -98,3 +98,5 @@ buildconfig
 bytecode
 IrElseBranch
 irReturn
+Collektive
+coroutines
