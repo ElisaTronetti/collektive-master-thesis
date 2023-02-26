@@ -1,5 +1,4 @@
 name: LaTeX document CD
-name: Build LaTeX document
 on:
   push:
     tags:
