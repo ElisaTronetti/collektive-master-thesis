@@ -68,6 +68,22 @@ One advantage of Kotlin Multiplatform is, for example, the ability to share code
 Concluding, Kotlin Multiplatform is the perfect technology to achieve this thesis project, because it allows creating a unique code base that is possible to use on three different platforms: JVM, JavaScript and Native. Moreover, it is not required the implementation of platform-specific behaviors, meaning that one the common code has been developed.
 
 \section{Project structure}\label{section:project_structure}
+Collektive has been developed as a Gradle project composed by three different submodules, as shown in Figure \ref{fig:collektive_package_diagram}:
+\begin{enumerate}
+    \item \textbf{plugin}:
+    \begin{enumerate}
+        \item \textbf{gradle-plugin}:
+        \item \textbf{compiler-plugin}:
+    \end{enumerate}
+    \item \textbf{dsl}:
+    \item \textbf{collektive-test}:
+\end{enumerate}
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=1.1]{document/chapters/4-collektive/images/collektive_package_diagram.pdf}
+    \caption{Package diagram of Collektive project}
+    \label{fig:collektive_package_diagram}
+\end{figure}
 
 \section{DSL}\label{section:dsl}
 A \textbf{DSL} (Domain-Specific Language) \cite{dsl_definition} is a programming language or language construct that is designed to be highly specific to a particular domain, or problem space. Unlike general-purpose programming languages, which are intended to be applicable across a wide range of domains and problem types, DSLs are created to meet the specific needs of a particular application or system. For this reason, general-purpose languages, such as Java, are generally more complex than DSL.\newline 
