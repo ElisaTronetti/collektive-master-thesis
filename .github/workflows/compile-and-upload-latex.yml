@@ -1,14 +1,24 @@
 name: LaTeX document CD
+name: Build LaTeX document
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - "v*.*.*"
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
-      - name: Build and release LaTeX document
-        uses: TemplatesHub/gh-action-latex-build-and-release@v2
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
         with:
-          pdf-name: 'Elisa-Tronetti-Master-Thesis'
+          root_file: main.tex
+          args: -pdf -file-line-error -halt-on-error -interaction=nonstopmode --shell-escape
+      - name: Rename file
+        run: mv main.pdf "Elisa-Tronetti-Master-Thesis-${{ github.ref_name }}.pdf"
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Elisa-Tronetti-Master-Thesis-${{ github.ref_name }}.pdf
