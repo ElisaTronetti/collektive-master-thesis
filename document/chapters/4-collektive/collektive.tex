@@ -43,17 +43,29 @@ It is possible to share the code in different ways \cite{kotlin_multiplatform_sh
         \caption{Kotlin Multiplatform used to share code on all platforms \cite{kotlin_multiplatform_share_code}}
         \label{fig:km_share_code_on_all_platforms}
     \end{figure}
-    \item the code can be shared among some platforms, but not all of them
+    \item \textbf{Share code among some platforms}: this organization is usually applied when similar platforms share a big portion of code. As it can be seen in Figure \ref{fig:km_reuse_code}, it is possible to define hierarchies that allow to organization the share code, such as the \textit{desktopMain} folder that shares only define some shared code for its dependencies.
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[scale=0.97]{document/chapters/4-collektive/images/kotlin_multiplatform_reuse_code.png}
+        \caption{Kotlin Multiplatform reuse of code among some platforms of the project \cite{kotlin_multiplatform_overview}}
+        \label{fig:km_reuse_code}
+    \end{figure}
 \end{itemize}
 
+In some cases it might be necessary to access platform-specific APIs from the common code. This can be done by using the specific Kotlin mechanism of expected and actual declarations \cite{kotlin_multiplatform_expect_actual}.\newline
 \begin{figure}[!ht]
     \centering
-    \includegraphics[scale=0.97]{document/chapters/4-collektive/images/kotlin_multiplatform_reuse_code.png}
-    \caption{Kotlin Multiplatform reuse of code \cite{kotlin_multiplatform_overview}}
-    \label{fig:km_reuse_code}
+    \includegraphics[scale=0.85]{document/chapters/4-collektive/images/km_expect_actual.png}
+    \caption{Kotlin Multiplatform expect and actual dependency mechanism \cite{kotlin_multiplatform_expect_actual}}
+    \label{fig:km_expect_actual}
 \end{figure}
-L'altra immagine sulla doc di koltin è più bella di questa!!
+In Figure \ref{fig:km_expect_actual} it is shown an example of this mechanism. For instance, in the common code it is created a new function or class, and it is declared using the keyword \textbf{expect}. The keyword informs the compiler that it should look for the implementation of this element in the platform-specific folders. This can be done by declaring the same function or class by using the \textbf{actual} keyword, which allows taking advantage of specific APIs. In the cited example, the actual implementation required are for the iOS and Android platforms.
 
+Kotlin Multiplatform also includes tools to help developers manage their codebase, such as Gradle plugins that allow for building and testing code across multiple platforms.
+
+One advantage of Kotlin Multiplatform is, for example, the ability to share code between Android and iOS. This can be especially valuable for companies that want to develop apps for both platforms, as it can help reduce development time and costs. With Kotlin Multiplatform, developers can write shared code for common features, such as user authentication or data storage, and then write platform-specific code for the UI and other platform-specific features.
+
+Concluding, Kotlin Multiplatform is the perfect technology to achieve this thesis project, because it allows creating a unique code base that is possible to use on three different platforms: JVM, JavaScript and Native. Moreover, it is not required the implementation of platform-specific behaviors, meaning that one the common code has been developed.
 
 \section{Project structure}\label{section:project_structure}
 
