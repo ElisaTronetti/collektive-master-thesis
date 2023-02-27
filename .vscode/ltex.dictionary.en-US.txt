@@ -101,3 +101,6 @@ irReturn
 Collektive
 coroutines
 desktopMain
+gradle-plugin
+collektive-test
+dsl
