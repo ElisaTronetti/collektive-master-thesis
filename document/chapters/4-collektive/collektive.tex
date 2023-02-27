@@ -70,13 +70,13 @@ Concluding, Kotlin Multiplatform is the perfect technology to achieve this thesi
 \section{Project structure}\label{section:project_structure}
 Collektive has been developed as a Gradle project composed by three different submodules, as shown in Figure \ref{fig:collektive_package_diagram}:
 \begin{enumerate}
-    \item \textbf{plugin}:
+    \item \textbf{plugin}: it is divide in two submodules itself: 
     \begin{enumerate}
-        \item \textbf{gradle-plugin}:
-        \item \textbf{compiler-plugin}:
+        \item \textbf{gradle-plugin}: necessary plugin that a gradle project uses in order to include the compiler plugin. Its structure has been introduced previously in Section \ref{section:gradle_plugin};
+        \item \textbf{compiler-plugin}: the compiler plugin is used modify a data structure used to keep track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated in order to allow the alignment whenever necessary. The specific functionalities of the compiler plugin has been explained in depth in Section \ref{section:compiler_plugin_solution}; 
     \end{enumerate}
-    \item \textbf{dsl}:
-    \item \textbf{collektive-test}:
+    \item \textbf{dsl}: the actual DSL implementation, where the logic is implemented and that exposes the operator of the aggregate computing. The description of this submodule is going to be presented in Section \ref{section:dsl};
+    \item \textbf{collektive-test}: this submodule is used to test an aggregate program by running it on a simulation environment provided by the Alchemist Simulator \cite{alchemist}.
 \end{enumerate}
 \begin{figure}[!ht]
     \centering
