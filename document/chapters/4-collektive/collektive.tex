@@ -75,7 +75,7 @@ Collektive has been developed as a Gradle project composed by three different su
         \item \textbf{gradle-plugin}: necessary plugin that a gradle project uses in order to include the compiler plugin. Its structure has been introduced previously in Section \ref{section:gradle_plugin};
         \item \textbf{compiler-plugin}: the compiler plugin is used modify a data structure used to keep track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated in order to allow the alignment whenever necessary. The specific functionalities of the compiler plugin has been explained in depth in Section \ref{section:compiler_plugin_solution}; 
     \end{enumerate}
-    \item \textbf{dsl}: the actual DSL implementation, where the logic is implemented and that exposes the operator of the aggregate computing. The description of this submodule is going to be presented in Section \ref{section:dsl};
+    \item \textbf{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing. The description of this submodule is going to be presented in Section \ref{section:dsl};
     \item \textbf{collektive-test}: this submodule is used to test an aggregate program by running it on a simulation environment provided by the Alchemist Simulator \cite{alchemist}.
 \end{enumerate}
 \begin{figure}[!ht]
@@ -89,6 +89,142 @@ Collektive has been developed as a Gradle project composed by three different su
 A \textbf{DSL} (Domain-Specific Language) \cite{dsl_definition} is a programming language or language construct that is designed to be highly specific to a particular domain, or problem space. Unlike general-purpose programming languages, which are intended to be applicable across a wide range of domains and problem types, DSLs are created to meet the specific needs of a particular application or system. For this reason, general-purpose languages, such as Java, are generally more complex than DSL.\newline 
 DSLs can be implemented in a number of ways, including as standalone programming languages, as libraries that extend existing programming languages, or as annotations or macros that modify the syntax or behavior of an existing language. DSLs can be used to provide a higher level of abstraction over complex systems or processes, allowing developers to express ideas and concepts in a more concise and intuitive way.\newline
 To ensure that DSLs are fit for their intended purpose, they are typically developed in close collaboration with domain experts. In fact, many DSLs are not designed to be used by programmers, but rather by non-technical individuals who are knowledgeable in the relevant domain. This collaborative approach helps to ensure that the DSL is intuitive and expressive for its intended users, allowing them to more easily and effectively express complex ideas and processes.
+
+The DSL developed for this project is organized as shown in the package diagram in Figure \ref{fig:dsl_packege_diagram}.
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=1]{document/chapters/4-collektive/images/dsl_package_diagram.pdf}
+    \caption{Package diagram of Collektive DSL}
+    \label{fig:dsl_packege_diagram}
+\end{figure}
+As previously described, Kotlin Multiplatform allows to create common code that is then compiled to three different targets, which are JVM, JavaScript and Native. Since the behavior of the DSL does not require platform-specific features, it is present in the project only the \textbf{commonMain} package, which contains the whole implementation.\newline
+It is also present the \textbf{commonTest} folder, which is used to define the tests to verify the correct behavior of the system and that is possible to run over the different platforms, to ensure that the implementation works as predicted for all the targets. In Section \ref{section:validation} are going to be presented more details about the tests.
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=0.73]{document/chapters/4-collektive/images/dsl_class_diagram.pdf}
+    \caption{Class diagram of Collektive DSL}
+    \label{fig:dsl_class_diagram}
+\end{figure}
+The implementation of the project involves the elements presented in the class diagram in Figure \ref{fig:dsl_class_diagram}, which are:
+\begin{itemize}
+    \item \textbf{AggregateContext}: it is the class that contains the implementation of the aggregate programming constructs and the function that performs the alignment. Moreover, this class is used to handle all the data necessary for the computation: it stores the local state of the device of the previous round, the messages received from the neighbors, the device identifier, and an instance of the stack used to keep track of the computational state. The \textit{AggregateContext} contains also the data class \textit{AggregateResult}, making it possible to instantiate it when the context receiver is \textit{AggregateContext};
+    \item \textbf{AggregateResult}: the computation of an aggregate program returns as output an \textit{AggregateResult}, which contains the results obtained from the current computational round, which is composed by: the actual result returned by the aggregate program, the messages to send to the neighbors to notify them of the current results, and the new device local state;
+    \item \textbf{Field}: this class represents the \textbf{computational field}, and it is used by the aggregate constructs to handle this data structure. It contains the local value of the device that is computing and all the messages received by the neighbors. Specifically, the local value is a pair that contains the ID and a map of paths and computed values. Similarly, the messages are composed by the identifier of the neighbor and the same map containing the path and the registered result obtained in the computation corresponding to that path;
+    \item \textbf{ID}: a simple identifier which goal is to be able to uniquely recognize different computational device in the aggregate system. Any type of identifier can be used;
+    \item \textbf{Stack}: this is the data structure discussed previously in Section \ref{section:compiler_plugin_solution}, and it is used by the compiler plugin to save the current computational state in order to provide the alignment feature. Through an instance of this class it is possible to retrieve the current path in order to create a computational field or to get the neighboring device values of a specific path;
+    \item \textbf{Path}: the path class has already been introduced in Section \ref{section:compiler_plugin_solution}, and its role is to return an immutable list whenever it is necessary to retrieve the current stack state.
+\end{itemize}
+
+A key aspect of this project is the implementation of the aggregate programming constructs contained in the \textit{AggregateContext} class.
+\begin{lstlisting}[caption={Neighbouring implementation}, captionpos=b, language=Kotlin, label={code:neighbouring_implementation}]
+fun <X> neighbouring(type: X): Field<X> {
+    toBeSent[stack.currentPath()] = type
+    val messages = messagesAt(stack.currentPath())
+    return FieldImpl(Pair(localId, type), messages)
+}
+\end{lstlisting}
+The implementation of the \textbf{neighbouring} function is reported in Listing \ref{code:neighbouring_implementation}. It accepts in input any parameter, which is the value computed by the current device and that is going to be shared with the neighborhood.\newline 
+The behavior of this construct consists on:
+\begin{itemize}
+    \item Saving the value computed and the current stack in order to send the message to the neighbors;
+    \item Retrieving the messages of the neighbors that correspond to the current path;
+    \item Finally, returning a field with the local value and the neighbors values, ready to be manipulated.
+\end{itemize}
+
+\begin{lstlisting}[caption={Repeating implementation}, captionpos=b, language=Kotlin, label={code:repeating_implementation}]
+fun <X,Y : Any> repeating(initial: X, repeat: (X) -> Y): Y {
+    val res = 
+        if (previousState.containsKey(stack.currentPath())) {
+            repeat(previousState[stack.currentPath()] as X) 
+        } else {
+            repeat(initial)
+        }
+    state[stack.currentPath()] = res
+    return res
+}
+\end{lstlisting}
+The \textbf{repeating} function is used to represent the time evolution, and it allows the field to change dynamically.\newline
+This expression needs two parameters:
+\begin{enumerate}
+    \item \textbf{initial}: the initial value used whenever the function is evaluated for the first time;
+    \item \textbf{repeat}: the function that is going to be computed and that takes as input the initial value or the output of the previous round evaluation.
+\end{enumerate}
+The body of \textit{repeating} can be broken down in the following steps:
+\begin{itemize}
+    \item It checks whether a previous state exists for the current path in the \textit{perviousState} map;
+    \item If a previous state exists, it is invoked the \textit{repeat} function with the value associated with the current path in the previous round;
+    \item If a previous state does not exist, the function invokes \textit{repeat} with the \textit{initial} value;
+    \item Furthermore, the result of the \textit{repeat} evaluation is store in the \textit{state} map associated to the current state. This creates the evolution of the local device state, that is going to be used in the next aggregate program round;
+    \item Finally, the computed value returned by \textit{repeat} is returned.
+\end{itemize}
+
+\begin{lstlisting}[caption={Sharing implementation}, captionpos=b, language=Kotlin, label={code:sharing_implementation}]
+fun <X, Y: Any?> sharing(
+    initial: X,
+    body: (Field<X>) -> Y
+): Y {
+    val messages = messagesAt(stack.currentPath())
+    val previous = 
+        if (previousState.containsKey(stack.currentPath())){
+            (previousState[stack.currentPath()]) 
+        } else {
+            initial
+        }
+    val subject = FieldImpl<X>(
+        Pair(localId, previous), 
+        messages
+    )
+    return body(subject).also {
+        toBeSent[stack.currentPath()] = it
+    }
+}
+\end{lstlisting}
+The last aggregate programming constructs is \textbf{sharing}, and its implementation is shown in Listing \ref{code:sharing_implementation}. As described before in Section \ref{section:aggregate_programming_introduction}, the \textit{sharing} allows to observe the
+neighbors' field, updated the local values and share immediately the updated state in a
+single operation.\newline
+This function accepts two parameters:
+\begin{enumerate}
+    \item \textbf{initial}: similarly to the \textit{repeating} constructs, the initial value is used whenever a \textit{sharing} function is evaluated for the first time;
+    \item \textbf{body}: it is used to transform immediately the field, resulting a value that is going to be shared with the neighborhood.
+\end{enumerate}
+The behavior of the \textit{sharing} function can be described as follows:
+\begin{itemize}
+    \item The function retrieves the messages of the neighbors for the current path from the stack instance;
+    \item It checks whether a previous state exists for the current path, similarly to the \textit{repeating} function;
+    \item If a previous state exists, the function retrieves it from the \textit{previousState} map;
+    \item Otherwise, it is used the \textit{initial} value;
+    \item Taken the retrieved value, whether it is the \textit{initial} or the value computed in the previous round, and the messages from the neighbors, a new field instance is created;
+    \item The expression invokes the \textit{body} function with the new created field as argument;
+    \item The returned value of the \textit{body} function is stored in the \textit{toBeSent} map assigned to the current path. This map contains all the messages to send to the neighbors before the next round begin;
+    \item Finally, the output value of \textit{body} is returned by the \textit{sharing} function.
+\end{itemize}
+
+\begin{lstlisting}[caption={Aggregate entry point}, captionpos=b, language=Kotlin, label={code:aggregate_entry_point}]
+fun <X> aggregate(
+    init: AggregateContext.() -> X
+) = singleCycle(compute = init)
+\end{lstlisting}
+The main entry point of an aggregate program is shown in the code in Listing \ref{code:aggregate_entry_point}.\newline
+This function takes a single parameter called \textit{init}, which is a lambda expression that takes an instance of \textit{AggregateContext} as a receiver object.
+
+\begin{info}[Kotlin lambda and context receiver:]
+    A lambda expression is a block of code that can be executed later, and it can be passed around as a value. In Kotlin, lambda expressions can have a receiver object, which is an object on which the lambda is invoked.\newline
+    In Kotlin, a context receiver is a way of providing a context or a scope to a block of code, such as a lambda expression. A context receiver allows the block of code to access the properties and functions of the receiver object using the \textit{this} keyword, without having to explicitly specify the receiver object in the code.
+\end{info}
+
+This means that when the lambda expression \textit{init} is invoked, it has access to the properties and functions of the \textit{AggregateContext} object. By using the aggregate function, it is then possible to define the lambda that is going to be computed, and, by doing so, the aggregate constructs defines in the \textit{AggregateContext} can be used freely.\newline
+This function allows the computation of a single cycle, which means that only one round is going to be performed. This requires the user of the DSL to define how the different devices should communicate. In Section \ref{section:validation} it is going to be presented a different \textit{aggregate} function that allows to run multiple rounds of an aggregate program, used to test the correct behavior during the validation process.
+\begin{lstlisting}[caption={Single cycle \textit{AggregateResult} output}, captionpos=b, language=Kotlin, label={code:single_cycle_return_type}]
+with(AggregateContext(localId, messages, state)) {
+    AggregateContext.AggregateResult(
+        compute(),
+        messagesToSend(),
+        newState()
+    )
+}
+\end{lstlisting}
+The \textit{singleCycle} function returns an \textbf{AggregateResult}, which is the output of an aggregate program in Collektive. This class contains the value computed from the aggregate lambda, a map of all the messages to send to the neighbors, and the new state of the device.
 
 \section{Usage examples}\label{section:usage_example}
 
