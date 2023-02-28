@@ -104,3 +104,12 @@ desktopMain
 gradle-plugin
 collektive-test
 dsl
+commonMain
+commonTest
+AggregateResult
+neighbouring
+perviousState
+previousState
+toBeSent
+init
+singleCycle
