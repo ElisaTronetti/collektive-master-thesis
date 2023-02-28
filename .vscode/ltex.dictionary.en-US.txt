@@ -113,3 +113,4 @@ previousState
 toBeSent
 init
 singleCycle
+hardcoded
