@@ -226,6 +226,33 @@ with(AggregateContext(localId, messages, state)) {
 \end{lstlisting}
 The \textit{singleCycle} function returns an \textbf{AggregateResult}, which is the output of an aggregate program in Collektive. This class contains the value computed from the aggregate lambda, a map of all the messages to send to the neighbors, and the new state of the device.
 
-\section{Usage examples}\label{section:usage_example}
+\section{Usage example}\label{section:usage_example}
+One important aspect to consider during the development of a DSL is its usability. It is important to provide the user with a minimal set of operators, each of them with a clear purpose. This is what has been achieved with Collektive, since the constructs are coherent with the aggregate programming original operators.
+
+In order to use Collektive, it is necessary to perform a bit of setup:
+\begin{enumerate}
+    \item \textbf{Include the compiler plugin}: since the alignment is crucial for the dsl to work, it is important to include into the Gradle project the custom Gradle plugin created to expose the Kotlin compiler plugin. Whenever a new submodule of Collektive is created, the Gradle plugin can be included as shown in the code in Listing \ref{code:include_gradle_plugin};
+\begin{lstlisting}[caption={Inclusion of the custom Gradle plugin to a local Gradle submodule}, captionpos=b, language=Kotlin, label={code:include_gradle_plugin}]
+plugins {
+    id("io.github.elisatronetti.kotlinAlignmentPlugin") version "0.1.0"
+}
+\end{lstlisting}
+    \item \textbf{Include the DSL}: it is also necessary to include the DSL to the project, in order to be able to access all the aggregate programming constructs developed. The code in Listing \ref{code:include_dsl} shows how to include it into a new Collektive submodule.
+\begin{lstlisting}[caption={Inclusion of the DSL to a local Gradle submodule}, captionpos=b, language=Kotlin, label={code:include_dsl}]
+dependencies {
+    implementation(project(path=":dsl"))
+}
+\end{lstlisting}
+\end{enumerate}
+
+Once the setup is finished, the DSL is available into the new submodule. By calling the function \textbf{aggregate}, the DSL functions \textbf{neighboring}, \textbf{repeating} and \textbf{sharing} can be used. Moreover, the compiler plugin included provides the correct alignment of the elements.\newline
+For example, the snippet of code in Listing \ref{code:aggregate_program_example} shows an example of usage. The program shares with the neighbors the double of a local number. In this example, the value of the number is hardcoded, but in a real world example, this value might depend on the device environment, which would make different devices have a different value evaluation.
+\begin{lstlisting}[caption={Example of an aggregate program developed with Collektive}, captionpos=b, language=Kotlin, label={code:aggregate_program_example}]
+val double: (Int) -> Int = { it * 2 }
+val testValue: Int = 2
+aggregate {
+    neighbouring(double(testValue))
+}
+\end{lstlisting}
 
 \section{Validation}\label{section:validation}
