@@ -157,7 +157,7 @@ The chosen approach is similar to the one discussed for KSP in Section \ref{sect
 
 This important data structure has been called \textbf{Stack} and its interface is shown in Listing \ref{code:stack_interface_compiler_plugin}.
 \begin{lstlisting}[caption={Stack interface for Kotlin compiler plugin solution}, captionpos=b, language=Kotlin, label={code:stack_interface_compiler_plugin}]
-interface Stack<X> {
+interface Stack {
     fun currentPath(): Path
     fun alignRaw(token: X?): Unit
     fun dealign(): Unit
