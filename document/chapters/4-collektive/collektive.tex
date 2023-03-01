@@ -256,3 +256,76 @@ aggregate {
 \end{lstlisting}
 
 \section{Validation}\label{section:validation}
+Validation refers to the process of ensuring that the software meets the intended requirements and specifications and fits for its intended use. Validation is a critical aspect of the software development process as it helps to ensure that the software is free of defects, meets the expectations of its users, and performs its intended function correctly.
+
+The validation process typically involves testing the software in various ways, and the goal of each type of testing is to ensure that the software meets the intended goal and that it performs as expected in various environments and scenarios.
+
+Collektive validation consists on two main tests:
+\begin{enumerate}
+    \item \textbf{Functional testing}: involves verifying that the software performs its intended functions correctly and without errors;
+    \item \textbf{Compatibility testing}: involves testing the software's ability to operate correctly in different environments and with different hardware and software configurations.
+\end{enumerate}
+These validation processes are achieved in two different ways, which are going to be discussed in this section.
+
+The first method tests both the functionalities and the compatibility of the system. This is obtained by taking advantage of the Kotlin Multiplatform features, because when it comes to testing, it provides several tools and frameworks that can be used to test code written in Kotlin on different platforms.\newline
+One popular testing framework for Kotlin Multiplatform is \textbf{KotlinTest}\footnote{\url{https://kotlinlang.org/docs/multiplatform-run-tests.html}}. \textit{KotlinTest} is a multiplatform testing library that provides a common API for writing tests that can be run on different platforms. It supports a range of testing styles, including behavior-driven development (BDD) and property-based testing.\newline
+Kotlin Multiplatform also provides a set of common annotations that can be used to mark tests and test suites, such as the \textbf{@Test} annotation. These annotations can be used in conjunction with testing frameworks like \textit{KotlinTest} to write and run tests on multiple platforms.\newline
+Since the DSL is developed using Kotlin Multiplatform, the package \textbf{commonTest} contains the test implemented using \textit{KotlinTest}.\newline
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[scale=1.1]{document/chapters/4-collektive/images/common_test_package_diagram.pdf}
+    \caption{Package diagram of Collektive DSL tests}
+    \label{fig:common_test_package_diagram}
+\end{figure}
+The organization of the folder \textit{commonTest} is shown in Figure \ref{fig:common_test_package_diagram}. It contains only the \textbf{kotlin} subfolder, since the implementation of platform-specific tests is not required.\newline
+The test are organized in the following folder system:
+\begin{itemize}
+    \item \textbf{field}: contains unit testing of the \textit{Field} class and the field manipulation functions, such us the retrieval of the lower comparable value contained in the field;
+    \item \textbf{stack}: similarly to the \textit{Field}, also the \textit{Stack} class requires unit testing, to verify that it works as predicted;
+    \item \textbf{branch}: it contains all the possible testing of the branching alignment. It verifies the correct alignment of simple if, else-if and else blocks and expressions. Furthermore, it tests the alignment of the \textit{when} Kotlin expressions;
+    \item \textbf{aggregate}: finally, in this folder are contained all the test of the aggregate programming constructs, which are \textit{neighboring}, \textit{repeating} and \textit{sharing}.
+\end{itemize}
+
+Since testing only one round of an aggregate program would not be enough to ensure the correct system behavior, it has been implemented an infrastructure that allows to test multiple rounds.\newline
+It is necessary to create a class that allows to save the messages and deliver them to other devices. This class is called \textbf{Network}, and its interface is shown in the code in Listing \ref{code:network_interface}.
+\begin{lstlisting}[caption={Network interface to simulate multiple round of an aggregate program in tests}, captionpos=b, language=Kotlin, label={code:network_interface}]
+interface Network {
+    fun send(localId: ID, message: Map<Path, *>)
+    fun receive(): Map<ID, Map<Path, *>>
+}
+\end{lstlisting}
+Before creating an aggregate program, it is necessary to instantiate a \textit{Network}, which contains an internal map of messages, and it is used to handle the communication between devices.
+
+It is also necessary to create a new entry point for the DSL, which makes it possible to accept parameters to handle multiple rounds.
+\begin{lstlisting}[caption={Aggregate programming entry point used to compute multiple rounds}, captionpos=b, language=Kotlin, label={code:aggregate_entry_point_for_multiple_rounds}]
+fun <X> aggregate(
+    condition: () -> Boolean,
+    network: Network = NetworkImpl(),
+    init: AggregateContext.() -> X
+) = runUntil(condition, network, compute = init)
+\end{lstlisting}
+The new \textit{aggregate} function is reported in Listing \ref{code:aggregate_entry_point_for_multiple_rounds}, and it accepts the following parameters:
+\begin{enumerate}
+    \item \textbf{condition}: it is a lambda expression that takes no arguments and returns a \textit{Boolean} value, which is used to establish whether the computation should run another round or not;
+    \item \textbf{network}: an instance of the \textit{Network} class introduced in the code in Listing \ref{code:network_interface}, which is used to handle sending and receiving messages;
+    \item \textbf{init}: the actual aggregate program, contained in a lambda expression which has as receiver object \textit{AggregateContext}.
+\end{enumerate}
+This \textit{aggregate} function calls \textbf{runUntil},  and in the snippet of code in Listing \ref{code:run_until_body} it is reported the main logic its implementation.\newline
+The purpose of \textit{runUntil} is to repeatedly execute the \textit{compute} lambda expression until the \textit{condition} lambda return \textit{true}.\newline
+In order to do that, every time it is necessary a new iteration, it is computed a \textbf{singleCycle}, which is the same function used in the normal aggregate program execution, which was presented in Section \ref{section:dsl}. A cycle requires the local identifier of the device, it retrieves from the network the message sent by the neighbors, the current local state of the device and the lambda that define the computation.\newline
+Afterwords, it updates the local state, and it sends the via network the messages regarding the computed values of this round.
+\begin{lstlisting}[caption={Main logic of the \textit{runUntil} function}, captionpos=b, language=Kotlin, label={code:run_until_body}]
+while (condition()) {
+    computed = singleCycle(
+        localId,
+        network.receive(),
+        state,
+        compute
+    )
+    state = computed.newState
+    network.send(localId, computed.toSend)
+}
+\end{lstlisting}
+
+By using these mechanisms just presented, it is possible to create tests that check the correct interaction between devices, verifying also that the alignment works properly. Moreover, \textit{KotlinTest} allows to run the created test over the different targets of the project, which tests the compatibility of the software over different platforms.
+
