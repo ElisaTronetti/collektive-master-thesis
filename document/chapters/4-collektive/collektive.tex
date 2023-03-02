@@ -1,5 +1,5 @@
 \chapter{Collektive: aggregate programming in pure Kotlin}\label{chapter:collektive}
-The name given to the project is \textbf{Collektive}, which emphasize the aggregate programming aim to dispose of numerous devices that work together to achieve a certain goal. Moreover, the name contains \textbf{kt} to refer to the development in Kotlin.
+The name given to the project is \textbf{Collektive}\footnote{\url{https://github.com/ElisaTronetti/collektive}}, which emphasize the aggregate programming aim to dispose of numerous devices that work together to achieve a certain goal. Moreover, the name contains \textbf{kt} to refer to the development in Kotlin.
 
 The goal of Collektive is to provide to the user a minimal DSL that makes it possible to create aggregate programs transparently. It is necessary to keep in mind that the solution needs to respect these requirements:
 \begin{itemize}
@@ -23,10 +23,10 @@ Kotlin Multiplatform allows to write code in the Kotlin programming language and
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.9]{document/chapters/4-collektive/images/kotlin_multiplatform_code.png}
-    \caption{How Kotlin Multiplatform works \cite{kotlin_multiplatform_overview}}
+    \caption{How Kotlin Multiplatform works}
     \label{fig:km_code_work}
 \end{figure}
-As can be seen in Figure \ref{fig:km_code_work}, Kotlin Multiplatform code behaves in the following way \cite{kotlin_multiplatform_overview}:
+As can be seen in Figure \ref{fig:km_code_work}\footnote{\url{https://kotlinlang.org/docs/multiplatform.html} \label{km_footnote}}, Kotlin Multiplatform code behaves in the following way\footref{km_footnote}:
 \begin{itemize}
     \item \textbf{Common Kotlin}: the code written in common Kotlin can be used across multiple platforms without requiring modifications. This code can include business logic, data models, and other non-platform-specific functionality. Common code can rely on a set of libraries that are available for Kotlin Multiplatform and that cover everyday tasks, such as serializations or coroutines;
     \item \textbf{Platform-specific versions of Kotlin}: this refers to \textbf{Kotlin/JVM}, \textbf{Kotlin/JS} and \textbf{Kotlin/Native}, which include extensions to the Kotlin language, allowing developers to use platform-specific APIs, features and tools;
@@ -34,32 +34,32 @@ As can be seen in Figure \ref{fig:km_code_work}, Kotlin Multiplatform code behav
 \end{itemize}
 
 The way that Kotlin Multiplatform avoid the necessity to write and maintain the same code over and over again for all the targeted platforms, is by providing the possibility to share the same code across multiple platforms.\newline
-It is possible to share the code in different ways \cite{kotlin_multiplatform_share_code}:
+It is possible to share the code in different ways\footnote{\url{https://kotlinlang.org/docs/multiplatform-share-on-platforms.html} \label{km_share_footnote}}:
 \begin{itemize}
-    \item \textbf{Share code on all platforms}: this is typically done when some business logic is common to all platforms, in order to write it only once in the common code and then share it on all the targets, as shown in Figure \ref{fig:km_share_code_on_all_platforms};
+    \item \textbf{Share code on all platforms}: this is typically done when some business logic is common to all platforms, in order to write it only once in the common code and then share it on all the targets, as shown in Figure \ref{fig:km_share_code_on_all_platforms}\footref{km_share_footnote};
     \begin{figure}[!ht]
         \centering
         \includegraphics[scale=0.86]{document/chapters/4-collektive/images/km_share_code_on_all_platforms.png}
-        \caption{Kotlin Multiplatform used to share code on all platforms \cite{kotlin_multiplatform_share_code}}
+        \caption{Kotlin Multiplatform used to share code on all platforms}
         \label{fig:km_share_code_on_all_platforms}
     \end{figure}
-    \item \textbf{Share code among some platforms}: this organization is usually applied when similar platforms share a big portion of code. As it can be seen in Figure \ref{fig:km_reuse_code}, it is possible to define hierarchies that allow to organization the share code, such as the \textit{desktopMain} folder that shares only define some shared code for its dependencies.
+    \item \textbf{Share code among some platforms}: this organization is usually applied when similar platforms share a big portion of code. As it can be seen in Figure \ref{fig:km_reuse_code}\footref{km_footnote}, it is possible to define hierarchies that allow to organization the share code, such as the \textit{desktopMain} folder that shares only define some shared code for its dependencies.
     \begin{figure}[!ht]
         \centering
         \includegraphics[scale=0.97]{document/chapters/4-collektive/images/kotlin_multiplatform_reuse_code.png}
-        \caption{Kotlin Multiplatform reuse of code among some platforms of the project \cite{kotlin_multiplatform_overview}}
+        \caption{Kotlin Multiplatform reuse of code among some platforms of the project}
         \label{fig:km_reuse_code}
     \end{figure}
 \end{itemize}
 
-In some cases it might be necessary to access platform-specific APIs from the common code. This can be done by using the specific Kotlin mechanism of expected and actual declarations \cite{kotlin_multiplatform_expect_actual}.\newline
+In some cases it might be necessary to access platform-specific APIs from the common code. This can be done by using the specific Kotlin mechanism of expected and actual declarations\footnote{\url{https://kotlinlang.org/docs/multiplatform-connect-to-apis.html} \label{expect_actual_footnote}}.\newline
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.85]{document/chapters/4-collektive/images/km_expect_actual.png}
-    \caption{Kotlin Multiplatform expect and actual dependency mechanism \cite{kotlin_multiplatform_expect_actual}}
+    \caption{Kotlin Multiplatform expect and actual dependency mechanism}
     \label{fig:km_expect_actual}
 \end{figure}
-In Figure \ref{fig:km_expect_actual} it is shown an example of this mechanism. For instance, in the common code it is created a new function or class, and it is declared using the keyword \textbf{expect}. The keyword informs the compiler that it should look for the implementation of this element in the platform-specific folders. This can be done by declaring the same function or class by using the \textbf{actual} keyword, which allows taking advantage of specific APIs. In the cited example, the actual implementation required are for the iOS and Android platforms.
+In Figure \ref{fig:km_expect_actual}\footref{expect_actual_footnote} it is shown an example of this mechanism. For instance, in the common code it is created a new function or class, and it is declared using the keyword \textbf{expect}. The keyword informs the compiler that it should look for the implementation of this element in the platform-specific folders. This can be done by declaring the same function or class by using the \textbf{actual} keyword, which allows taking advantage of specific APIs. In the cited example, the actual implementation required are for the iOS and Android platforms.
 
 Kotlin Multiplatform also includes tools to help developers manage their codebase, such as Gradle plugins that allow for building and testing code across multiple platforms.
 
@@ -86,7 +86,7 @@ Collektive has been developed as a Gradle project composed by three different su
 \end{figure}
 
 \section{DSL}\label{section:dsl}
-A \textbf{DSL} (Domain-Specific Language) \cite{dsl_definition} is a programming language or language construct that is designed to be highly specific to a particular domain, or problem space. Unlike general-purpose programming languages, which are intended to be applicable across a wide range of domains and problem types, DSLs are created to meet the specific needs of a particular application or system. For this reason, general-purpose languages, such as Java, are generally more complex than DSL.\newline 
+A \textbf{DSL} (Domain-Specific Language)\footnote{\url{https://www.jetbrains.com/mps/concepts/domain-specific-languages/}} is a programming language or language construct that is designed to be highly specific to a particular domain, or problem space. Unlike general-purpose programming languages, which are intended to be applicable across a wide range of domains and problem types, DSLs are created to meet the specific needs of a particular application or system. For this reason, general-purpose languages, such as Java, are generally more complex than DSL.\newline 
 DSLs can be implemented in a number of ways, including as standalone programming languages, as libraries that extend existing programming languages, or as annotations or macros that modify the syntax or behavior of an existing language. DSLs can be used to provide a higher level of abstraction over complex systems or processes, allowing developers to express ideas and concepts in a more concise and intuitive way.\newline
 To ensure that DSLs are fit for their intended purpose, they are typically developed in close collaboration with domain experts. In fact, many DSLs are not designed to be used by programmers, but rather by non-technical individuals who are knowledgeable in the relevant domain. This collaborative approach helps to ensure that the DSL is intuitive and expressive for its intended users, allowing them to more easily and effectively express complex ideas and processes.
 
