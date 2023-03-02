@@ -176,7 +176,7 @@ A Kotlin compiler plugin architecture is organized as shown in Figure \ref{fig:k
 
 \begin{figure}[!ht]
     \centering
-    \includegraphics[scale=0.8]{document/chapters/2-metaprogramming/images/kotlin_compiler_plugin_architecture.png}
+    \includegraphics[scale=1]{document/chapters/2-metaprogramming/images/kotlin_compiler_plugin_architecture.pdf}
     \caption{The Kotlin compiler plugin architecture \cite{compiler_plugins_jetbrains}}
     \label{fig:kotlin_compiler_plugin_architecture}
 \end{figure}
@@ -256,7 +256,7 @@ if (a < b) {
 The AST that is generated from the code structure of Listing \ref{code:ast_pseudocode} is shown in Figure \ref{fig:ast_pseudocode_example}.
 \begin{figure}[!ht]
     \centering
-    \includegraphics[scale=0.5]{document/chapters/2-metaprogramming/images/ast_pseudocode_example.png}
+    \includegraphics[scale=0.8]{document/chapters/2-metaprogramming/images/ast_pseudocode_example.pdf}
     \caption{The Abstract Syntax Tree of the source code in Listing \ref{code:ast_pseudocode}}
     \label{fig:ast_pseudocode_example}
 \end{figure}
@@ -339,7 +339,7 @@ The operation defined can be performed on elements of an object structure, which
 In the context of the Kotlin compiler, the visitor pattern is applied as in Figure \ref{fig:visitor_uml_kotlin_compiler}. The \textit{IrElement} interface represents the object structure that needs to be visited. As anticipated previously in this section, this interface is implemented by all the node of the IR syntax tree, which means that every element can be visited through this pattern.\newline
 \begin{figure}[!ht]
     \centering
-    \includegraphics[scale=0.55]{document/chapters/2-metaprogramming/images/visitor_uml_kotlin_compiler.png}
+    \includegraphics[scale=0.77]{document/chapters/2-metaprogramming/images/visitor_uml_kotlin_compiler.pdf}
     \caption{The Visitor design pattern UML applied in the Kotlin compiler plugin context in order to visit the IR syntax tree}
     \label{fig:visitor_uml_kotlin_compiler}
 \end{figure}
@@ -390,7 +390,7 @@ The factory can only be used to create new element declarations, so it is necess
 The transformation of the IR can be done similarly to the navigation seen in Section \ref{section:compiler_plugin_basics}, but it is performed by another interface that extends \textit{IrElementVisitor}, which is called \textbf{IrElementTransformer}. The UML that shows the organization of the interfaces in this context can be seen in Figure \ref{fig:transformer_uml_kotlin_compiler}.\newline
 \begin{figure}[!ht]
     \centering
-    \includegraphics[scale=0.5]{document/chapters/2-metaprogramming/images/transformer_uml_kotlin_compiler.png}
+    \includegraphics[scale=0.69]{document/chapters/2-metaprogramming/images/transformer_uml_kotlin_compiler.pdf}
     \caption{The Visitor design pattern UML applied in the Kotlin compiler plugin context in order to transform the IR syntax tree}
     \label{fig:transformer_uml_kotlin_compiler}
 \end{figure}
@@ -493,7 +493,7 @@ The \textit{generate} method just shown has two different purposes:
     \item it creates an instance of the transformer implementation, giving it as argument the plugin context and the print function found, which are all the information that is going to be used to modify the code.
 \end{itemize}
 
-The most important element of all, that actually perform the code transformation, is the \textbf{TrasformerImpl}, which implements the \textbf{IrElementTransformer} interface.\newline
+The most important element of all, that actually perform the code transformation, is the \textbf{TransformerImpl}, which implements the \textbf{IrElementTransformer} interface.\newline
 Since the modifications that needs to be achieved are applied to all the function declaration bodies, the \textit{visitFunction}  needs to be overridden in the following way:
 \begin{lstlisting}[caption={Example of \textit{visitFunction} implementation of the transformer, used to visit all the function declarations}, captionpos=b, language=Kotlin, label={code:visit_function_declaration_example}]
 override fun visitFunction(
