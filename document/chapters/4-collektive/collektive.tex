@@ -8,7 +8,7 @@ The goal of Collektive is to provide to the user a minimal DSL that makes it pos
     \item \textbf{Portability}: refers to its ability to run on various platforms and environments, including different operating systems, cloud platforms, and hardware architectures. This enables systems built with the DSL to be easily deployed and run in different environments, which is crucial for systems requiring deployment in multiple locations or scalability to meet changing demands.
 \end{itemize}
 
-The following sections are organized in order to present in details the project developed. Specifically, Section \ref{section:technology_choices} discuss the main technological choice involved in the development of the DSL, in Section \ref{section:project_structure} is shown the project structure, in Section \ref{section:dsl} is analyzed in details the DSL created. Then, Section \ref{section:usage_example} presents the final result and how the DSL can be used, and Section \ref{section:validation} is used to highlight the validation methods applied to test the correct behavior of the project developed.
+The following sections are organized in order to present in details the project developed. Specifically, Section~\ref{section:technology_choices} discuss the main technological choice involved in the development of the DSL, in Section~\ref{section:project_structure} is shown the project structure, in Section~\ref{section:dsl} is analyzed in details the DSL created. Then, Section~\ref{section:usage_example} presents the final result and how the DSL can be used, and Section~\ref{section:validation} is used to highlight the validation methods applied to test the correct behavior of the project developed.
 
 \section{Technology}\label{section:technology_choices}
 This section presents the main technological choice taken regarding the development of the DSL, in order to achieve the requirements cited previously.\newline
@@ -26,7 +26,7 @@ Kotlin Multiplatform allows to write code in the Kotlin programming language and
     \caption{How Kotlin Multiplatform works}
     \label{fig:km_code_work}
 \end{figure}
-As can be seen in Figure \ref{fig:km_code_work}\footnote{\url{https://kotlinlang.org/docs/multiplatform.html} \label{km_footnote}}, Kotlin Multiplatform code behaves in the following way\footref{km_footnote}:
+As can be seen in Figure~\ref{fig:km_code_work}\footnote{\url{https://kotlinlang.org/docs/multiplatform.html} \label{km_footnote}}, Kotlin Multiplatform code behaves in the following way\footref{km_footnote}:
 \begin{itemize}
     \item \textbf{Common Kotlin}: the code written in common Kotlin can be used across multiple platforms without requiring modifications. This code can include business logic, data models, and other non-platform-specific functionality. Common code can rely on a set of libraries that are available for Kotlin Multiplatform and that cover everyday tasks, such as serializations or coroutines;
     \item \textbf{Platform-specific versions of Kotlin}: this refers to \textbf{Kotlin/JVM}, \textbf{Kotlin/JS} and \textbf{Kotlin/Native}, which include extensions to the Kotlin language, allowing developers to use platform-specific APIs, features and tools;
@@ -36,7 +36,7 @@ As can be seen in Figure \ref{fig:km_code_work}\footnote{\url{https://kotlinlang
 The way that Kotlin Multiplatform avoid the necessity to write and maintain the same code over and over again for all the targeted platforms, is by providing the possibility to share the same code across multiple platforms.\newline
 It is possible to share the code in different ways\footnote{\url{https://kotlinlang.org/docs/multiplatform-share-on-platforms.html} \label{km_share_footnote}}:
 \begin{itemize}
-    \item \textbf{Share code on all platforms}: this is typically done when some business logic is common to all platforms, in order to write it only once in the common code and then share it on all the targets, as shown in Figure \ref{fig:km_share_code_on_all_platforms}\footref{km_share_footnote};
+    \item \textbf{Share code on all platforms}: this is typically done when some business logic is common to all platforms, in order to write it only once in the common code and then share it on all the targets, as shown in Figure~\ref{fig:km_share_code_on_all_platforms}\footref{km_share_footnote};
     \begin{figure}[!ht]
         \centering
         \includegraphics[scale=0.86]{document/chapters/4-collektive/images/km_share_code_on_all_platforms.png}
@@ -59,7 +59,7 @@ In some cases it might be necessary to access platform-specific APIs from the co
     \caption{Kotlin Multiplatform expect and actual dependency mechanism}
     \label{fig:km_expect_actual}
 \end{figure}
-In Figure \ref{fig:km_expect_actual}\footref{expect_actual_footnote} it is shown an example of this mechanism. For instance, in the common code it is created a new function or class, and it is declared using the keyword \textbf{expect}. The keyword informs the compiler that it should look for the implementation of this element in the platform-specific folders. This can be done by declaring the same function or class by using the \textbf{actual} keyword, which allows taking advantage of specific APIs. In the cited example, the actual implementation required are for the iOS and Android platforms.
+In Figure~\ref{fig:km_expect_actual}\footref{expect_actual_footnote} it is shown an example of this mechanism. For instance, in the common code it is created a new function or class, and it is declared using the keyword \textbf{expect}. The keyword informs the compiler that it should look for the implementation of this element in the platform-specific folders. This can be done by declaring the same function or class by using the \textbf{actual} keyword, which allows taking advantage of specific APIs. In the cited example, the actual implementation required are for the iOS and Android platforms.
 
 Kotlin Multiplatform also includes tools to help developers manage their codebase, such as Gradle plugins that allow for building and testing code across multiple platforms.
 
@@ -68,14 +68,14 @@ One advantage of Kotlin Multiplatform is, for example, the ability to share code
 Concluding, Kotlin Multiplatform is the perfect technology to achieve this thesis project, because it allows creating a unique code base that is possible to use on three different platforms: JVM, JavaScript and Native. Moreover, it is not required the implementation of platform-specific behaviors, meaning that one the common code has been developed.
 
 \section{Project structure}\label{section:project_structure}
-Collektive has been developed as a Gradle project composed by three different submodules, as shown in Figure \ref{fig:collektive_package_diagram}:
+Collektive has been developed as a Gradle project composed by three different submodules, as shown in Figure~\ref{fig:collektive_package_diagram}:
 \begin{enumerate}
     \item \textbf{plugin}: it is divide in two submodules itself: 
     \begin{enumerate}
-        \item \textbf{gradle-plugin}: necessary plugin that a gradle project uses in order to include the compiler plugin. Its structure has been introduced previously in Section \ref{section:gradle_plugin};
-        \item \textbf{compiler-plugin}: the compiler plugin is used modify a data structure used to keep track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated in order to allow the alignment whenever necessary. The specific functionalities of the compiler plugin has been explained in depth in Section \ref{section:compiler_plugin_solution}; 
+        \item \textbf{gradle-plugin}: necessary plugin that a gradle project uses in order to include the compiler plugin. Its structure has been introduced previously in Section~\ref{section:gradle_plugin};
+        \item \textbf{compiler-plugin}: the compiler plugin is used modify a data structure used to keep track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated in order to allow the alignment whenever necessary. The specific functionalities of the compiler plugin has been explained in depth in Section~\ref{section:compiler_plugin_solution}; 
     \end{enumerate}
-    \item \textbf{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing. The description of this submodule is going to be presented in Section \ref{section:dsl};
+    \item \textbf{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing. The description of this submodule is going to be presented in Section~\ref{section:dsl};
     \item \textbf{collektive-test}: this submodule is used to test an aggregate program by running it on a simulation environment provided by the Alchemist Simulator \cite{alchemist}.
 \end{enumerate}
 \begin{figure}[!ht]
@@ -90,7 +90,7 @@ A \textbf{DSL} (Domain-Specific Language)\footnote{\url{https://www.jetbrains.co
 DSLs can be implemented in a number of ways, including as standalone programming languages, as libraries that extend existing programming languages, or as annotations or macros that modify the syntax or behavior of an existing language. DSLs can be used to provide a higher level of abstraction over complex systems or processes, allowing developers to express ideas and concepts in a more concise and intuitive way.\newline
 To ensure that DSLs are fit for their intended purpose, they are typically developed in close collaboration with domain experts. In fact, many DSLs are not designed to be used by programmers, but rather by non-technical individuals who are knowledgeable in the relevant domain. This collaborative approach helps to ensure that the DSL is intuitive and expressive for its intended users, allowing them to more easily and effectively express complex ideas and processes.
 
-The DSL developed for this project is organized as shown in the package diagram in Figure \ref{fig:dsl_packege_diagram}.
+The DSL developed for this project is organized as shown in the package diagram in Figure~\ref{fig:dsl_packege_diagram}.
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=1]{document/chapters/4-collektive/images/dsl_package_diagram.pdf}
@@ -98,7 +98,7 @@ The DSL developed for this project is organized as shown in the package diagram 
     \label{fig:dsl_packege_diagram}
 \end{figure}
 As previously described, Kotlin Multiplatform allows to create common code that is then compiled to three different targets, which are JVM, JavaScript and Native. Since the behavior of the DSL does not require platform-specific features, it is present in the project only the \textbf{commonMain} package, which contains the whole implementation.\newline
-It is also present the \textbf{commonTest} folder, which is used to define the tests to verify the correct behavior of the system and that is possible to run over the different platforms, to ensure that the implementation works as predicted for all the targets. In Section \ref{section:validation} are going to be presented more details about the tests.
+It is also present the \textbf{commonTest} folder, which is used to define the tests to verify the correct behavior of the system and that is possible to run over the different platforms, to ensure that the implementation works as predicted for all the targets. In Section~\ref{section:validation} are going to be presented more details about the tests.
 
 \begin{figure}[!ht]
     \centering
@@ -106,14 +106,14 @@ It is also present the \textbf{commonTest} folder, which is used to define the t
     \caption{Class diagram of Collektive DSL}
     \label{fig:dsl_class_diagram}
 \end{figure}
-The implementation of the project involves the elements presented in the class diagram in Figure \ref{fig:dsl_class_diagram}, which are:
+The implementation of the project involves the elements presented in the class diagram in Figure~\ref{fig:dsl_class_diagram}, which are:
 \begin{itemize}
     \item \textbf{AggregateContext}: it is the class that contains the implementation of the aggregate programming constructs and the function that performs the alignment. Moreover, this class is used to handle all the data necessary for the computation: it stores the local state of the device of the previous round, the messages received from the neighbors, the device identifier, and an instance of the stack used to keep track of the computational state. The \textit{AggregateContext} contains also the data class \textit{AggregateResult}, making it possible to instantiate it when the context receiver is \textit{AggregateContext};
     \item \textbf{AggregateResult}: the computation of an aggregate program returns as output an \textit{AggregateResult}, which contains the results obtained from the current computational round, which is composed by: the actual result returned by the aggregate program, the messages to send to the neighbors to notify them of the current results, and the new device local state;
     \item \textbf{Field}: this class represents the \textbf{computational field}, and it is used by the aggregate constructs to handle this data structure. It contains the local value of the device that is computing and all the messages received by the neighbors. Specifically, the local value is a pair that contains the ID and a map of paths and computed values. Similarly, the messages are composed by the identifier of the neighbor and the same map containing the path and the registered result obtained in the computation corresponding to that path;
     \item \textbf{ID}: a simple identifier which goal is to be able to uniquely recognize different computational device in the aggregate system. Any type of identifier can be used;
-    \item \textbf{Stack}: this is the data structure discussed previously in Section \ref{section:compiler_plugin_solution}, and it is used by the compiler plugin to save the current computational state in order to provide the alignment feature. Through an instance of this class it is possible to retrieve the current path in order to create a computational field or to get the neighboring device values of a specific path;
-    \item \textbf{Path}: the path class has already been introduced in Section \ref{section:compiler_plugin_solution}, and its role is to return an immutable list whenever it is necessary to retrieve the current stack state.
+    \item \textbf{Stack}: this is the data structure discussed previously in Section~\ref{section:compiler_plugin_solution}, and it is used by the compiler plugin to save the current computational state in order to provide the alignment feature. Through an instance of this class it is possible to retrieve the current path in order to create a computational field or to get the neighboring device values of a specific path;
+    \item \textbf{Path}: the path class has already been introduced in Section~\ref{section:compiler_plugin_solution}, and its role is to return an immutable list whenever it is necessary to retrieve the current stack state.
 \end{itemize}
 
 A key aspect of this project is the implementation of the aggregate programming constructs contained in the \textit{AggregateContext} class.
@@ -124,7 +124,7 @@ fun <X> neighbouring(type: X): Field<X> {
     return FieldImpl(Pair(localId, type), messages)
 }
 \end{lstlisting}
-The implementation of the \textbf{neighbouring} function is reported in Listing \ref{code:neighbouring_implementation}. It accepts in input any parameter, which is the value computed by the current device and that is going to be shared with the neighborhood.\newline 
+The implementation of the \textbf{neighbouring} function is reported in Listing~\ref{code:neighbouring_implementation}. It accepts in input any parameter, which is the value computed by the current device and that is going to be shared with the neighborhood.\newline 
 The behavior of this construct consists on:
 \begin{itemize}
     \item Saving the value computed and the current stack in order to send the message to the neighbors;
@@ -180,7 +180,7 @@ fun <X, Y: Any?> sharing(
     }
 }
 \end{lstlisting}
-The last aggregate programming constructs is \textbf{sharing}, and its implementation is shown in Listing \ref{code:sharing_implementation}. As described before in Section \ref{section:aggregate_programming_introduction}, the \textit{sharing} allows to observe the
+The last aggregate programming constructs is \textbf{sharing}, and its implementation is shown in Listing~\ref{code:sharing_implementation}. As described before in Section~\ref{section:aggregate_programming_introduction}, the \textit{sharing} allows to observe the
 neighbors' field, updated the local values and share immediately the updated state in a
 single operation.\newline
 This function accepts two parameters:
@@ -205,7 +205,7 @@ fun <X> aggregate(
     init: AggregateContext.() -> X
 ) = singleCycle(compute = init)
 \end{lstlisting}
-The main entry point of an aggregate program is shown in the code in Listing \ref{code:aggregate_entry_point}.\newline
+The main entry point of an aggregate program is shown in the code in Listing~\ref{code:aggregate_entry_point}.\newline
 This function takes a single parameter called \textit{init}, which is a lambda expression that takes an instance of \textit{AggregateContext} as a receiver object.
 
 \begin{info}[Kotlin lambda and context receiver:]
@@ -214,7 +214,7 @@ This function takes a single parameter called \textit{init}, which is a lambda e
 \end{info}
 
 This means that when the lambda expression \textit{init} is invoked, it has access to the properties and functions of the \textit{AggregateContext} object. By using the aggregate function, it is then possible to define the lambda that is going to be computed, and, by doing so, the aggregate constructs defines in the \textit{AggregateContext} can be used freely.\newline
-This function allows the computation of a single cycle, which means that only one round is going to be performed. This requires the user of the DSL to define how the different devices should communicate. In Section \ref{section:validation} it is going to be presented a different \textit{aggregate} function that allows to run multiple rounds of an aggregate program, used to test the correct behavior during the validation process.
+This function allows the computation of a single cycle, which means that only one round is going to be performed. This requires the user of the DSL to define how the different devices should communicate. In Section~\ref{section:validation} it is going to be presented a different \textit{aggregate} function that allows to run multiple rounds of an aggregate program, used to test the correct behavior during the validation process.
 \begin{lstlisting}[caption={Single cycle \textit{AggregateResult} output}, captionpos=b, language=Kotlin, label={code:single_cycle_return_type}]
 with(AggregateContext(localId, messages, state)) {
     AggregateContext.AggregateResult(
@@ -231,13 +231,13 @@ One important aspect to consider during the development of a DSL is its usabilit
 
 In order to use Collektive, it is necessary to perform a bit of setup:
 \begin{enumerate}
-    \item \textbf{Include the compiler plugin}: since the alignment is crucial for the dsl to work, it is important to include into the Gradle project the custom Gradle plugin created to expose the Kotlin compiler plugin. Whenever a new submodule of Collektive is created, the Gradle plugin can be included as shown in the code in Listing \ref{code:include_gradle_plugin};
+    \item \textbf{Include the compiler plugin}: since the alignment is crucial for the dsl to work, it is important to include into the Gradle project the custom Gradle plugin created to expose the Kotlin compiler plugin. Whenever a new submodule of Collektive is created, the Gradle plugin can be included as shown in the code in Listing~\ref{code:include_gradle_plugin};
 \begin{lstlisting}[caption={Inclusion of the custom Gradle plugin to a local Gradle submodule}, captionpos=b, language=Kotlin, label={code:include_gradle_plugin}]
 plugins {
     id("io.github.elisatronetti.kotlinAlignmentPlugin") version "0.1.0"
 }
 \end{lstlisting}
-    \item \textbf{Include the DSL}: it is also necessary to include the DSL to the project, in order to be able to access all the aggregate programming constructs developed. The code in Listing \ref{code:include_dsl} shows how to include it into a new Collektive submodule.
+    \item \textbf{Include the DSL}: it is also necessary to include the DSL to the project, in order to be able to access all the aggregate programming constructs developed. The code in Listing~\ref{code:include_dsl} shows how to include it into a new Collektive submodule.
 \begin{lstlisting}[caption={Inclusion of the DSL to a local Gradle submodule}, captionpos=b, language=Kotlin, label={code:include_dsl}]
 dependencies {
     implementation(project(path=":dsl"))
@@ -246,7 +246,7 @@ dependencies {
 \end{enumerate}
 
 Once the setup is finished, the DSL is available into the new submodule. By calling the function \textbf{aggregate}, the DSL functions \textbf{neighboring}, \textbf{repeating} and \textbf{sharing} can be used. Moreover, the compiler plugin included provides the correct alignment of the elements.\newline
-For example, the snippet of code in Listing \ref{code:aggregate_program_example} shows an example of usage. The program shares with the neighbors the double of a local number. In this example, the value of the number is hardcoded, but in a real world example, this value might depend on the device environment, which would make different devices have a different value evaluation.
+For example, the snippet of code in Listing~\ref{code:aggregate_program_example} shows an example of usage. The program shares with the neighbors the double of a local number. In this example, the value of the number is hardcoded, but in a real world example, this value might depend on the device environment, which would make different devices have a different value evaluation.
 \begin{lstlisting}[caption={Example of an aggregate program developed with Collektive}, captionpos=b, language=Kotlin, label={code:aggregate_program_example}]
 val double: (Int) -> Int = { it * 2 }
 val testValue: Int = 2
@@ -277,7 +277,7 @@ Since the DSL is developed using Kotlin Multiplatform, the package \textbf{commo
     \caption{Package diagram of Collektive DSL tests}
     \label{fig:common_test_package_diagram}
 \end{figure}
-The organization of the folder \textit{commonTest} is shown in Figure \ref{fig:common_test_package_diagram}. It contains only the \textbf{kotlin} subfolder, since the implementation of platform-specific tests is not required.\newline
+The organization of the folder \textit{commonTest} is shown in Figure~\ref{fig:common_test_package_diagram}. It contains only the \textbf{kotlin} subfolder, since the implementation of platform-specific tests is not required.\newline
 The test are organized in the following folder system:
 \begin{itemize}
     \item \textbf{field}: contains unit testing of the \textit{Field} class and the field manipulation functions, such us the retrieval of the lower comparable value contained in the field;
@@ -287,7 +287,7 @@ The test are organized in the following folder system:
 \end{itemize}
 
 Since testing only one round of an aggregate program would not be enough to ensure the correct system behavior, it has been implemented an infrastructure that allows to test multiple rounds.\newline
-It is necessary to create a class that allows to save the messages and deliver them to other devices. This class is called \textbf{Network}, and its interface is shown in the code in Listing \ref{code:network_interface}.
+It is necessary to create a class that allows to save the messages and deliver them to other devices. This class is called \textbf{Network}, and its interface is shown in the code in Listing~\ref{code:network_interface}.
 \begin{lstlisting}[caption={Network interface to simulate multiple round of an aggregate program in tests}, captionpos=b, language=Kotlin, label={code:network_interface}]
 interface Network {
     fun send(localId: ID, message: Map<Path, *>)
@@ -304,15 +304,15 @@ fun <X> aggregate(
     init: AggregateContext.() -> X
 ) = runUntil(condition, network, compute = init)
 \end{lstlisting}
-The new \textit{aggregate} function is reported in Listing \ref{code:aggregate_entry_point_for_multiple_rounds}, and it accepts the following parameters:
+The new \textit{aggregate} function is reported in Listing~\ref{code:aggregate_entry_point_for_multiple_rounds}, and it accepts the following parameters:
 \begin{enumerate}
     \item \textbf{condition}: it is a lambda expression that takes no arguments and returns a \textit{Boolean} value, which is used to establish whether the computation should run another round or not;
-    \item \textbf{network}: an instance of the \textit{Network} class introduced in the code in Listing \ref{code:network_interface}, which is used to handle sending and receiving messages;
+    \item \textbf{network}: an instance of the \textit{Network} class introduced in the code in Listing~\ref{code:network_interface}, which is used to handle sending and receiving messages;
     \item \textbf{init}: the actual aggregate program, contained in a lambda expression which has as receiver object \textit{AggregateContext}.
 \end{enumerate}
 This \textit{aggregate} function calls \textbf{runUntil},  and in the snippet of code in Listing \ref{code:run_until_body} it is reported the main logic its implementation.\newline
 The purpose of \textit{runUntil} is to repeatedly execute the \textit{compute} lambda expression until the \textit{condition} lambda return \textit{true}.\newline
-In order to do that, every time it is necessary a new iteration, it is computed a \textbf{singleCycle}, which is the same function used in the normal aggregate program execution, which was presented in Section \ref{section:dsl}. A cycle requires the local identifier of the device, it retrieves from the network the message sent by the neighbors, the current local state of the device and the lambda that define the computation.\newline
+In order to do that, every time it is necessary a new iteration, it is computed a \textbf{singleCycle}, which is the same function used in the normal aggregate program execution, which was presented in Section~\ref{section:dsl}. A cycle requires the local identifier of the device, it retrieves from the network the message sent by the neighbors, the current local state of the device and the lambda that define the computation.\newline
 Afterwords, it updates the local state, and it sends the via network the messages regarding the computed values of this round.
 \begin{lstlisting}[caption={Main logic of the \textit{runUntil} function}, captionpos=b, language=Kotlin, label={code:run_until_body}]
 while (condition()) {
@@ -328,4 +328,3 @@ while (condition()) {
 \end{lstlisting}
 
 By using these mechanisms just presented, it is possible to create tests that check the correct interaction between devices, verifying also that the alignment works properly. Moreover, \textit{KotlinTest} allows to run the created test over the different targets of the project, which tests the compatibility of the software over different platforms.
-
