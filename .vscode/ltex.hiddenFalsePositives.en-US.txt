@@ -31,3 +31,4 @@
 {"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QDSLs can be implemented in a number of ways, including as standalone programming languages, as libraries that extend existing programming languages, or as annotations or macros that modify the syntax or behavior of an existing language.\\E$"}
 {"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QDSLs can be used to provide a higher level of abstraction over complex systems or processes, allowing developers to express ideas and concepts in a more concise and intuitive way.\\E$"}
 {"rule":"DT_DT","sentence":"^\\QA context receiver allows the block of code to access the properties and functions of the receiver object using the this keyword, without having to explicitly specify the receiver object in the code.\\E$"}
+{"rule":"QUESTION_MARK","sentence":"^\\QHaving you by my side all along this journey was my biggest treasure.\\E$"}
