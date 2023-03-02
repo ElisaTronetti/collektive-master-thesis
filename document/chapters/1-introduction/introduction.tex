@@ -1,5 +1,5 @@
 \chapter{Introduction}\label{chapter:introduction}
-In the last few decades, there has been a significant technological development in various fields \cite{techological_evolution}.
+In the last few decades, there has been a significant technological development in various fields~\cite{techological_evolution}.
 Computing technology has advanced rapidly, with the introduction of faster and more powerful processors, and the widespread adoption of cloud computing.\newline
 The Internet has also become an integral part of modern life, connecting people and devices across the globe; in addition, the development of faster and more reliable connectivity networks has made it possible to transfer and share data at an even faster rate.\newline
 Mobile technology has grown exponentially, thanks to the adoption of smartphones and other mobile devices.\newline
@@ -13,9 +13,9 @@ In order to face the new complexities it is necessary to rethink and renovate th
 
 \textbf{Aggregate Programming} is a paradigm which aims to address these requirements. It allows for the easy manipulation of data across devices, making it possible to perform operation on the data of distributed systems, in a simple and efficient manner.
 
-This paradigm has been implemented in different programming languages and platforms: for example \textbf{Protelis}, \textbf{Scafi} and \textbf{FCPP}. All of them present strengths, but also weaknesses: in order to address those, a new framework can be a solution.
+This paradigm has been implemented in different programming languages and platforms: for example \textbf{Protelis}~\cite{protelis_introduction}, \textbf{Scafi}~\cite{scafi_introduction} and \textbf{FCPP}~\cite{fcpp_introduction}. All of them present strengths, but also weaknesses: in order to address those, a new framework can be a solution.
 
-In the following sections of this chapter, these themes are described in details, in order to define the goal of this thesis. Specifically Section \ref{section:aggregate_programming_introduction} describes the aggregate programming characteristics and its main complexities, in Section \ref{section:state_of_the_art} are introduced the implementation of the aggregate paradigm that constitute the current state of the art, and Section \ref{section:motivation_goal} presents the motivations behind this work and the goals that aims to achieve.
+In the following sections of this chapter, these themes are described in details, in order to define the goal of this thesis. Specifically Section~\ref{section:aggregate_programming_introduction} describes the aggregate programming characteristics and its main complexities, in Section~\ref{section:state_of_the_art} are introduced the implementation of the aggregate paradigm that constitute the current state of the art, and Section~\ref{section:motivation_goal} presents the motivations behind this work and the goals that aims to achieve.
 
 \section{Context}\label{section:aggregate_programming_introduction}
 In this section it is going to be discussed in details the paradigm of Aggregate Programming, in order to provide the context of its development and an overview about how the paradigm works.
@@ -25,7 +25,7 @@ Since the last few decades have witnessed technological advances, the traditiona
 The systems developed are becoming more and more complex, with requirements that are sometimes difficult to achieve. 
 
 These challenges are enhanced when coming into terms with distributed systems, because there is the need to handle the always increasing number of connected devices, that share and compute data.\newline
-Some relevant complexities are the following \cite{distributed_systems_challenges}:
+Some relevant complexities are the following~\cite{distributed_systems_challenges}:
 \begin{itemize}
     \item \textbf{Scalability}: as the number of devices in a distributed system grows, the coordination becomes increasingly complex. This requires the development of scalable algorithms and protocols that can handle large numbers of devices;
     \item \textbf{Heterogeneity and interoperability}: in a distributed system, devices may be made by different manufacturers and use different protocols, which can make it difficult for them to communicate with each other. The interoperability between heterogeneous devices and systems is a major challenge;
@@ -37,22 +37,22 @@ Some relevant complexities are the following \cite{distributed_systems_challenge
 \end{itemize}
 
 Traditionally, the development of this kind of architectures is focused on the single device, instead of the system as a whole. This means that the developers need to concern about all the aspects just discussed, such as the coordination between devices, creating specific algorithms, but also about security, consistency, fault tolerance, which creates unnecessary complexities during the engineering of a system.\newline
-This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures, such as the one represented in Figure \ref{fig:iot_connected_things}, which shows an example of a real life environment, with numerous heterogeneous devices that needs to communicate with each others.
+This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures, such as the one represented in Figure~\ref{fig:iot_connected_things}, which shows an example of a real life environment, with numerous heterogeneous devices that needs to communicate with each others.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.8]{document/chapters/1-introduction/images/iot_connected_things.png}
-    \caption{Example of a real life environment, where heterogeneous devices have the possibility to communicate with each other wirelessly creating complex distributed systems. \cite{aggregate_programmig_iot}}
+    \caption{Example of a real life environment, where heterogeneous devices have the possibility to communicate with each other wirelessly creating complex distributed systems~\cite{aggregate_programmig_iot}}
     \label{fig:iot_connected_things}
 \end{figure}
 
-Aggregate programming is a paradigm that focuses on the manipulation of complex data structures as a whole, rather than their individual components \cite{aggregate_programmig_iot}. The focus is on what a system is required to do, rather than on how is going to achieve it.\newline
-This paradigm is closely related to the \textbf{field calculus} \cite{field_calculus}, a mathematical framework for modeling and reasoning about distributed systems.\newline
+Aggregate programming is a paradigm that focuses on the manipulation of complex data structures as a whole, rather than their individual components~\cite{aggregate_programmig_iot}. The focus is on what a system is required to do, rather than on how is going to achieve it.\newline
+This paradigm is closely related to the \textbf{field calculus}~\cite{field_calculus}, a mathematical framework for modeling and reasoning about distributed systems.\newline
 Aggregate programming in combination with field calculus, provides a powerful tool for modeling, reasoning, and programming distributed systems. It allows for the efficient manipulation of large and complex data in distributed systems, and facilitates the representation of relationships and interactions between devices. It is a useful approach to adopt for IoT and other distributed systems where scalability, coordination, and security are critical concerns.
 
 The basic concept used in aggregate programming is the \textbf{computational field}, which is a mathematical function that assigns a value to each point in a space, and it is used to represent and manipulate the state of a distributed system.
 
-In order to explain better what a computational field is and how it is used, it is necessary to discuss the assumed computational model \cite{computational_fields_theory}.\newline
+In order to explain better what a computational field is and how it is used, it is necessary to discuss the assumed computational model~\cite{computational_fields_theory}.\newline
 Supposing a program P executed by a network of devices defined by a dynamic neighboring relationship. The computation of P can be analyzed by a local and a global point of view.\newline
 Considering the \textbf{local} perspective, P is computing on a round-based scheme in single devices. A round is executed in the following steps:
 \begin{itemize}
@@ -71,25 +71,25 @@ A computational field is a snapshot of the state of the distributed system's net
 
 The main constructs provided by the field calculus are the following:
 \begin{itemize}
-    \item \textbf{Rep-expression} $rep(e_0)\{(x) \rightarrow e\}$ \newline
+    \item \textbf{Rep-expression} $rep(e_0)\{(x) \rightarrow e\}$\newline
     This is the repeat construct, and it represents the time evolution. This allows the field to change dynamically: if in the previous round the rep expression has not been evaluated, the initialization value is $e_0$, otherwise it is the value obtained in the last computation of rep;
     \item \textbf{Nbr-expression} $nbr\{e\}$\newline
     The neighboring is used to model the device-to-neighbor interaction. In order to do this, it is necessary to construct neighboring fields: in this data structure each event is associated to a value, that is mapped to a neighbor identifier and its last value computed. Using this construct it is possible for a device to understand its surrounding by manipulating the neighboring field obtained;
     \item \textbf{Branching} $if(e_0)\{e_1\} else \{e_2\}$\newline
-    Branching causes a domain restriction, which means that devices compute $e_1$ only in the restricted domain where $e_0$ is true, otherwise they compute $e_2$. This behavior and its consequences will be discussed in details in Section \ref{subsection:alignment};
+    Branching causes a domain restriction, which means that devices compute $e_1$ only in the restricted domain where $e_0$ is true, otherwise they compute $e_2$. This behavior and its consequences will be discussed in details in Section~\ref{subsection:alignment};
     \item \textbf{Function calls} $e(e_1, ..., e_n)$ \newline
     This construct model a function call where $e$ evaluates to a field of function values. 
 \end{itemize}
 
 As previously said, the data structures manipulated are distributed over space, and they evolve over time. These two aspects are handled, in the case of field calculus, by two separate constructs: the evolution in time is manipulated by \textit{rep-expression}, the space management, which provide neighbors interactions, is provided by the \textit{nbr-expression}.\newline
-The use of time evolution and neighbor interaction operators in the traditional way leads to a slowdown in the efficient spread of information. This is due to the separation of state sharing (nbr) and state updates (rep), which requires information received through nbr to be stored through rep in the local memory of the device before it can be passed on during the next execution of nbr \cite{share_operator}. 
+The use of time evolution and neighbor interaction operators in the traditional way leads to a slowdown in the efficient spread of information. This is due to the separation of state sharing (nbr) and state updates (rep), which requires information received through nbr to be stored through rep in the local memory of the device before it can be passed on during the next execution of nbr~\cite{share_operator}. 
 
-It is possible to overcome this limitation by extending the field calculus with a new construct, which has been called \textbf{share} \cite{share_operator}. The share operator allows to observe the neighbors' field, updated the local values and sharing immediately the updated state in a single computation. It is possible to observe the differences between the behavior of the share operator and the combination of rep and nbr in Figure \ref{fig:share_operator_introduction}.
+It is possible to overcome this limitation by extending the field calculus with a new construct, which has been called \textbf{share}~\cite{share_operator}. The share operator allows to observe the neighbors' field, updated the local values and sharing immediately the updated state in a single computation. It is possible to observe the differences between the behavior of the share operator and the combination of rep and nbr in Figure~\ref{fig:share_operator_introduction}.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.8]{document/chapters/1-introduction/images/share_operator_introduction.png}
-    \caption{Comparison between the combination of rep-expression and nbr-expression, and the share construct \cite{share_operator}}
+    \caption{Comparison between the combination of rep-expression and nbr-expression, and the share construct~\cite{share_operator}}
     \label{fig:share_operator_introduction}
 \end{figure}
 
@@ -104,7 +104,7 @@ Taking in consideration this portion of pseudocode, it is possible to identify t
     \item \textbf{$D_{true}$}: this is how the domain is called when $e0$ is true;
     \item \textbf{$D_{false}$}: the name of the domain in the case that the condition $e0$ is false.
 \end{enumerate}
-For example, if a device is in the domain $D_{true}$, the following are the implications \cite{computational_fields_theory}:
+For example, if a device is in the domain $D_{true}$, the following are the implications~\cite{computational_fields_theory}:
 \begin{itemize}
     \item it does not compute $e2$, which is the typical branch behavior;
     \item if $e2$ involves a nbr-expression, this is not going to be evaluated by the considered device. This means that the neighboring devices in $D_{false}$ can not obtain the value of this device for the nbr-expression in $e2$, because it has not been computed. Similarly, the nbr-expression in $e1$ evaluated by this device is not going to be shared from $D_{true}$ to $D_{false}$;
@@ -145,7 +145,7 @@ Concluding, the alignment is provided by keeping track of the computational loca
 The aim of this section is to give an introduction about the state-of-the-art technologies that have been developed in the field of aggregate programming. This overview is going to take in consideration how each implementation works and the choices that led their development, with the goal of depicting a representation of the context in which the project of this thesis is going to be set in.
 
 \subsection{Protelis}\label{subsection:protelis}
-Protelis \cite{protelis_introduction} is a functional language inspired by Proto. It implements the field calculus providing a modern specification language.\newline
+Protelis~\cite{protelis_introduction} is a functional language inspired by Proto. It implements the field calculus providing a modern specification language.\newline
 The architecture is based on Java, and the reasons are multiple:
 \begin{itemize}
     \item Java is portable across different systems and devices;
@@ -169,10 +169,10 @@ share (d <- POSITIVE_INFINITY) {
 }
 \end{lstlisting}
 
-Protelis is very versatile, and it can be used in a wide range of application domains. It is possible to create Protelis modules and execute them in simulations using Alchemist \cite{alchemist}, which is a simulator for pervasive computing and distributed systems.
+Protelis is very versatile, and it can be used in a wide range of application domains. It is possible to create Protelis modules and execute them in simulations using Alchemist~\cite{alchemist}, which is a simulator for pervasive computing and distributed systems.
 
 \subsection{ScaFi}\label{subsection:scafi}
-ScaFi \cite{scafi_introduction} is a programming language and framework for Aggregate Programming. Its name stands for \textit{\textbf{Sca}la \textbf{Fi}elds}, since it is built on top of the Scala programming language, which provides the functional programming paradigm and type-safe features. It also uses the Akka framework for actor-based concurrency and the Java Virtual Machine (JVM) for execution.
+ScaFi~\cite{scafi_introduction} is a programming language and framework for Aggregate Programming. Its name stands for \textit{\textbf{Sca}la \textbf{Fi}elds}, since it is built on top of the Scala programming language, which provides the functional programming paradigm and type-safe features. It also uses the Akka framework for actor-based concurrency and the Java Virtual Machine (JVM) for execution.
 
 ScaFi implements a variant of field calculus, providing a domain-specific language (DSL) and API in order to allow writing, testing and running aggregate programs.
 
@@ -180,10 +180,10 @@ One of the key features of ScaFi is its support for declarative programming, whi
 
 ScaFi aims to provide a high-level and type-safe programming interface for building complex systems.\newline
 The combination of the Scala programming language, the Akka framework, and the JVM provides a strong foundation for building scalable and robust distributed systems.\newline
-In particular, the choice of a JVM-based architecture has the same advantages discussed previously for Protelis (Section \ref{subsection:protelis}), which are mainly portability, low-cost of devices, diffusion and general JVM performances optimizations.
+In particular, the choice of a JVM-based architecture has the same advantages discussed previously for Protelis (Section~\ref{subsection:protelis}), which are mainly portability, low-cost of devices, diffusion and general JVM performances optimizations.
 
 \subsection{FCPP}\label{subsection:fcpp}
-FCPP \cite{fcpp_introduction} is a library in C++14, and it implements the field calculus.\newline
+FCPP~\cite{fcpp_introduction} is a library in C++14, and it implements the field calculus.\newline
 It provides tools for simulation of distributed systems, and its extensible component-based architecture makes it suitable for a wide range of application scenarios.
 
 Differently from Protelis and ScaFi, FCPP does not rely on the Java Virtual Machine (JVM). It is implemented in C++, which choice gives the following advantages:
@@ -214,5 +214,5 @@ These considerations highlight crucial weaknesses of the already existent framew
     \item \textbf{Portability}: refers to the ability of the DSL to run on different platforms and environments, such as different operating systems, cloud platforms, and hardware architectures. Portability helps to ensure that the systems built using the DSL can be easily deployed and run in different environments, which is especially important for systems that need to be deployed in multiple locations or need to scale to meet changing demands.
 \end{itemize}
 
-The goal of this thesis is the study and the implementation of the aggregate programming paradigm, facing the alignment problem discussed in Section \ref{subsection:alignment}, focussing on transparency, minimality and portability.\newline
-The reminder of this thesis is organized as follows. Chapter \ref{chapter:metaprogramming} debates all the possibilities of metaprogramming in Kotlin, and Chapter \ref{chapter:alignment} explains in details the solution of the alignment problem. Chapter \ref{chapter:collektive} describes how the DSL is implemented and shows the end usage result. Finally, Chapter \ref{chapter:conclusion} summarizes the work done in this thesis, adding plans for future development.
+The goal of this thesis is the study and the implementation of the aggregate programming paradigm, facing the alignment problem discussed in Section~\ref{subsection:alignment}, focussing on transparency, minimality and portability.\newline
+The reminder of this thesis is organized as follows. Chapter~\ref{chapter:metaprogramming} debates all the possibilities of metaprogramming in Kotlin, and Chapter~\ref{chapter:alignment} explains in details the solution of the alignment problem. Chapter~\ref{chapter:collektive} describes how the DSL is implemented and shows the end usage result. Finally, Chapter~\ref{chapter:conclusion} summarizes the work done in this thesis, adding plans for future development.
