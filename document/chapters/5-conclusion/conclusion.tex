@@ -2,7 +2,7 @@
 During the work done in this thesis, it was necessary to go into details of a lot of different aspects.
 
 The foundation is the \textbf{aggregate programming} paradigm, which introduced its constructs and the alignment problem.\newline Regarding the alignment, multiple technological alternatives were discussed, and some of them required to dive into the \textbf{metaprogramming}. Specifically, they were analyzed Kotlin annotations and stacktraces, KSP (which stands for Kotlin Symbol Processing) and Kotlin compiler plugins.\newline
-As seen in Chapter \ref{chapter:alignment}, the final solution involved the creation of a Kotlin compiler plugin, that creates a custom stack that is used to align correctly the different devices. The plugin required a deep comprehension of the compiler and the IR used to represent the syntax tree, which was used to manipulate correctly the different elements.\newline
+As seen in Chapter~\ref{chapter:alignment}, the final solution involved the creation of a Kotlin compiler plugin, that creates a custom stack that is used to align correctly the different devices. The plugin required a deep comprehension of the compiler and the IR used to represent the syntax tree, which was used to manipulate correctly the different elements.\newline
 Since the compiler plugin is developed based on an intermediate representation maintained by Kotlin itself, it is expected to not require drastic changes over time.
 
 Collektive project includes the Gradle plugin, the compiler plugin and the DSL, and it lays the foundation of a new aggregate programming tool.
@@ -24,7 +24,7 @@ The validation process verifies the correct system behavior on the different tar
 
 Different improvements can be done in the future:
 \begin{enumerate}
-    \item It is possible to integrate Collektive into \textbf{Alchemist} \cite{alchemist}, which would allow performing more complex computations, which could actually bring out the potential of this project;
-    \item Another possible development is the implementation of a library with self-stabilizing functions, which would capture families of strategies used typically to achieve flexible and resilient decentralized behaviors, in order to hide the complexities by using the field calculus constructs \cite{self_stabilisation_functions};
+    \item It is possible to integrate Collektive into \textbf{Alchemist}~\cite{alchemist}, which would allow performing more complex computations, which could actually bring out the potential of this project;
+    \item Another possible development is the implementation of a library with self-stabilizing functions, which would capture families of strategies used typically to achieve flexible and resilient decentralized behaviors, in order to hide the complexities by using the field calculus constructs~\cite{self_stabilisation_functions};
     \item It would be also necessary in the future to publish the project  to a package repository like Maven Central, JCenter, or a similar repository, allowing others to easily download and use Collektive as a dependency in their own projects.
 \end{enumerate}
