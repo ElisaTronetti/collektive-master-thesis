@@ -1,7 +1,7 @@
 \chapter{Metaprogramming in Kotlin}\label{chapter:metaprogramming}
 A typical program computation can be summarized as follows: it reads data as input, computes that data and generates an output.\newline
 Metaprograms\footnote{\url{https://devopedia.org/metaprogramming}} are able to take as input another program, sometimes even the metaprogram itself, manipulate it and return a new version of it expressing a modified behavior.\newline 
-In Figure \ref{fig:programming_vs_metaprogramming} it is shown this difference with a representation of a simple program which transforms the input data, and a metaprogram which, on the other hand, modifies an entire input program generating an output program.
+In Figure~\ref{fig:programming_vs_metaprogramming} it is shown this difference with a representation of a simple program which transforms the input data, and a metaprogram which, on the other hand, modifies an entire input program generating an output program.
 \begin{figure}[ht!]
     \centering
     \subfloat[\centering Simple program]{{\includegraphics[scale=1.3]{document/chapters/2-metaprogramming/images/programming_vs_metaprogramming-programming.pdf} }}
@@ -47,14 +47,14 @@ For example, this is a possible custom annotation that uses meta-annotation:
 @Retention(AnnotationRetention.RUNTIME)
 annotation class MyAnnotation
 \end{lstlisting}
-In this snippet of code in Listing \ref{code:kotlin_annotations_customization}, the \textbf{@Target} annotation specifies the elements that the annotation can be applied to, in this case either classes or functions. The \textbf{@Retention} annotation refers to the retention policy, which determines that the annotation is available at runtime.
+In this snippet of code in Listing~\ref{code:kotlin_annotations_customization}, the \textbf{@Target} annotation specifies the elements that the annotation can be applied to, in this case either classes or functions. The \textbf{@Retention} annotation refers to the retention policy, which determines that the annotation is available at runtime.
 
 Annotations can be used to provide metadata, such as the purpose of a function, the intended usage of a class, or the preferred behavior of a method. One possible use case is to use annotations to specify that a certain method should only be called on a background thread, or that a certain class is serializable.
 
 Another feature provided by annotations, which is considered metaprogramming, is the possibility to use them to automate tasks, such as code generation. For example, annotations can be used to automatically generate code for serializing and deserializing objects.
 
 It is possible to use the annotation in the code by placing the \textbf{@} (at) symbol, followed by the annotation type before the element that is going to be annotated, such as a class, function, or property.\newline
-The following snippet of code shows how to actually use a custom annotation, specifically the one created in Listing \ref{code:kotlin_annotations_customization}:
+The following snippet of code shows how to actually use a custom annotation, specifically the one created in Listing~\ref{code:kotlin_annotations_customization}:
 \begin{lstlisting}[caption={Example of usage of a custom annotation in Kotlin}, language=Kotlin, captionpos=b, label={code:kotlin_annotations_usage}]
 @MyAnnotation
 class MyClass
@@ -73,7 +73,7 @@ KSP has been developed as an alternative technology to \textbf{kapt}\footnote{\u
 In comparison to kapt, annotation processors that utilize KSP can be executed two times faster.
 
 Kotlin Symbol Processing is a feature of the Kotlin compiler that allows to manipulate the code at compile time by processing the symbols contained in the code. As a consequence of that, it is possible to write metaprogramming code that analyzes, transforms, and generates other code, without the need to access the code at runtime.\newline
-KSP reads the source code, generates new modules, and during the compilation the Kotlin compiler uses the original code and the generated source without distinctions, as it is shown in Figure \ref{fig:ksp_diagram}, creating one executing program.
+KSP reads the source code, generates new modules, and during the compilation the Kotlin compiler uses the original code and the generated source without distinctions, as it is shown in Figure~\ref{fig:ksp_diagram}, creating one executing program.
 
 \begin{figure}[!ht]
     \centering
@@ -112,11 +112,11 @@ KSFile
         //contains inner classes, functions, properties
         declarations: List<KSDeclaration>    
 \end{lstlisting}
-The Listing \ref{code:ksp_source_code}\footref{ksp_footnote} shows the data structure that is accessible using KSP. Specifically, in this code it is contained a class declaration (\textit{KSClassDeclaration}), and it is possible to get its name, type, parameters, inner declarations, and so on.\newline
+The Listing~\ref{code:ksp_source_code}\footref{ksp_footnote} shows the data structure that is accessible using KSP. Specifically, in this code it is contained a class declaration (\textit{KSClassDeclaration}), and it is possible to get its name, type, parameters, inner declarations, and so on.\newline
 This representation allows to have a complete overview of the code structure.
 
 KSP expects two elements to be implemented: the \textbf{SymbolProcessorProvider} and the \textbf{SymbolProcessor}.\newline
-The \textit{SymbolProcessorProvider} interface is defined like shown in Listing \ref{code:symbol_processor_provider_interface}\footref{ksp_footnote}.
+The \textit{SymbolProcessorProvider} interface is defined like shown in Listing~\ref{code:symbol_processor_provider_interface}\footref{ksp_footnote}.
 \begin{lstlisting}[caption={SymbolProcessorProvider interface}, language=Kotlin, captionpos=b, label={code:symbol_processor_provider_interface}]
 interface SymbolProcessorProvider {
     fun create(environment: SymbolProcessorEnvironment):
@@ -125,7 +125,7 @@ interface SymbolProcessorProvider {
 \end{lstlisting}
 The \textit{create} function is invoked when KSP creates an instance of the \textit{SymbolProcessor}: this means that, without the \textit{SymbolProcessorProvider}, it would not be possible to instantiate a \textit{SymbolProcessor}. The \textit{SymbolProcessorProvider} is separated from the \textit{SymbolProcessor} to allow more freedom during the development.
 
-In Listing \ref{code:symbol_processor_interface}\footref{ksp_footnote} is shown the interface of the \textit{SymbolProcessor}.
+In Listing~\ref{code:symbol_processor_interface}\footref{ksp_footnote} is shown the interface of the \textit{SymbolProcessor}.
 \begin{lstlisting}[caption={SymbolProcessor interface}, language=Kotlin, captionpos=b, label={code:symbol_processor_interface}]
 interface SymbolProcessor {
     fun process(resolver: Resolver): List<KSAnnotated>
@@ -134,7 +134,7 @@ interface SymbolProcessor {
 The only function that needs to be overridden is \textit{process}, which is typically used to read files and pass the elements to the visitors.\newline
 The \textit{Resolver} is the entry point of the functionalities provided by KSP: it can be used, for example, to get all the files of the source code, the symbols with annotation, a class, or a function declaration by name.\newline
 As many other compiler related APIs, KSP supports the \textbf{visitor pattern}, allowing to examine each element in an object-oriented way.\newline
-For example, the code in Listing \ref{code:ksp_visitor}\footref{ksp_footnote} reports an implementation of a visitor that inspects the declarations and collects the function names in a list.
+For example, the code in Listing~\ref{code:ksp_visitor}\footref{ksp_footnote} reports an implementation of a visitor that inspects the declarations and collects the function names in a list.
 \begin{lstlisting}[caption={Visitor that collects function declarations}, language=Kotlin, captionpos=b, label={code:ksp_visitor}]
 class FindFunctionsVisitor: KSTopDownVisitor<Unit, Unit>() {
     override fun visitFunctionDeclaration(
@@ -155,7 +155,7 @@ On the other hand, since the goal of KSP is to be a simple solution for common p
 \end{itemize}
 
 \subsection{Kotlin compiler plugins}\label{section:compiler_plugin_explanation}
-Kotlin compiler plugins \cite{compiler_plugins_jetbrains} are a way to extend the functionalities of the Kotlin compiler by adding custom processing to the compilation. This means that the compiler plugin code runs at compile-time, and, since this is a feature of \textit{kotlinc}, it only works on Kotlin source code.
+Kotlin compiler plugins~\cite{compiler_plugins_jetbrains} are a way to extend the functionalities of the Kotlin compiler by adding custom processing to the compilation. This means that the compiler plugin code runs at compile-time, and, since this is a feature of \textit{kotlinc}, it only works on Kotlin source code.
 
 Compiler plugins allow automating tasks and enforce coding standards. For example, they can be used to generate boilerplate code, such as accessor methods, or to enforce specific naming conventions or coding styles. Compiler plugins can also be used to perform code analysis and modification, such as adding custom checks and warnings, or refactoring the code automatically.
 
@@ -172,12 +172,12 @@ Moreover, compiler plugins can slow down the compilation process and make it mor
 
 Finally, another aspect that must be taken in consideration is the fact that the Kotlin compiler API is not documented. This means that working with it and understanding the function's behaviors is not an easy task, and it requires even more time.
 
-A Kotlin compiler plugin architecture is organized as shown in Figure \ref{fig:kotlin_compiler_plugin_architecture}.
+A Kotlin compiler plugin architecture is organized as shown in Figure~\ref{fig:kotlin_compiler_plugin_architecture}.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=1]{document/chapters/2-metaprogramming/images/kotlin_compiler_plugin_architecture.pdf}
-    \caption{The Kotlin compiler plugin architecture \cite{compiler_plugins_jetbrains}}
+    \caption{The Kotlin compiler plugin architecture~\cite{compiler_plugins_jetbrains}}
     \label{fig:kotlin_compiler_plugin_architecture}
 \end{figure}
 
@@ -197,7 +197,7 @@ The \textbf{Gradle module} is a wrapper for the Kotlin module, and it is an entr
 \end{itemize}
 
 Since the components of a plugin architecture have been explained from a general point of view, it is now necessary to explain each element more in depth.\newline
-Specifically, the following sections are organized as follows: Section \ref{section:gradle_plugin} introduces how to create a Gradle plugin necessary to use a compiler plugin, Section \ref{section:kotlin_ir} goes into details of the \textbf{IR} (\textbf{I}ntermediate \textbf{R}epresentation) that is the foundation that makes a compiler plugin possible, in Section \ref{section:compiler_plugin_basics} it is explained how to inspect and navigate Kotlin IR, in Section \ref{section:compiler_plugin_advaced} are covered advanced features, such as how to build new elements and how to transform the Kotlin IR, and Section \ref{section:compiler_plugin_example} brings all together, showing the highlights of a working example of a simple Kotlin compiler plugin.
+Specifically, the following sections are organized as follows: Section~\ref{section:gradle_plugin} introduces how to create a Gradle plugin necessary to use a compiler plugin, Section~\ref{section:kotlin_ir} goes into details of the \textbf{IR} (\textbf{I}ntermediate \textbf{R}epresentation) that is the foundation that makes a compiler plugin possible, in Section~\ref{section:compiler_plugin_basics} it is explained how to inspect and navigate Kotlin IR, in Section~\ref{section:compiler_plugin_advaced} are covered advanced features, such as how to build new elements and how to transform the Kotlin IR, and Section~\ref{section:compiler_plugin_example} brings all together, showing the highlights of a working example of a simple Kotlin compiler plugin.
 
 \subsubsection{Gradle Plugin}\label{section:gradle_plugin}
 A Gradle plugin\footnote{\url{https://docs.gradle.org/current/userguide/custom_plugins.html}} is typically used to handle a set of tasks that extend the project's capabilities.\newline
@@ -217,9 +217,9 @@ buildConfig {
     ...
 }
 \end{lstlisting}
-The code in Listing \ref{code:build_config_example} shows how to create references to a subproject called \textit{compiler-plugin} and how to create the identification string, which is the concatenation of the project group and name. Similarly, it is possible to reference the name, the version and the project group of the compiler plugin, creating a unique reference to its artifact.
+The code in Listing~\ref{code:build_config_example} shows how to create references to a subproject called \textit{compiler-plugin} and how to create the identification string, which is the concatenation of the project group and name. Similarly, it is possible to reference the name, the version and the project group of the compiler plugin, creating a unique reference to its artifact.
 
-After creating the configuration just presented, it is possible to create the actual Gradle plugin, such as in Listing \ref{code:gradle_plugin_example}. Gradle exposes an interface that is specifically created for Kotlin compiler plugins, which is called \textbf{KotlinCompilerPluginSupportPlugin}.
+After creating the configuration just presented, it is possible to create the actual Gradle plugin, such as in Listing~\ref{code:gradle_plugin_example}. Gradle exposes an interface that is specifically created for Kotlin compiler plugins, which is called \textbf{KotlinCompilerPluginSupportPlugin}.
 \begin{lstlisting}[caption={Gradle plugin class example}, language=Kotlin, captionpos=b, label={code:gradle_plugin_example}]
 class GradlePlugin : KotlinCompilerPluginSupportPlugin {
     ...
@@ -242,10 +242,10 @@ When the Kotlin/Native backend was first developed, it was based on a new infras
     \label{fig:kotlin_compiler_plugin_ir_representation}
 \end{figure}
 
-Currently, the structure of the compiler can be represented as in Figure \ref{fig:kotlin_compiler_plugin_ir_representation}\footnote{\url{https://twitter.com/kotlin/status/1453741469148270593/photo/1}}: the frontend takes as input source file written in Kotlin, and then, each backend creates a syntax tree with all the information, using the IR representation. Only after this step, the code is transformed in the specific bytecode of each backend, which is different for each target.
+Currently, the structure of the compiler can be represented as in Figure~\ref{fig:kotlin_compiler_plugin_ir_representation}\footnote{\url{https://twitter.com/kotlin/status/1453741469148270593/photo/1}}: the frontend takes as input source file written in Kotlin, and then, each backend creates a syntax tree with all the information, using the IR representation. Only after this step, the code is transformed in the specific bytecode of each backend, which is different for each target.
 
 The IR representation is an \textbf{abstract syntax tree} (\textbf{AST}). An AST\footnote{\url{https://dev.to/balapriya/abstract-syntax-tree-ast-explained-in-plain-english-1h38}} is a data structure that represents the abstract syntactic structure of a program. It is a tree representation of the source code, where each node in the tree corresponds to a construct in the source code. The nodes in the tree contain information about the construct, such as its type, location, and properties.\newline
-For example, considering the simple snippet of pseudocode in Listing \ref{code:ast_pseudocode}.
+For example, considering the simple snippet of pseudocode in Listing~\ref{code:ast_pseudocode}.
 \begin{lstlisting}[caption={Pseudocode of a simple assignment and expression}, language=Kotlin, captionpos=b, label={code:ast_pseudocode}]
 if (a < b) {
     x = a + b
@@ -253,11 +253,11 @@ if (a < b) {
     x = a - b
 }
 \end{lstlisting}
-The AST that is generated from the code structure of Listing \ref{code:ast_pseudocode} is shown in Figure \ref{fig:ast_pseudocode_example}.
+The AST that is generated from the code structure of Listing~\ref{code:ast_pseudocode} is shown in Figure~\ref{fig:ast_pseudocode_example}.
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.8]{document/chapters/2-metaprogramming/images/ast_pseudocode_example.pdf}
-    \caption{The Abstract Syntax Tree of the source code in Listing \ref{code:ast_pseudocode}}
+    \caption{The Abstract Syntax Tree of the source code in Listing~\ref{code:ast_pseudocode}}
     \label{fig:ast_pseudocode_example}
 \end{figure}
 Each node in the tree describes a construct in the source code. The root node represents the assignment of the result of the \textit{branch} expression to the variable \textit{x}. The \textit{branch} defines the conditional construct, and it has three children: the \textit{condition}, the \textit{if-body} and the \textit{else-body}. Each of these blocks is represented by a separate subtree, with \textit{<}, \textit{+} and \textit{-} nodes representing the comparison, addition and subtraction operations, respectively. The nodes \textit{a} and \textit{b} are the variables, that are used as operands of these operations.\newline
@@ -289,8 +289,8 @@ fun main() {
 }
 \end{lstlisting}
 
-This is the complete Kotlin IR syntax tree that is generated from the source code of Listing \ref{code:kotlin_for_ir_tree}:
-\begin{lstlisting}[caption={Kotlin IR tree of Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, basicstyle=\small, label={code:kotlin_ir_tree_example}]
+This is the complete Kotlin IR syntax tree that is generated from the source code of Listing~\ref{code:kotlin_for_ir_tree}:
+\begin{lstlisting}[caption={Kotlin IR tree of Listing~\ref{code:kotlin_for_ir_tree}}, captionpos=b, basicstyle=\small, label={code:kotlin_ir_tree_example}]
 FILE fqName:<root> fileName:Main.kt
 FUN name:main visibility:public modality:FINAL <> () returnType:kotlin.Unit
  BLOCK_BODY
@@ -299,7 +299,7 @@ FUN name:main visibility:public modality:FINAL <> () returnType:kotlin.Unit
 \end{lstlisting}
 The indentation of the IR allows to understand the relationship between each node, increasing its readability. In order to provide more clarity, they are going to be analyzed the most significant nodes of the IR.\newline
 Starting from the following node:
-\begin{lstlisting}[caption={Kotlin IR tree of the main function in Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_example}]
+\begin{lstlisting}[caption={Kotlin IR tree of the main function in Listing~\ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_example}]
 FUN name:main visibility:public modality:FINAL <> () returnType:kotlin.Unit
 \end{lstlisting}
 This represents the definition of the \textit{main()} function and the IR tree representation provides a lot of information about it:
@@ -314,17 +314,17 @@ This represents the definition of the \textit{main()} function and the IR tree r
 \end{itemize}
 
 The child of the function IR element is the initialization of its body, which is declared like this:
-\begin{lstlisting}[caption={Kotlin IR tree of the body block of the main function in Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_body_init_example}]
+\begin{lstlisting}[caption={Kotlin IR tree of the body block of the main function in Listing~\ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_body_init_example}]
 BLOCK_BODY
 \end{lstlisting}
-When analyzing the IR tree, two different keywords are going to be found for bodies. The first one is \textbf{BLOCK\_BODY}, which is used in this specific case in Listing \ref{code:kotlin_ir_tree_main_body_init_example}: this means that the body is expected to have multiple statements. The second one is \textbf{EXPRESSION\_BODY}, which is indicated when the body holds a single expression, such as a variable assignment.
+When analyzing the IR tree, two different keywords are going to be found for bodies. The first one is \textbf{BLOCK\_BODY}, which is used in this specific case in Listing~\ref{code:kotlin_ir_tree_main_body_init_example}: this means that the body is expected to have multiple statements. The second one is \textbf{EXPRESSION\_BODY}, which is indicated when the body holds a single expression, such as a variable assignment.
 
-Finally, the Listing \ref{code:kotlin_ir_tree_main_body_example} shows the \textit{println()} function call and its parameter:
-\begin{lstlisting}[caption={Kotlin IR tree of the body block content of the main function in Listing \ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_body_example}]
+Finally, the Listing~\ref{code:kotlin_ir_tree_main_body_example} shows the \textit{println()} function call and its parameter:
+\begin{lstlisting}[caption={Kotlin IR tree of the body block content of the main function in Listing~\ref{code:kotlin_for_ir_tree}}, captionpos=b, label={code:kotlin_ir_tree_main_body_example}]
 CALL `public final fun println (message: kotlin.String): kotlin.Unit [external] declared in kotlin.io' type=kotlin.Unit origin=null
   message: CONST String type=kotlin.String value="test"
 \end{lstlisting}
-Similarly to the \textit{FUN} keyword, \textbf{CALL} is used to indicate that a function is being called. Specifically, it declares the call of the \textit{println} function, alongside with information about where to find its declaration, which is in this case in \textit{kotlin.io}, since the print is a Kotlin library function. Moreover, the function has one parameter, which is called message. The second line in Listing \ref{code:kotlin_ir_tree_main_body_example} gives all the details about it: it is a constant, defined by the \textbf{CONST} keyword, it is a \textit{String} and its value is \textit{test}.
+Similarly to the \textit{FUN} keyword, \textbf{CALL} is used to indicate that a function is being called. Specifically, it declares the call of the \textit{println} function, alongside with information about where to find its declaration, which is in this case in \textit{kotlin.io}, since the print is a Kotlin library function. Moreover, the function has one parameter, which is called message. The second line in Listing~\ref{code:kotlin_ir_tree_main_body_example} gives all the details about it: it is a constant, defined by the \textbf{CONST} keyword, it is a \textit{String} and its value is \textit{test}.
 
 Another basic feature that needs to be explained is how to actually visit the IR syntax tree from the code point of view. One key concept that is necessary to cover before diving into it is the \textbf{visitor design pattern}\footnote{\url{https://www.baeldung.com/java-visitor-pattern}\label{visitor_pattern_footnote}}.
 \begin{figure}[!ht]
@@ -334,16 +334,16 @@ Another basic feature that needs to be explained is how to actually visit the IR
     \label{fig:visitor_uml}
 \end{figure}
 This is a behavioral design pattern which purpose is to add new operations to existing classes without modifying the classes themselves.\newline
-The operation defined can be performed on elements of an object structure, which is defined in a separate class, called the \textbf{Visitor}, that implements the desired behavior. The elements of the object structure are updated to accept the Visitor instance, allowing it to traverse the structure and perform the operation on each element. The structure of the design pattern just described is reported in the UML in Figure \ref{fig:visitor_uml}\footref{visitor_pattern_footnote}.
+The operation defined can be performed on elements of an object structure, which is defined in a separate class, called the \textbf{Visitor}, that implements the desired behavior. The elements of the object structure are updated to accept the Visitor instance, allowing it to traverse the structure and perform the operation on each element. The structure of the design pattern just described is reported in the UML in Figure~\ref{fig:visitor_uml}\footref{visitor_pattern_footnote}.
 
-In the context of the Kotlin compiler, the visitor pattern is applied as in Figure \ref{fig:visitor_uml_kotlin_compiler}. The \textit{IrElement} interface represents the object structure that needs to be visited. As anticipated previously in this section, this interface is implemented by all the node of the IR syntax tree, which means that every element can be visited through this pattern.\newline
+In the context of the Kotlin compiler, the visitor pattern is applied as in Figure~\ref{fig:visitor_uml_kotlin_compiler}. The \textit{IrElement} interface represents the object structure that needs to be visited. As anticipated previously in this section, this interface is implemented by all the node of the IR syntax tree, which means that every element can be visited through this pattern.\newline
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.77]{document/chapters/2-metaprogramming/images/visitor_uml_kotlin_compiler.pdf}
     \caption{The Visitor design pattern UML applied in the Kotlin compiler plugin context in order to visit the IR syntax tree}
     \label{fig:visitor_uml_kotlin_compiler}
 \end{figure}
-For example, the two implementations of \textit{IrElement}, shown in Figure \ref{fig:visitor_uml_kotlin_compiler}, are \textit{IrClass} and \textit{IrFunction}, which represents class declarations and function declarations respectively. A lot of other different elements that are not specified in the UML exists; this omission is done in order to increase its readability. Examples of the omitted elements are: \textit{IrConst} for constant, \textit{IrCall} for function calls, \textit{IrBranch} that includes if-else blocks, etc.\newline
+For example, the two implementations of \textit{IrElement}, shown in Figure~\ref{fig:visitor_uml_kotlin_compiler}, are \textit{IrClass} and \textit{IrFunction}, which represents class declarations and function declarations respectively. A lot of other different elements that are not specified in the UML exists; this omission is done in order to increase its readability. Examples of the omitted elements are: \textit{IrConst} for constant, \textit{IrCall} for function calls, \textit{IrBranch} that includes if-else blocks, etc.\newline
 The \textit{IrElement} has two functions that enable the visitor pattern that have two completely different behaviors:
 \begin{itemize}
     \item \textbf{accept}: it allows the visit of only the current element. For example, if trying to visit a class, only the class element is going to be analyzed and returned;
@@ -351,7 +351,7 @@ The \textit{IrElement} has two functions that enable the visitor pattern that ha
 \end{itemize}
 Both functions possess two parameters, where the first one is the \textit{IrElementVisitor}, the second one is \textit{data}, which is used to pass information about the context to the IR visitor.\newline
 The return type in the \textit{accept} function can be used to get as output the elements visited, and it is useful, for example, when the navigation aims to find a specific element. Otherwise, the return can just be set as \textit{Unit}.\newline
-In the case of \textit{acceptChildren}, its return type is \textit{Unit}, which means that when visiting recursively the children of an element, no data can be returned. Whenever it is necessary to collect information from a recursive visitor, it is usually created a builder object that can be updated and then returned. In Listing \ref{code:accept_children_collect_example}\footnote{\url{https://blog.bnorm.dev/writing-your-second-compiler-plugin-part-3}} the role of the \textit{collect} function is to create a mutable list that is updated on the visit of each child of the root element.
+In the case of \textit{acceptChildren}, its return type is \textit{Unit}, which means that when visiting recursively the children of an element, no data can be returned. Whenever it is necessary to collect information from a recursive visitor, it is usually created a builder object that can be updated and then returned. In Listing~\ref{code:accept_children_collect_example}\footnote{\url{https://blog.bnorm.dev/writing-your-second-compiler-plugin-part-3}} the role of the \textit{collect} function is to create a mutable list that is updated on the visit of each child of the root element.
 \begin{lstlisting}[caption={Example of a custom visitor and a function that supports the collection of elements}, captionpos=b, language=Kotlin, label={code:accept_children_collect_example}]
 class CustomVisitor(
   private val elements: MutableList<IrElement>
@@ -367,7 +367,7 @@ fun collect(element: IrElement) = buildList<IrElement> {
 }
 \end{lstlisting}
 
-As previously said, the \textbf{IrElementVisitor} is the interface that has to be implemented in order to create a custom visitor. It requires two type parameters: the first one indicates the return type of the visit functions, the second one the type of the data that can be used to pass contextual information. The interface provides a lot of different visit methods, that can be used based on the wanted behavior. In Figure \ref{fig:visitor_uml_kotlin_compiler} are reported \textit{visitFunction} and \textit{visitClass}, but other examples are \textit{visitBody}, \textit{visitVariable}, \textit{visitDeclaration}, etc.
+As previously said, the \textbf{IrElementVisitor} is the interface that has to be implemented in order to create a custom visitor. It requires two type parameters: the first one indicates the return type of the visit functions, the second one the type of the data that can be used to pass contextual information. The interface provides a lot of different visit methods, that can be used based on the wanted behavior. In Figure~\ref{fig:visitor_uml_kotlin_compiler} are reported \textit{visitFunction} and \textit{visitClass}, but other examples are \textit{visitBody}, \textit{visitVariable}, \textit{visitDeclaration}, etc.
 
 The \textbf{IrElement} and the \textbf{IrElementVisitor}, with the understanding of the IR syntax tree, allows creating basic Kotlin compiler plugins, without modifying the existing source code.
 
@@ -375,7 +375,7 @@ The \textbf{IrElement} and the \textbf{IrElementVisitor}, with the understanding
 There are two advanced aspects that need to be introduced, which are the building of new IR elements and the transformation of the IR syntax tree.
 
 In order to understand how to build IR elements, it is important to keep in mind that the Kotlin compiler entry point provides the \textbf{IrPluginContext}, which contains the information about the context of the plugin. This is a critical element because it can be used to obtain an instance of the \textbf{IrFactory}, which is a factory that can create IR elements, such as \textit{IrClass} for creating new classes or \textit{IrSimpleFunction} used for creating functions.\newline
-For example, the code in Listing \ref{code:build_main_function_with_factory}\footnote{\url{https://blog.bnorm.dev/writing-your-second-compiler-plugin-part-4}} shows how to use the factory to create a function called \textit{main} and that does not have a return type:
+For example, the code in Listing~\ref{code:build_main_function_with_factory}\footnote{\url{https://blog.bnorm.dev/writing-your-second-compiler-plugin-part-4}} shows how to use the factory to create a function called \textit{main} and that does not have a return type:
 \begin{lstlisting}[caption={Main function IR building by using the IrFactory}, captionpos=b, language=Kotlin, label={code:build_main_function_with_factory}]
 pluginContext.irFactory.buildFun {
     name = Name.identifier("main")
@@ -387,7 +387,7 @@ pluginContext.irFactory.buildFun {
 
 The factory can only be used to create new element declarations, so it is necessary another way in order to build statements and expressions. This is provided by the \textbf{IrBuilder} and by the \textbf{IrBuilderWithScope}, which is really convenient when, for example, a new statement is created in a specific function scope.
 
-The transformation of the IR can be done similarly to the navigation seen in Section \ref{section:compiler_plugin_basics}, but it is performed by another interface that extends \textit{IrElementVisitor}, which is called \textbf{IrElementTransformer}. The UML that shows the organization of the interfaces in this context can be seen in Figure \ref{fig:transformer_uml_kotlin_compiler}.\newline
+The transformation of the IR can be done similarly to the navigation seen in Section~\ref{section:compiler_plugin_basics}, but it is performed by another interface that extends \textit{IrElementVisitor}, which is called \textbf{IrElementTransformer}. The UML that shows the organization of the interfaces in this context can be seen in Figure~\ref{fig:transformer_uml_kotlin_compiler}.\newline
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.69]{document/chapters/2-metaprogramming/images/transformer_uml_kotlin_compiler.pdf}
@@ -416,13 +416,13 @@ fun main() {
     test()
 }
 \end{lstlisting}
-When executing the code in Listing \ref{code:main_compiler_plugin_example}, this is the result shown in the console:
-\begin{lstlisting}[caption={Output of the execution of Listing \ref{code:main_compiler_plugin_example} with the application of the compiler plugin created as an example}, captionpos=b, language=Kotlin, label={code:output_main_compiler_plugin_example}]
+When executing the code in Listing~\ref{code:main_compiler_plugin_example}, this is the result shown in the console:
+\begin{lstlisting}[caption={Output of the execution of Listing~\ref{code:main_compiler_plugin_example} with the application of the compiler plugin created as an example}, captionpos=b, language=Kotlin, label={code:output_main_compiler_plugin_example}]
 main declaration
 test declaration
 Hello!
 \end{lstlisting}
-The goal of this compiler plugin is to modify at compile time every function declaration, inserting a print of the function name. This means that after the compilation, the code in Listing \ref{code:main_compiler_plugin_example} is going to be transformed as in the code in Listing \ref{code:main_compiler_plugin_example_after_compilation}. The arrows added are used to identify the lines of code created by the compiler plugin.
+The goal of this compiler plugin is to modify at compile time every function declaration, inserting a print of the function name. This means that after the compilation, the code in Listing~\ref{code:main_compiler_plugin_example} is going to be transformed as in the code in Listing~\ref{code:main_compiler_plugin_example_after_compilation}. The arrows added are used to identify the lines of code created by the compiler plugin.
 \begin{lstlisting}[caption={Kotlin code with the modification of the compiler plugin created as an example}, captionpos=b, language=Kotlin, escapechar=\$, label={code:main_compiler_plugin_example_after_compilation}]
 fun test() {
     -> println("test declaration")
@@ -436,7 +436,7 @@ fun main() {
 \end{lstlisting}
 One thing to notice is that, typically, the functions' names are not passed from compilation time to run time, this information would be usually lost. By the intervention of the plugin, that information is not lost, but it is inserted in the print function and shown to the user.
 
-Moreover, the module of the project that contains the code that is going to use the compiler plugin is a \textbf{Kotlin Multiplatform} project. The reasons behind this choice are going to be explained afterwards in Section \ref{section:technology_choices}, but this example is also a \textbf{proof of concept} of the feasibility of creating Kotlin compiler plugins for multiplatform projects.
+Moreover, the module of the project that contains the code that is going to use the compiler plugin is a \textbf{Kotlin Multiplatform} project. The reasons behind this choice are going to be explained afterwards in Section~\ref{section:technology_choices}, but this example is also a \textbf{proof of concept} of the feasibility of creating Kotlin compiler plugins for multiplatform projects.
 
 This project example is composed by three submodules:
 \begin{itemize}
@@ -447,7 +447,7 @@ This project example is composed by three submodules:
 
 Since the Gradle module is just based on mandatory  but standard settings, it is only going to be analyzed the compiler module.\newline
 The first component of the compiler plugin is the \textbf{CommandLineProcessor}, which sets one command line option: when including the plugin to a project, it can be specified a boolean parameter that enables or disable the plugin, making it easier to use.\newline
-The creation of this parameter consists on building an option using the \textit{CliOption} class, which is used to inform the compiler plugin what parameters to expect and what is their role. The option created for this example is shown in the code in Listing \ref{code:cli_option_example}.
+The creation of this parameter consists on building an option using the \textit{CliOption} class, which is used to inform the compiler plugin what parameters to expect and what is their role. The option created for this example is shown in the code in Listing~\ref{code:cli_option_example}.
 \begin{lstlisting}[caption={Creation of compiler option that enables or disables the plugin}, captionpos=b, language=Kotlin, label={code:cli_option_example}]
 CliOption(
     optionName = ARG_ENABLED,
@@ -471,7 +471,7 @@ override fun registerProjectComponents(
     }
 }
 \end{lstlisting}
-In Listing \ref{code:component_registrar_example} it is shown how to register the extension that is going to generate code. The \textbf{IrGenerationExtension} implemented method is \textit{generate}, and it is shown in Listing \ref{code:generation_extension_example}.
+In Listing~\ref{code:component_registrar_example} it is shown how to register the extension that is going to generate code. The \textbf{IrGenerationExtension} implemented method is \textit{generate}, and it is shown in Listing~\ref{code:generation_extension_example}.
 \begin{lstlisting}[caption={Example of \textit{IrGenerationExtension} implementation of methos generate}, captionpos=b, language=Kotlin, label={code:generation_extension_example}]
 override fun generate(
     moduleFragment: IrModuleFragment,
@@ -521,7 +521,7 @@ private fun irDebug(
         }
 }
 \end{lstlisting}
-The implementation \textit{irDebug} is shown in Listing \ref{code:ir_debug_example}, and it is used to add a \textit{irEnter} element and then all the statements in the body of the function are inserted again in the function body, in order to maintain the previous behavior. The body is recreated and returned by using the \textit{DeclarationIrBuilder}.
+The implementation \textit{irDebug} is shown in Listing~\ref{code:ir_debug_example}, and it is used to add a \textit{irEnter} element and then all the statements in the body of the function are inserted again in the function body, in order to maintain the previous behavior. The body is recreated and returned by using the \textit{DeclarationIrBuilder}.
 
 \begin{lstlisting}[caption={Example of creation of a new function call and adding to it arguments}, captionpos=b, language=Kotlin, label={code:ir_enter_example}]
 private fun IrBuilderWithScope.irEnter(
@@ -535,7 +535,7 @@ private fun IrBuilderWithScope.irEnter(
     }
 }
 \end{lstlisting}
-In the code in Listing \ref{code:ir_enter_example} it is shown the extension function \textit{irEnter}, which is used to build a new \textit{IrCall}. The \textit{IrCall} aims to create a new function call, specifically of the print function retrieved previously. It also adds a new argument, which is a string of the name of the function it is going to be created into.
+In the code in Listing~\ref{code:ir_enter_example} it is shown the extension function \textit{irEnter}, which is used to build a new \textit{IrCall}. The \textit{IrCall} aims to create a new function call, specifically of the print function retrieved previously. It also adds a new argument, which is a string of the name of the function it is going to be created into.
 
 In conclusion, this transformation, applied to all the function declarations, creates the behavior that this project example wanted to achieve.\newline
 It proves that the source code can be modified completely and that the compiler plugin can be also applied smoothly to multiplatform projects.
