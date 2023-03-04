@@ -1,7 +1,7 @@
 \chapter{Transparent alignment in Kotlin}\label{chapter:alignment}
-The alignment, discussed in Section~\ref{subsection:alignment}, is a crucial feature that is necessary to provide in order to create a working implementation of the \textbf{Aggregate programming} paradigm. 
+The alignment, discussed in Section~\ref{subsection:alignment}, is a crucial feature that must be provided in order to create a working implementation of the \textbf{Aggregate programming} paradigm. 
 
-The first step for finding a solution of a problem is to define a simple use case, which is going to be the base of the resolution attempts. A good starting point is code in Listing~\ref{code:first_alignment_code_example}, which was also discussed previously in Section~\ref{subsection:alignment}. In order to be coherent with the final solution, the code is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
+The first step necessary to find a solution for a problem is to define a simple use case, which is going to be the base of the resolution attempts. A good starting point to illustate this is represented by the code in Listing~\ref{code:first_alignment_code_example}, which was also discussed previously in Section~\ref{subsection:alignment}. In order to be coherent with the final solution, the code is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
 \begin{lstlisting}[caption={Starting point code to resolve the alignment problem}, captionpos=b, language=Kotlin, label={code:first_alignment_code_example}]
 fun f1() {neighboring(e1)}
 fun f2() {neighboring(e1)}
@@ -10,34 +10,34 @@ f1()
 f2()
 \end{lstlisting}
 The goal that needs to be achieved is to find an alignment solution that is able to keep track of the current computational state of a device, making it possible to align only the correct expressions with each other. In this example, it is necessary to find a unique way to identify the execution of the neighboring expression in the body of the \textit{f1} function from the one in the \textit{f2} function.\newline
-It is not considered right now the computing device identification, since it is not a core problem in these attempts. Once the base case is solved, then further complexities of the alignment problem are going to be analyzed, such as the branch construct.
+The computing device identification is not considered right now, since it is not a core problem in these attempts. Once the base case is solved, then further complexities of the alignment problem are going to be analyzed, such as the branch construct.
 
 There are key aspects that are considered for this study and that are used to compare the different approaches:
 \begin{itemize}
     \item \textbf{Availability for Kotlin multiplatform}: it is important to keep in mind that DSL is developed by using Kotlin multiplatform, which choice is discussed in Section~\ref{section:technology_choices}. The approaches chosen must be available for a Kotlin multiplatform architecture;
-    \item \textbf{Portability}: the alignment solution has to work for all the targeted platforms by Kotlin Multiplatform, which are Native, JavaScript and JVM. Multiple device computing on the same platform have to be able to align correctly;
+    \item \textbf{Portability}: the alignment solution has to work for all the targeted platforms by Kotlin Multiplatform, which are Kotlin Native, JavaScript and JVM. Multiple devices computing on the same platform have to be able to align correctly;
     \item \textbf{Interoperability}: the solution should allow devices executing on different platform to align;
-    \item \textbf{Efficiency}: one aspect to consider is the efficiency, because it can not be produced an elaborated solution that needs devices with high computational requirements;
+    \item \textbf{Efficiency}: key aspect to consider, since it can not be produced an elaborated solution that needs devices with high computational requirements;
     \item \textbf{Transparency}: finally, this feature has to be transparent to the final user, without making the developer write ulterior code to make the alignment work.
 \end{itemize}
 
-Different approaches have been tried to find a solution, and, for each attempt they are discussed the advantages and the disadvantages. The following sections analyze all the possibilities taken in consideration: Section~\ref{section:stacktraces_hashes} goes into details of the attempts with stacktraces and hashes, Section~\ref{section:annotation_ksp} exploit the problem with annotations and KSP, understanding their limits. Finally, Section~\ref{section:compiler_plugin_solution} describes in details the solution adopted, by developing a Kotlin compiler plugin. In each section there is a table that recaps the characteristics for each technology tried for the alignment based on the key aspects highlighted previously.
+Different approaches have been tried to find a solution, and, for each attempt, the advantages and the disadvantages are discussed. The following sections analyze all the possibilities taken in consideration: Section~\ref{section:stacktraces_hashes} goes into details of the attempts with stacktraces and hashes, Section~\ref{section:annotation_ksp} exploit the problem with annotations and KSP, understanding their limits. Finally, Section~\ref{section:compiler_plugin_solution} describes in details the solution adopted, by developing a Kotlin compiler plugin. In each section there is a table that recaps the characteristics for each technology tried for the alignment based on the key aspects highlighted previously.
 
 \section{Stacktraces and hashes}\label{section:stacktraces_hashes}
 Since the alignment problem is quite complex, the firsts attempts regards simple strategies without the concern of efficiency, trying to use already existing Kotlin functionalities to generate a unique identifier.
 
-One way of keeping track of the functions called during a program execution is by checking the \textbf{stacktrace}. This leads to one of the possible solutions, which is throwing exceptions whenever an aggregate programming construct is computed, and then using the generated exception stacktrace as identifier.\newline
+One way of keeping track of the functions called during a program execution is by checking the \textbf{stacktrace}. This leads to one of the possible solutions, which is throwing exceptions whenever an aggregate programming construct is computed, and then using the generated exception stacktrace as the unique identifier.\newline
 The stacktraces can be generated in all the platforms that the DSL aims to target. On each platform, the stacktrace is identical for every program execution, meaning that it is possible to align different devices that are executing the same program on the same target.\newline
 Moreover, this solution offers transparency to the final user, because the alignment can work without having the developer to write additional code.\newline
 On the other hand, this option presents two main problems that can not be avoided:
 \begin{enumerate}
-    \item The first problem regards the efficiency of this solution. Since an aggregate program runs continuously on each computing device, an enormous amount of exception would be thrown, causing delays that in a distributed system can cause issues;
+    \item The first problem regards the efficiency of this solution. Since an aggregate program runs continuously on each computing device, an enormous amount of exceptions would be thrown, causing delays that can create issues in a distributed system;
     \item The second problem refers to the interoperability of device computing on different targeted platforms. The stacktraces generated by the Native target are completely different from the one generated by JavaScript and JVM, and they represent information in a non-identical way. This means that devices running on different platforms can not align correctly, since the identifier generated for the sequence of the functions called does not match.
 \end{enumerate}
 
-Following a similar line of reasoning, the next attempt involved the \textbf{hash-codes}. Kotlin provides a method that given an object returns its hash-code, and it is guaranteed that the hash-code generated is always the same whenever two objects are equal to each other. In order to take advantage of this feature, it was created a new class called \textit{Event}, which has the role to encapsulate the DSL expression that is currently being computed by a device, and then use the object hash-code as identifier.\newline
-In general, this is not a suitable solution: the hash generated is the same during a single execution, but it is not when running multiple devices that have to communicate, meaning that the alignment can not be achieved, since the identifiers can be different even though they should not be.\newline
-This issue is present also when trying to align devices running on different platforms, but there is an additional problem: the hash-code generated from a target is not the same in another target, creating a discrepancy impossible to overcome.
+Following a similar line of reasoning, the next attempt involved the \textbf{hash-codes}. Kotlin provides a method that, given an object, returns its hash-code. It is guaranteed that the hash-code generated is always the same whenever two objects are equal to each other. In order to take advantage of this feature, it was created a new class called \textit{Event}, which has the role to encapsulate the DSL expression that is currently being computed by a device, and then uses the object hash-code as identifier.\newline
+In general, this is not a suitable solution: the hash generated is the same during a single execution, but this is not the case when running multiple devices that have to communicate, meaning that the alignment can not be achieved, since the identifiers can be different even though they should not be.\newline
+This issue is also present when trying to align devices running on different platforms, but there is an additional problem: the hash-code generated from a target is not the same in another target, creating a discrepancy impossible to overcome.
 
 \begin{table}[!ht]
     \small
@@ -67,35 +67,35 @@ This issue is present also when trying to align devices running on different pla
     \label{tab:stacktrace_hash_table}
 \end{table}
 
-Considering these attempts and their characteristics, it is possible to conclude that they are not suitable as resolution of the alignment problem. In order to give a clear view of their pros and cons, the characteristics of the alternative just discussed are recapped in Table~\ref{tab:stacktrace_hash_table}.
+Considering these attempts and their characteristics, it is possible to conclude that they are not suitable as resolution for the alignment problem. In order to give a clear view of their pros and cons, the characteristics of the alternative just discussed are recapped in Table~\ref{tab:stacktrace_hash_table}.
 
 \section{Annotations and KSP}\label{section:annotation_ksp}
-Since simple Kotlin functionalities are not feasible for solving the alignment problem, another possibility is to try different metaprogramming alternative, such as the ones discussed in Chapter~\ref{chapter:metaprogramming}.
+Since simple Kotlin functionalities are not feasible for solving the alignment problem, another possibility is to try different metaprogramming alternatives, such as the ones discussed in Chapter~\ref{chapter:metaprogramming}.
 
 The first metaprogramming technique taken in consideration is \textbf{annotations}. As explained in Section~\ref{section:annotation}, annotations can be used to attach additional metadata to elements in the code, which can be used to create specific behaviors. For example, it is possible to use them to define that a function should be causing the alignment and specify through the annotations how to handle it.\newline
-Before trying to develop such solution, a few considerations must be made:
+Before trying to develop such solution, a few considerations must be highlighted:
 \begin{itemize}
-    \item A key aspect of this project is the interoperability, achieved by using Kotlin multiplatform, and the chosen targets are Native, JavaScript and JVM. While this thesis is being redacted, Kotlin\textbackslash JS does not support annotations, creating a compatibility issue that is difficult to overcome;
-    \item In order to take advantage of the metadata provided by annotations, the developer should annotate manually every element in the source code whenever the alignment is required. This is not acceptable, since a requirement of the solution is the transparency for the final user.
+    \item A key aspect of this project is the interoperability, achieved by using Kotlin multiplatform for the chosen targets (Native, JavaScript and JVM). While this thesis is being redacted, Kotlin\textbackslash JS does not support annotations, creating a compatibility issue that is difficult to overcome;
+    \item In order to take advantage of the metadata provided by annotations, the developer should annotate manually every element in the source code whenever the alignment is required. This is not acceptable, since it would violate the requirement of transparency for the final user.
 \end{itemize}
-This results in the impossibility to use annotations for the alignment, since a possible solution would not meet the basic requirements of the project.
+This results in the impossibility to use annotations for the alignment, since a possible solution developed using said methodology would not meet the basic requirements of the project.
 
 The next alternative that involves metaprogramming is \textbf{KSP} (Kotlin Symbol Processing), which is described in details in Section~\ref{section:ksp}. Starting from KSP 1.0.1, it is possible to use KSP on multiplatform projects\footnote{\url{https://kotlinlang.org/docs/ksp-multiplatform.html}}, which includes also the targets necessary to reach successfully the outcome desired.\newline
-KSP allows the creating of lightweight compilers, providing an API that hides all the complexities that a complete compiler plugin would involve. While designing a possible solution, it is necessary to keep in mind the biggest limitation that this technology brings within, which is the impossibility to modify the source code.\newline
-Since KSP can access the code at compile time, it would be possible to extract information that can be used to build a custom stacktrace that keeps track of the sequence of functions called. Then, this custom stack can be used as identifier when needed. For this reason, it has been created a class \textit{Stack}, which interface is in Listing~\ref{code:stack_interface_ksp}.
+KSP allows the creation of lightweight compilers, providing an API that hides all the complexities that a complete compiler plugin would involve. While designing a possible solution, it is necessary to keep in mind the biggest limitation that this technology brings within: the impossibility to modify the source code.\newline
+Since KSP can access the code at compile time, it would be possible to extract information that can be used to build a custom stacktrace that keeps track of the sequence of functions called. Then, this custom stack can be used as identifier when needed. For this reason, it has been created a class \textit{Stack}, which interface is reported in Listing~\ref{code:stack_interface_ksp}.
 \begin{lstlisting}[caption={Stack interface for KSP}, captionpos=b, language=Kotlin, label={code:stack_interface_ksp}]
 interface Stack {
     fun currentPath(): String
     fun align(token: String): Unit
 }
 \end{lstlisting}
-By using the \textit{Stack} it is possible to add to a data structure everything necessary for the alignment, which might be for example function calls. Considering the base case cited previously in Listing~\ref{code:first_alignment_code_example}, when executing \textit{f1}, the stack list should contain \textit{[f1, neighboring]}, and when computing \textit{f2} would be \textit{[f2, neighboring]}, making it possible to uniquely identify the two different expressions.\newline
+By using the \textit{Stack} it is possible to add to a data structure everything that is necessary for the alignment, which might be for example function calls. Considering the base case cited previously in Listing~\ref{code:first_alignment_code_example}, when executing \textit{f1}, the stack list should contain \textit{[f1, neighboring]}, and when computing \textit{f2} would be \textit{[f2, neighboring]}, making it possible to uniquely identify the two different expressions.\newline
 Trying to obtain the result just described, the problem can be divided in two smaller steps:
 \begin{enumerate}
     \item The aggregate programming constructs are part of the DSL functions exposed to the final user, meaning that it is not possible for the user to change their implementation in any way while using it. Moreover, the name of these functions is known in advanced. This leads to create a simple solution for handling them, which consists on changing their implementations and adding a line of code that it is responsible to insert in the \textit{Stack} data structure the function name. For example, in the \textit{neighboring} implementation there is a function call to align that add its name to the stack.
     \item The second problem, which is more complex, can not be solved in the same way, since it would be the final user to manually solve the alignment problem. The solution would be to modify the functions \textit{f1} and \textit{f2} using KSP and adding the same line of code discussed for the previous case. On the other hand, the direct modification of the source code is not allowed by KSP, which means that the only solution would be to recreate the same code of the user, with the added function calls. This solution would be feasible for simple use cases, but it is not efficient when dealing with complex systems.
 \end{enumerate}
-This leads to the conclusion that it is crucial for the solution of the alignment problem the possibility to modify the source code. KSP can be used as a temporary solution for some use cases, also taking advantage of the simple and powerful API that it provides, but the downsides are important factors to consider.
+This leads to the conclusion that it is crucial for the solution of the alignment problem to have the possibility to modify the source code. KSP can be used as a temporary solution for some use cases, also taking advantage of the simple and powerful API that it provides, but the downsides are important factors to consider.
 
 \begin{table}[!ht]
     \small
@@ -120,11 +120,11 @@ This leads to the conclusion that it is crucial for the solution of the alignmen
 Concluding, the characteristics of annotation and KSP are added in Table~\ref{tab:annotation_ksp_table} alongside with the stacktrace and hash ones, summarizing the considerations made on all the alternatives considered up until this point.
 
 \section{KCP: solution with total transparency and portability}\label{section:compiler_plugin_solution}
-\textbf{Kotlin compiler plugins} are another metaprogramming alternative. As discussed previously in Section~\ref{section:compiler_plugin_explanation}, the development of a compiler plugin requires a lot of time and study, but they also provide a total freedom when trying to modify the code at compile time.
+\textbf{Kotlin compiler plugins} are another metaprogramming alternative. As discussed previously in Section~\ref{section:compiler_plugin_explanation}, the development of a compiler plugin requires a lot of time and study, but it also provide a total freedom when trying to modify the code at compile time.
 
 The following considerations prove that a plugin can be used to solve the alignment problem:
 \begin{itemize}
-    \item When developing project using Kotlin multiplatform, under the hood the compiler translate the Kotlin code into the code of the targets. Before doing that, it is transformed into an \textit{Intermediate Representation}, called \textbf{IR}, which as been discussed in Section~\ref{section:kotlin_ir}. This representation allows the creation of multiplatform compiler plugins, without the need to distinguish the plugin between the different platforms;
+    \item When developing a project using Kotlin multiplatform, the compiler translates under the hood the Kotlin code into the code for the targets. Before doing that, it is transformed into an \textit{Intermediate Representation}, called \textbf{IR}, which as been discussed in Section~\ref{section:kotlin_ir}. This representation allows the creation of multiplatform compiler plugins, without the need to distinguish the plugin between the different platforms;
     \item Since the source code is completely available at compile time, it is possible to analyze it in order to make the plugin understand when the alignment is needed. Then, new code can be generated to guarantee the correct alignment, which can be similar to the stack discussed for KSP; 
     \item Since the generation is based on the intermediate representation, this allows the interoperability between the different project targets, and also on devices running on the same platform;
     \item The plugin modifications are applied at compile time, which does not impact in a relevant way the execution time;
@@ -163,7 +163,7 @@ interface Stack {
     fun dealign(): Unit
 }
 \end{lstlisting}
-The stack has an internal mutable list that is updated when calling the method \textit{alignRaw} and \textit{dealign}. Specifically, \textit{alignRaw} is used to push a generic identifier into the stack, \textit{dealign} is used to pop it.\newline
+The stack has an internal mutable list that is updated when calling the method \textit{alignRaw} and \textit{dealign}. Specifically, \textit{alignRaw} is used to push a generic identifier into the stack, while, on the other hand, \textit{dealign} is used to pop it.\newline
 When a device needs to know its computational state, it can retrieve its path using the function \textit{currentPath}. A \textbf{Path} is a data class that is used as a wrapper of the current stack state, in order to return the immutable list, following Kotlin best practice. Its implementation is in Listing~\ref{code:path_compiler_plugin}.
 \begin{lstlisting}[caption={Path dataclass for Kotlin compiler plugin solution}, captionpos=b, language=Kotlin, label={code:path_compiler_plugin}]
 data class Path(val path: List<Any?>)
@@ -179,7 +179,7 @@ fun <R> alignedOn(pivot: Any?, body: () -> R): R {
 The method \textit{alignedOn} in Listing~\ref{code:alignedOn_compiler_plugin} needs to be explained further, since its behavior is central in the solution proposed.\newline
 The function signature accepts two parameters: the first one is the \textit{pivot}, which is the identifier that is going to be pushed in the stack, the second one is \textit{body}, which is the element that is going to be computed.\newline
 For instance, considering the base example reported at the beginning of this chapter in Listing~\ref{code:first_alignment_code_example} and supposing the computation of \textit{f1}, the \textit{pivot} would be the name of the function, that is the string \textit{f1}, and the body would be \textit{f1()}, which performs the computation of that function.\newline
-The implementation of \textit{alignedOn} is entitled update the stack pushing the pivot, then it executes the function taken as parameter and returns as output the value computed. Once the computation of the function is completed, it also resets the stack at its previous state.
+The implementation of \textit{alignedOn} is entitled to update the stack pushing the pivot, then it executes the function taken as parameter and returns as output the value computed. Once the computation of the function is completed, it also resets the stack at its previous state.
 
 The basic information to explain the solution has been presented, and it is now necessary to divide the problem in two smaller steps. In Section~\ref{subsection:function_alignment} it is going to be discussed how to perform the alignment when dealign with function calls, giving also example of the generation of the code created by the compiler plugin. Then, in Section~\ref{subsection:branch_alignment} it is going to be explained how to guarantee the alignment when there are branches that cause domain restriction.
 
@@ -224,10 +224,10 @@ The \textbf{IrGenerationExtension}, before registering the transformer necessary
 The referred elements are:
 \begin{enumerate}
     \item \textbf{The alignedOn function declaration}: in order to be able to call an already existent function, it is necessary to specify to the compiler to look for that function. In this case it is necessary the reference to \textit{alignedOn}, discussed in Listing~\ref{code:alignedOn_compiler_plugin};
-    \item \textbf{The aggregate context}: the functions exposed by the DSL are encapsulated in the \textbf{AggregateContext} class, which also contains the reference to the stack instance. Since it is possible to modify the stack only through its instance, the aggregate context class retrieved here can be used to get the instance of the object when calling the \textit{alignedOn} function. More details about the \textit{AggregateContext} class are going to be given in Chapter~\ref{chapter:collektive}.
+    \item \textbf{The aggregate context}: the functions exposed by the DSL are encapsulated in the \textbf{AggregateContext} class, which also contains the reference to the stack instance. Since it is possible to modify the stack only through its instance, the aggregate context class retrieved here can be used to get the instance of the object when calling the \textit{alignedOn} function. More details about the \textit{AggregateContext} class are going to be discussed in Chapter~\ref{chapter:collektive}.
 \end{enumerate}
 
-In order to provide some optimization, not every element of the source code is going to be modified by the compiler plugin, but only the necessary ones. If the final user needs a particular alignment not covered by the developed plugin, he can use the \textit{alignedOn} function manually.\newline
+In order to optimize the solution, not every element of the source code is going to be modified by the compiler plugin, but only the necessary ones. If the final user needs a particular alignment not covered by the developed plugin, he can use the \textit{alignedOn} function manually.\newline
 The entry point of the DSL is the function \textbf{aggregate}, which takes as parameter a function type with receiver. The receiver is the \textit{AggregateContext}, meaning that all the call members of the receiver can be used inside the \textit{aggregate} function call.\newline
 After retrieving the necessary elements, the \textit{IrGenerationExtension} registers the \textbf{AggregateCallTransformer}, which visits through the visitor pattern all the function calls looking for all the \textit{aggregate} call. Because of that, the compiler plugin knows that inside that function calls there might be the necessity to modify the code to provide the alignment feature.
 
@@ -238,7 +238,7 @@ Starting from the function calls, this is what happen:
     \item Then the behavior can be divided in three different cases:
     \begin{enumerate}
         \item If the function call has been already aligned, any modification is applied to the code;
-        \item Otherwise, in order to provide another optimization, it is checked if the considered function call or any of its children has a reference to the \textit{AggregateContext}. Only the function of the DSL, which are \textbf{neighboring}, \textbf{repeating} and \textbf{sharing} have a reference to that context. This means that everything not related to the DSL does not require to be modified for the alignment problem. This research is performed by checking the current function call's receivers and by the \textbf{AggregateRefChildrenVisitor} whenever it is necessary to visit the children.\newline
+        \item Otherwise, in order to provide another optimization, it is checked if the considered function call or any of its children has a reference to the \textit{AggregateContext}. Only the functions provided by the DSL, which are \textbf{neighboring}, \textbf{repeating} and \textbf{sharing} have a reference to that context. This means that everything not related to the DSL does not require to be modified for the alignment problem. This research is performed by checking the current function call's receivers and by the \textbf{AggregateRefChildrenVisitor} whenever it is necessary to visit the children.\newline
         If any of the elements analyzed have a reference to the \textit{AggregateContext}, then the code is not transformed;
         \item If the \textit{AggregateContext} reference is found, then the transformation proceeds. 
     \end{enumerate}
@@ -297,7 +297,7 @@ pluginContext.irFactory.buildFun {
     }
 }
 \end{lstlisting}
-From line 2 to 5 of Listing~\ref{code:lambda_creation} standard parameters are set, such as the return type, the lambda parent and information that inform the compiler that it is dealing with an anonymous function. Then, if the original expression return type is unit, then the body of the lambda is just the expression itself. Otherwise, a return block is added, which contains the original function call.
+From line 2 to 5 of Listing~\ref{code:lambda_creation}, standard parameters are set, such as the return type, the lambda parent and data that informs the compiler that it is dealing with an anonymous function. Then, if the original expression return type is unit, then the body of the lambda is just the expression itself. Otherwise, a return block is added, which contains the original function call.
 
 To recap the process it is possible to start from the simple code in Listing~\ref{code:base_for_transformation_example}.
 \begin{lstlisting}[caption={Base example of aggregate program}, captionpos=b, language=Kotlin, label={code:base_for_transformation_example}]
@@ -355,7 +355,7 @@ Supposing that the random generated number is 7, the stack during the computatio
     \item Finally, the body of the \textit{if} has been successfully executed and the stack can be cleared.
 \end{enumerate}
 
-Before diving into the creation of the \textit{alignedOn} parameters, it is necessary to understand how the IR syntax tree handled the branches when there are multiple conditions, which is slightly different from the single condition just presented. Kotlin IR works with binary trees, which means that when it has to handle branches with multiple conditions, it creates nested branches.\newline
+Before diving into the creation of the \textit{alignedOn} parameters, it is necessary to understand how the IR syntax tree handled the branches when there are multiple conditions, which is slightly different from the single condition just presented. Kotlin IR works with binary trees, which means that whenever it has to handle branches with multiple conditions, it creates nested branches.\newline
 For example, considering Listing~\ref{code:multiple_branches_example}, it is represented as shown in Figure~\ref{fig:multiple_branches_ir_example}.
 \begin{lstlisting}[caption={Example of code where a branch has multiple conditions}, captionpos=b, language=Kotlin, label={code:multiple_branches_example}]
 if (a && b) {
@@ -400,7 +400,7 @@ if(condition) function()
 \end{lstlisting}
 \end{itemize}
 
-The way the \textit{IrBlock} and the \textit{IrExpression} requires a slightly different implementation: if a branch was constituted by an \textit{IrBlock}, when creating the \textit{alignedOn} function call it is necessary to keep in mind that the second parameter is going to be a block and not a single expression.\newline
+The \textit{IrBlock} and the \textit{IrExpression} requires a slightly different implementation: if a branch was constituted by an \textit{IrBlock}, when creating the \textit{alignedOn} function call it is necessary to keep in mind that the second parameter is going to be a block and not a single expression.\newline
 The building of the \textit{alignedOn} function call is the same of the code shown in Listing~\ref{code:lambda_creation}, the only difference is the creation of the parameters. 
 
 The first parameter is the name of the element that is going to be put in the stack. As seen before, just the name of the condition is not sufficient, since the alignment is based on the name and the condition value. For this reason, the first parameter is a pair constituted by the condition name and its value, like this: \textit{[condition, true]}.\newline
@@ -419,7 +419,7 @@ this.body = context.
                 +irReturn(lastExpression)
             }
 \end{lstlisting}
-There are three main things need to be done when creating the lambda body, and they are shown in Listing~\ref{code:ir_block_branch_example}:
+There are three main things that need to be done when creating the lambda body, and they are shown in Listing~\ref{code:ir_block_branch_example}:
 \begin{enumerate}
     \item \textbf{Setting the return type}: since the body of the \textit{if} is a block, it is constituted by multiple expression. The last expression return type defines the return type of the block. In order to be able to get the result of the \textit{if} construct, it is necessary to set it correctly;
     \item \textbf{Creating the IrBlock}: the block created contains all the expressions of the previous block but the last one. In this way, the behavior of the block is not going to change;
@@ -427,5 +427,5 @@ There are three main things need to be done when creating the lambda body, and t
 \end{enumerate}
 
 This constituted the whole behavior of the compiler plugin when dealing with a \textit{IrBranch}, but the transformation is similar when dealing with an \textit{IrElseBranch}.\newline
-One final details of the transformation of the branches is in common with the function handling: the alignment is required if and only if there are aggregate programming construct calls, which means that the modification of an \textit{IrBranch} when its body does not involve any aggregate function is useless.\newline
+One final detail of the transformation of the branches is in common with the function handling: the alignment is required if and only if there are aggregate programming construct calls, which means that the modification of an \textit{IrBranch} when its body does not involve any aggregate function is useless.\newline
 For this reason, the same controls performed for the function calls are applied here, which means that, when visiting any branch, only if the \textit{AggregateContext} reference is found in any of it body expression or expressions' children, then the alignment transformation is actuated. This enhances the performances of the Kotlin compiler plugin created.
