@@ -116,6 +116,7 @@ The Listing~\ref{code:ksp_source_code}\footref{ksp_footnote} shows the data stru
 This representation allows to have a complete overview of the code structure.
 
 KSP expects two elements to be implemented: the \textbf{SymbolProcessorProvider} and the \textbf{SymbolProcessor}.\newline
+The \textit{create} function is invoked when KSP creates an instance of the \textit{SymbolProcessor}: this means that, without the \textit{SymbolProcessorProvider}, it would not be possible to instantiate a \textit{SymbolProcessor}. The \textit{SymbolProcessorProvider} is separated from the \textit{SymbolProcessor} to allow more freedom during the development.
 The \textit{SymbolProcessorProvider} interface is defined like shown in Listing~\ref{code:symbol_processor_provider_interface}\footref{ksp_footnote}.
 \begin{lstlisting}[caption={SymbolProcessorProvider interface}, language=Kotlin, captionpos=b, label={code:symbol_processor_provider_interface}]
 interface SymbolProcessorProvider {
@@ -123,15 +124,14 @@ interface SymbolProcessorProvider {
         SymbolProcessor
 }
 \end{lstlisting}
-The \textit{create} function is invoked when KSP creates an instance of the \textit{SymbolProcessor}: this means that, without the \textit{SymbolProcessorProvider}, it would not be possible to instantiate a \textit{SymbolProcessor}. The \textit{SymbolProcessorProvider} is separated from the \textit{SymbolProcessor} to allow more freedom during the development.
 
-In Listing~\ref{code:symbol_processor_interface}\footref{ksp_footnote} is shown the interface of the \textit{SymbolProcessor}.
+In Listing~\ref{code:symbol_processor_interface}\footref{ksp_footnote} is shown the interface of the \textit{SymbolProcessor}.\newline
+The only function that needs to be overridden is \textit{process}, which is typically used to read files and pass the elements to the visitors.
 \begin{lstlisting}[caption={SymbolProcessor interface}, language=Kotlin, captionpos=b, label={code:symbol_processor_interface}]
 interface SymbolProcessor {
     fun process(resolver: Resolver): List<KSAnnotated>
 }
 \end{lstlisting}
-The only function that needs to be overridden is \textit{process}, which is typically used to read files and pass the elements to the visitors.\newline
 The \textit{Resolver} is the entry point of the functionalities provided by KSP: it can be used, for example, to get all the files of the source code, the symbols with annotation, a class, or a function declaration by name.\newline
 As many other compiler related APIs, KSP supports the \textbf{visitor pattern}, allowing to examine each element in an object-oriented way.\newline
 For example, the code in Listing~\ref{code:ksp_visitor}\footref{ksp_footnote} reports an implementation of a visitor that inspects the declarations and collects the function names in a list.
@@ -350,8 +350,7 @@ The \textit{IrElement} has two functions that enable the visitor pattern that ha
     \item \textbf{acceptChildren}: this function implementation consists on calling the \textit{accept} function on each child of the current element, including itself.
 \end{itemize}
 Both functions possess two parameters, where the first one is the \textit{IrElementVisitor}, the second one is \textit{data}, which is used to pass information about the context to the IR visitor.\newline
-The return type in the \textit{accept} function can be used to get as output the elements visited, and it is useful, for example, when the navigation aims to find a specific element. Otherwise, the return can just be set as \textit{Unit}.\newline
-In the case of \textit{acceptChildren}, its return type is \textit{Unit}, which means that when visiting recursively the children of an element, no data can be returned. Whenever it is necessary to collect information from a recursive visitor, it is usually created a builder object that can be updated and then returned. In Listing~\ref{code:accept_children_collect_example}\footnote{\url{https://blog.bnorm.dev/writing-your-second-compiler-plugin-part-3}} the role of the \textit{collect} function is to create a mutable list that is updated on the visit of each child of the root element.
+The return type in the \textit{accept} function can be used to get as output the elements visited, and it is useful, for example, when the navigation aims to find a specific element. Otherwise, the return can just be set as \textit{Unit}.
 \begin{lstlisting}[caption={Example of a custom visitor and a function that supports the collection of elements}, captionpos=b, language=Kotlin, label={code:accept_children_collect_example}]
 class CustomVisitor(
   private val elements: MutableList<IrElement>
@@ -366,6 +365,7 @@ fun collect(element: IrElement) = buildList<IrElement> {
   element.accept(CustomVisitor(this), null)
 }
 \end{lstlisting}
+In the case of \textit{acceptChildren}, its return type is \textit{Unit}, which means that when visiting recursively the children of an element, no data can be returned. Whenever it is necessary to collect information from a recursive visitor, it is usually created a builder object that can be updated and then returned. In Listing~\ref{code:accept_children_collect_example}\footnote{\url{https://blog.bnorm.dev/writing-your-second-compiler-plugin-part-3}} the role of the \textit{collect} function is to create a mutable list that is updated on the visit of each child of the root element.
 
 As previously said, the \textbf{IrElementVisitor} is the interface that has to be implemented in order to create a custom visitor. It requires two type parameters: the first one indicates the return type of the visit functions, the second one the type of the data that can be used to pass contextual information. The interface provides a lot of different visit methods, that can be used based on the wanted behavior. In Figure~\ref{fig:visitor_uml_kotlin_compiler} are reported \textit{visitFunction} and \textit{visitClass}, but other examples are \textit{visitBody}, \textit{visitVariable}, \textit{visitDeclaration}, etc.
 
@@ -494,7 +494,12 @@ The \textit{generate} method just shown has two different purposes:
 \end{itemize}
 
 The most important element of all, that actually perform the code transformation, is the \textbf{TransformerImpl}, which implements the \textbf{IrElementTransformer} interface.\newline
-Since the modifications that needs to be achieved are applied to all the function declaration bodies, the \textit{visitFunction}  needs to be overridden in the following way:
+Since the modifications that needs to be achieved are applied to all the function declaration bodies, the \textit{visitFunction} needs to be overridden as reported in the code in Listing \ref{code:visit_function_declaration_example}, which works in the following way:
+\begin{itemize}
+    \item for each function declaration found in the context, verify if it has a body. For example, abstract declarations do not have a body;
+    \item if a body is found, it modifies the declaration it passing it to the \textit{irDebug} function.
+\end{itemize}
+
 \begin{lstlisting}[caption={Example of \textit{visitFunction} implementation of the transformer, used to visit all the function declarations}, captionpos=b, language=Kotlin, label={code:visit_function_declaration_example}]
 override fun visitFunction(
     declaration: IrFunction
@@ -506,7 +511,9 @@ override fun visitFunction(
     return super.visitFunction(declaration)
 }
 \end{lstlisting}
-This works in the following way: for each function declaration found in the context, verify if it has a body and, in that case, modify it passing it to the \textit{irDebug} function.
+
+The implementation \textit{irDebug} is shown in Listing~\ref{code:ir_debug_example}, and it is used to add a \textit{irEnter} element and then all the statements in the body of the function are inserted again in the function body, in order to maintain the previous behavior. The body is recreated and returned by using the \textit{DeclarationIrBuilder}.
+
 \begin{lstlisting}[caption={Example of implementation of a function that adds a new element into the function body}, captionpos=b, language=Kotlin, label={code:ir_debug_example}]
 private fun irDebug(
     function: IrFunction,
@@ -521,8 +528,8 @@ private fun irDebug(
         }
 }
 \end{lstlisting}
-The implementation \textit{irDebug} is shown in Listing~\ref{code:ir_debug_example}, and it is used to add a \textit{irEnter} element and then all the statements in the body of the function are inserted again in the function body, in order to maintain the previous behavior. The body is recreated and returned by using the \textit{DeclarationIrBuilder}.
 
+In the code in Listing~\ref{code:ir_enter_example} it is shown the extension function \textit{irEnter}, which is used to build a new \textit{IrCall}. The \textit{IrCall} aims to create a new function call, specifically of the print function retrieved previously. It also adds a new argument, which is a string of the name of the function it is going to be created into.
 \begin{lstlisting}[caption={Example of creation of a new function call and adding to it arguments}, captionpos=b, language=Kotlin, label={code:ir_enter_example}]
 private fun IrBuilderWithScope.irEnter(
     function: IrFunction
@@ -535,7 +542,6 @@ private fun IrBuilderWithScope.irEnter(
     }
 }
 \end{lstlisting}
-In the code in Listing~\ref{code:ir_enter_example} it is shown the extension function \textit{irEnter}, which is used to build a new \textit{IrCall}. The \textit{IrCall} aims to create a new function call, specifically of the print function retrieved previously. It also adds a new argument, which is a string of the name of the function it is going to be created into.
 
 In conclusion, this transformation, applied to all the function declarations, creates the behavior that this project example wanted to achieve.\newline
 It proves that the source code can be modified completely and that the compiler plugin can be also applied smoothly to multiplatform projects.
