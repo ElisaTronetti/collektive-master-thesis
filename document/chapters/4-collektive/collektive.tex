@@ -40,14 +40,14 @@ It is possible to share the code in different ways\footnote{\url{https://kotlinl
     \begin{figure}[!ht]
         \centering
         \includegraphics[scale=0.86]{document/chapters/4-collektive/images/km_share_code_on_all_platforms.png}
-        \caption{Kotlin Multiplatform used to share code on all platforms}
+        \caption{Kotlin Multiplatform sharing code on all platforms}
         \label{fig:km_share_code_on_all_platforms}
     \end{figure}
     \item \textbf{Share code among some platforms}: this organization is usually applied when similar platforms share a big portion of code. As it can be seen in Figure \ref{fig:km_reuse_code}\footref{km_footnote}, it is possible to define hierarchies that allow to organize the shared code, such as the \textit{desktopMain} folder that shares some code with its dependencies, which does not include the whole code present in \textit{commonMain}.
     \begin{figure}[!ht]
         \centering
         \includegraphics[scale=0.97]{document/chapters/4-collektive/images/kotlin_multiplatform_reuse_code.png}
-        \caption{Kotlin Multiplatform reuse of code among some platforms of the project}
+        \caption{Kotlin Multiplatform reusing code among some platforms of the project}
         \label{fig:km_reuse_code}
     \end{figure}
 \end{itemize}
@@ -65,7 +65,7 @@ Kotlin Multiplatform also includes tools to help developers manage their codebas
 
 One advantage of Kotlin Multiplatform is, for example, the ability to share code between Android and iOS. This can be especially valuable for companies that want to develop apps for both platforms, as it can help reduce development time and costs. With Kotlin Multiplatform, developers can write shared code for common features, such as user authentication or data storage, and then write platform-specific code for the UI and other platform-specific features.
 
-Concluding, Kotlin Multiplatform is the perfect technology to achieve this thesis project, because it allows creating a unique code base that is possible to use on three different platforms: JVM, JavaScript and Native. Moreover, it is not required the implementation of platform-specific behaviors, meaning that only the common code has been developed.
+Concluding, Kotlin Multiplatform is the perfect technology to achieve this thesis project, because it allows creating a unique code base that is possible to use on three different platforms: JVM, JavaScript and Native. Moreover, the implementation of platform-specific behaviors is not required, meaning that only the common code has been developed.
 
 \section{Project structure}\label{section:project_structure}
 Collektive has been developed as a Gradle project composed by three different submodules, as shown in Figure~\ref{fig:collektive_package_diagram}.
@@ -79,8 +79,8 @@ The cited submodules are:
 \begin{enumerate}
     \item \textbf{plugin}: it is divided in two submodules itself: 
     \begin{enumerate}
-        \item \textbf{gradle-plugin}: necessary plugin that a gradle project uses in order to include the compiler plugin. Its structure has been introduced previously in Section~\ref{section:gradle_plugin};
-        \item \textbf{compiler-plugin}: the compiler plugin is used modify a data structure used to keep track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated in order to allow the alignment whenever necessary. The specific functionalities of the compiler plugin have been explained in depth in Section~\ref{section:compiler_plugin_solution}; 
+        \item \textbf{gradle-plugin}: necessary plugin used by a gradle project in order to include the compiler plugin. Its structure has been introduced previously in Section~\ref{section:gradle_plugin};
+        \item \textbf{compiler-plugin}: the compiler plugin is used to modify a data structure, which to keep tracks of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated in order to allow the alignment whenever necessary. The specific functionalities of the compiler plugin have been explained in depth in Section~\ref{section:compiler_plugin_solution}; 
     \end{enumerate}
     \item \textbf{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing. The description of this submodule is going to be presented in Section~\ref{section:dsl};
     \item \textbf{collektive-test}: this submodule is used to test an aggregate program by running it on a simulated environment provided by the Alchemist Simulator~\cite{alchemist}. More details about this are in Section~\ref{section:validation}.
@@ -88,7 +88,7 @@ The cited submodules are:
 
 \section{DSL}\label{section:dsl}
 A \textbf{DSL} (Domain-Specific Language)\footnote{\url{https://www.jetbrains.com/mps/concepts/domain-specific-languages/}} is a programming language or language construct that is designed to be highly specific to a particular domain, or problem space. Unlike general-purpose programming languages, which are intended to be applicable across a wide range of domains and problem types, DSLs are created to meet the specific needs of a particular application or system. For this reason, general-purpose languages, such as Java, are generally more complex than DSLs.\newline 
-DSLs can be implemented in a number of ways, including as standalone programming languages, as libraries that extend existing programming languages, or as annotations or macros that modify the syntax or behavior of an existing language. DSLs can be used to provide a higher level of abstraction over complex systems or processes, allowing developers to express ideas and concepts in a more concise and intuitive way.\newline
+DSLs can be implemented in a number of ways, including: standalone programming languages, libraries that extend existing programming languages, or annotations or macros that modify the syntax or behavior of an existing language. DSLs can be used to provide a higher level of abstraction over complex systems or processes, allowing developers to express ideas and concepts in a more concise and intuitive way.\newline
 To ensure that DSLs are fit for their intended purpose, they are typically developed in close collaboration with domain experts. In fact, many DSLs are not designed to be used by programmers, but rather by non-technical individuals who are knowledgeable in the relevant domain. This collaborative approach helps to ensure that the DSL is intuitive and expressive for its intended users, allowing them to more easily and effectively express complex ideas and processes.
 
 The DSL developed for this project is organized as shown in the package diagram in Figure~\ref{fig:dsl_packege_diagram}.\newline
@@ -172,9 +172,8 @@ The behavior of the \textit{sharing} function can be described as follows:
 \begin{itemize}
     \item The function retrieves the messages of the neighbors for the current path from the stack instance;
     \item It checks whether a previous state exists for the current path, similarly to the \textit{repeating} function;
-    \item If a previous state exists, the function retrieves it from the \textit{previousState} map;
-    \item Otherwise, it is used the \textit{initial} value;
-    \item Taken the retrieved value, whether it is the \textit{initial} or the value computed in the previous round, and the messages from the neighbors, a new field instance is created;
+    \item If a previous state exists, the function retrieves it from the \textit{previousState} map. Otherwise, it is used the \textit{initial} value;
+    \item Taken the retrieved value, whether it is the \textit{initial} value or the one computed in the previous round, and the messages from the neighbors, a new field instance is created;
     \item The expression invokes the \textit{body} function with the new created field as argument;
     \item The returned value of the \textit{body} function is stored in the \textit{toBeSent} map assigned to the current path. This map contains all the messages to send to the neighbors before the next round begin;
     \item Finally, the output value of \textit{body} is returned by the \textit{sharing} function.
@@ -233,7 +232,7 @@ with(AggregateContext(localId, messages, state)) {
 One important aspect to consider during the development of a DSL is its usability. It is important to provide the user with a minimal set of operators, each of them with a clear purpose.\newline
 This is what has been achieved with Collektive, since the constructs are coherent with the aggregate programming original operators.
 
-In order to use Collektive, it is necessary to perform some setup:
+In order to use Collektive, it is necessary to perform some steps to setup the environment:
 \begin{enumerate}
     \item \textbf{Include the compiler plugin}: since the alignment is crucial for the DSL to work, it is important to include into the Gradle project the custom Gradle plugin created to expose the Kotlin compiler plugin.\newline
     Whenever a new submodule of Collektive is created, the Gradle plugin can be included as shown in the code in Listing~\ref{code:include_gradle_plugin};
@@ -272,8 +271,8 @@ Collektive validation consists on two main tests:
 \end{enumerate}
 These validation processes are achieved in two different ways, which are going to be discussed in this section.
 
-The first method tests both the functionalities and the compatibility of the system. This is obtained by taking advantage of the Kotlin Multiplatform features, because when it comes to testing, it provides several tools and frameworks that can be used to test code written in Kotlin on different platforms.\newline
-One popular testing framework for Kotlin Multiplatform is \textbf{KotlinTest}\footnote{\url{https://kotlinlang.org/docs/multiplatform-run-tests.html}}. \textit{KotlinTest} is a multiplatform testing library that provides a common API for writing tests that can be run on different platforms. It supports a range of testing styles, including behavior-driven development (BDD) and property-based testing.\newline
+The first method tests both the functionalities and the compatibility of the system. This is obtained by taking advantage of the Kotlin Multiplatform features because, when it comes to testing, it provides several tools and frameworks that can be used to test code written in Kotlin on different platforms.\newline
+One popular testing framework for Kotlin Multiplatform is \textbf{KotlinTest}\footnote{\url{https://kotlinlang.org/docs/multiplatform-run-tests.html}}; said framework is a multiplatform testing library that provides a common API for writing tests that can be run on different platforms. It supports a range of testing styles, including behavior-driven development (BDD) and property-based testing.\newline
 Kotlin Multiplatform also provides a set of common annotations that can be used to mark tests and test suites, such as the \textbf{@Test} annotation. These annotations can be used in conjunction with testing frameworks like \textit{KotlinTest} to write and run tests on multiple platforms.\newline
 Since the DSL is developed using Kotlin Multiplatform, the package \textbf{commonTest} contains the test implemented using \textit{KotlinTest}.\newline
 \begin{figure}[!ht]
@@ -335,4 +334,4 @@ The purpose of \textit{runUntil} is to repeatedly execute the \textit{compute} l
 In order to do that, every time it is necessary a new iteration, it is computed a \textbf{singleCycle}, which is the same function used in the normal aggregate program execution, which was presented in Section~\ref{section:dsl}. A cycle requires the local identifier of the device, it retrieves from the network the message received from the neighbors, the current local state of the device and the lambda that define the computation.\newline
 Afterwords, it updates the local state, and it sends the via network the messages regarding the computed values of this round.
 
-By using these mechanisms just presented, it is possible to create tests that check the correct interaction between devices, verifying also that the alignment works properly. Moreover, \textit{KotlinTest} allows to run the created test over the different targets of the project, which tests the compatibility of the software over different platforms.
+By using the mechanisms just presented, it is possible to create tests that check the correct interaction between devices, also verifying that the alignment works properly. Moreover, \textit{KotlinTest} allows to run the implemented tests over the different targets of the project, testing the compatibility of the software over different platforms.
