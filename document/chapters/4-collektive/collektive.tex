@@ -203,18 +203,24 @@ fun <X, Y: Any?> sharing(
 The main entry point of an aggregate program is shown in the code in Listing~\ref{code:aggregate_entry_point}.
 \begin{lstlisting}[caption={Aggregate entry point}, captionpos=b, language=Kotlin, label={code:aggregate_entry_point}]
 fun <X> aggregate(
+    localId: ID = IntId(),
+    messages:Map<ID,Map<Path,*>>=emptyMap<ID,Map<Path,Any>>(),
+    state: Map<Path,*> = emptyMap<Path, Any>(),
     init: AggregateContext.() -> X
-) = singleCycle(compute = init)
+) = singleCycle(localId, messages, state, compute = init)
 \end{lstlisting}
-This function accepts a single parameter called \textit{init}, which is a lambda expression that takes an instance of \textit{AggregateContext} as a receiver object.
-
-\begin{info}[Kotlin lambda and context receiver:]
+The \textit{aggregate} function accepts four parameters:
+\begin{enumerate}
+    \item \textbf{localId}: it is the identification number of a device, which can be used when it is necessary to make the same device compute another round of the aggregate program. This parameter is not mandatory, and, in case it is not defined, a new random identifier is generated;
+    \item \textbf{messages}: it might be sometime necessary to give the aggregate program some contextual information about the previous round outcome. This parameter is used to provide the messages received from the neighbors, and it is initialized ad an empty map as default value;
+    \item \textbf{state}: similarly to the \textit{messages} parameter, this is used to propagate the previous state of the device in the current round. It is not mandatory, and it is initialized as an empty map whenever it is not found;
+    \item \textbf{init}: it is a lambda expression that takes an instance of \textit{AggregateContext} as a receiver object.\newline
     A lambda expression is a block of code that can be executed later, and it can be passed around as a value. In Kotlin, lambda expressions can have a receiver object, which is an object on which the lambda is invoked.\newline
-    In Kotlin, a context receiver is a way of providing a context or a scope to a block of code, such as a lambda expression. A context receiver allows the block of code to access the properties and functions of the receiver object using the \textit{this} keyword, without having to explicitly specify the receiver object in the code.
-\end{info}
+    In Kotlin, a context receiver is a way of providing a context or a scope to a block of code, such as a lambda expression. A context receiver allows the block of code to access the properties and functions of the receiver object using the \textit{this} keyword, without having to explicitly specify the receiver object in the code.\newline
+    This means that when the lambda expression \textit{init} is invoked, it has access to the properties and functions of the \textit{AggregateContext} object. By using the aggregate function, it is then possible to define the lambda that is going to be computed, and, by doing so, the aggregate constructs defined in the \textit{AggregateContext} can be used freely.
+\end{enumerate}
 
-This means that when the lambda expression \textit{init} is invoked, it has access to the properties and functions of the \textit{AggregateContext} object. By using the aggregate function, it is then possible to define the lambda that is going to be computed, and, by doing so, the aggregate constructs defined in the \textit{AggregateContext} can be used freely.\newline
-This function allows the computation of a single cycle, which means that only one round is going to be performed. This requires the user of the DSL to define how the different devices should communicate.\newline
+This \textit{aggregate} function in Listing \ref{code:aggregate_entry_point} allows the computation of a single cycle, which means that only one round is going to be performed. This requires the user of the DSL to define how the different devices should communicate.\newline
 In Section~\ref{section:validation} it is going to be presented a different \textit{aggregate} function that allows to run multiple rounds of an aggregate program, used to test the correct behavior during the validation process.
 
 The \textit{singleCycle} function returns an \textbf{AggregateResult}, which is the output of an aggregate program in Collektive. The implementation of the \textit{singleCycle} function is reported in Listing~\ref{code:single_cycle_return_type}. This class contains the value computed from the aggregate lambda, a map of all the messages to send to the neighbors, and the new state of the device.
