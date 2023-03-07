@@ -20,11 +20,12 @@ The DSL created achieved the requirements established before its development, wh
     \item \textbf{Portability}: since its development is in Kotlin Multiplatform, it is possible to guarantee the compatibility with JVM, JavaScript and Kotlin Native platforms.
 \end{itemize}
 
-The validation process verifies the correct system behavior on the different targets, taking in consideration single computation and executions that involved multiple rounds to prove the correct interaction between devices.
+The validation process verifies the correct system behavior on the different targets, taking in consideration single computation and executions that involved multiple rounds to prove the correct interaction between devices.\newline
+The usage of \textbf{Alchemist Simulator}~\cite{alchemist} proves that it is possible to create algorithms, such as the gradient, in a simple way, and that the communication between the devices works as predicted. 
 
 Different improvements can be done in the future:
 \begin{enumerate}
-    \item It is possible to integrate Collektive into \textbf{Alchemist}~\cite{alchemist}, which would allow performing more complex computations, which could actually bring out the potential of this project;
+    \item It is possible to integrate Collektive into \textbf{Alchemist}~\cite{alchemist}, creating an incarnation that allows to create new algorithms just using the simulator;
     \item Another possible development is the implementation of a library with self-stabilizing functions, which would capture families of strategies used typically to achieve flexible and resilient decentralized behaviors, in order to hide the complexities by using the field calculus constructs~\cite{self_stabilisation_functions};
     \item It would be also necessary in the future to publish the project to a package repository like Maven Central, JCenter, or similar, allowing others to easily download and use Collektive as a dependency in their own projects.
 \end{enumerate}
