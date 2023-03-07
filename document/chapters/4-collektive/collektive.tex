@@ -255,8 +255,7 @@ dependencies {
 \end{lstlisting}
 \end{enumerate}
 
-Once the setup is finished, the DSL is available into the new submodule. By calling the function \textbf{aggregate}, the DSL functions \textbf{neighboring}, \textbf{repeating} and \textbf{sharing} can be used. Moreover, the compiler plugin included provides the correct alignment of the elements.\newline
-The snippet of code in Listing~\ref{code:aggregate_program_example} shows an example of usage. The program shares with the neighbors the double of a local number. In this example, the value of the number is hardcoded, but in a real world example, this value might depend on the device environment, which would make different devices have a different value evaluation.
+Once the setup is finished, the DSL is available into the new submodule. By calling the function \textbf{aggregate}, the DSL functions \textbf{neighboring}, \textbf{repeating} and \textbf{sharing} can be used. Moreover, the compiler plugin included provides the correct alignment of the elements.
 \begin{lstlisting}[caption={Example of an aggregate program developed with Collektive}, captionpos=b, language=Kotlin, label={code:aggregate_program_example}]
 val double: (Int) -> Int = { it * 2 }
 val testValue: Int = 2
@@ -264,6 +263,7 @@ aggregate {
     neighbouring(double(testValue))
 }
 \end{lstlisting}
+The snippet of code in Listing~\ref{code:aggregate_program_example} shows an example of usage. The program shares with the neighbors the double of a local number. In this example, the value of the number is hardcoded, but in a real world example, this value might depend on the device environment, which would make different devices have a different value evaluation.
 
 \section{Validation}\label{section:validation}
 The term validation refers to the process of ensuring that the software meets the intended requirements and specifications and fits for its intended use. Validation is a critical aspect of the software development process as it helps to ensure that the software is free of defects, meets the expectations of its users, and performs its intended function correctly.
@@ -308,13 +308,6 @@ Before creating an aggregate program, it is necessary to instantiate a \textit{N
 
 It is also necessary to create a new entry point for the DSL, which makes it possible to accept parameters to handle multiple rounds.
 
-The new \textit{aggregate} function is reported in Listing~\ref{code:aggregate_entry_point_for_multiple_rounds}, and it accepts the following parameters:
-\begin{enumerate}
-    \item \textbf{condition}: it is a lambda expression that takes no arguments and returns a \textit{Boolean} value, which is used to establish whether the computation should run another round or not;
-    \item \textbf{network}: an instance of the \textit{Network} class introduced in the code in Listing~\ref{code:network_interface}, which is used to handle sending and receiving messages;
-    \item \textbf{init}: the actual aggregate program, contained in a lambda expression which has as receiver object an \textit{AggregateContext}.
-\end{enumerate}
-
 \begin{lstlisting}[caption={Aggregate programming entry point used to compute multiple rounds}, captionpos=b, language=Kotlin, label={code:aggregate_entry_point_for_multiple_rounds}]
 fun <X> aggregate(
     condition: () -> Boolean,
@@ -322,6 +315,14 @@ fun <X> aggregate(
     init: AggregateContext.() -> X
 ) = runUntil(condition, network, compute = init)
 \end{lstlisting}
+
+The new \textit{aggregate} function is reported in Listing~\ref{code:aggregate_entry_point_for_multiple_rounds}, and it accepts the following parameters:
+\begin{enumerate}
+    \item \textbf{condition}: it is a lambda expression that takes no arguments and returns a \textit{Boolean} value, which is used to establish whether the computation should run another round or not;
+    \item \textbf{network}: an instance of the \textit{Network} class introduced in the code in Listing~\ref{code:network_interface}, which is used to handle sending and receiving messages;
+    \item \textbf{init}: the actual aggregate program, contained in a lambda expression which has as receiver object an \textit{AggregateContext}.
+\end{enumerate}
+
 This \textit{aggregate} function calls \textbf{runUntil},  and in the snippet of code in Listing \ref{code:run_until_body} it is reported the main logic its implementation.
 \begin{lstlisting}[caption={Main logic of the \textit{runUntil} function}, captionpos=b, language=Kotlin, label={code:run_until_body}]
 while (condition()) {
