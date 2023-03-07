@@ -118,9 +118,9 @@ The implementation of the project involves the elements presented in the class d
 \end{itemize}
 
 A key aspect of this project is the implementation of the aggregate programming constructs contained in the \textit{AggregateContext} class.\newline
-The implementation of the \textbf{neighbouring} function is reported in Listing~\ref{code:neighbouring_implementation}. It accepts in input any parameter, which is the value computed by the current device and that is going to be shared with the neighborhood.
-\begin{lstlisting}[caption={Neighbouring implementation}, captionpos=b, language=Kotlin, label={code:neighbouring_implementation}]
-fun <X> neighbouring(type: X): Field<X> {
+The implementation of the \textbf{neighboring} function is reported in Listing~\ref{code:neighboring_implementation}. It accepts in input any parameter, which is the value computed by the current device and that is going to be shared with the neighborhood.
+\begin{lstlisting}[caption={Neighboring implementation}, captionpos=b, language=Kotlin, label={code:neighboring_implementation}]
+fun <X> neighboring(type: X): Field<X> {
     toBeSent[stack.currentPath()] = type
     val messages = messagesAt(stack.currentPath())
     return FieldImpl(Pair(localId, type), messages)
@@ -238,7 +238,7 @@ with(AggregateContext(localId, messages, state)) {
 One important aspect to consider during the development of a DSL is its usability. It is important to provide the user with a minimal set of operators, each of them with a clear purpose.\newline
 This is what has been achieved with Collektive, since the constructs are coherent with the aggregate programming original operators.
 
-In order to use Collektive, it is necessary to perform some steps to setup the environment:
+In order to use Collektive, it is necessary to perform some steps to set up the environment:
 \begin{enumerate}
     \item \textbf{Include the compiler plugin}: since the alignment is crucial for the DSL to work, it is important to include into the Gradle project the custom Gradle plugin created to expose the Kotlin compiler plugin.\newline
     Whenever a new submodule of Collektive is created, the Gradle plugin can be included as shown in the code in Listing~\ref{code:include_gradle_plugin};
@@ -260,7 +260,7 @@ Once the setup is finished, the DSL is available into the new submodule. By call
 val double: (Int) -> Int = { it * 2 }
 val testValue: Int = 2
 aggregate {
-    neighbouring(double(testValue))
+    neighboring(double(testValue))
 }
 \end{lstlisting}
 The snippet of code in Listing~\ref{code:aggregate_program_example} shows an example of usage. The program shares with the neighbors the double of a local number. In this example, the value of the number is hardcoded, but in a real world example, this value might depend on the device environment, which would make different devices have a different value evaluation.
