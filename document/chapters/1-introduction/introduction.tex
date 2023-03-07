@@ -15,7 +15,7 @@ In order to face the new complexities it is necessary to rethink and renovate th
 
 This paradigm has been implemented in different programming languages and platforms: for example \textbf{Protelis}~\cite{protelis_introduction}, \textbf{Scafi}~\cite{scafi_introduction} and \textbf{FCPP}~\cite{fcpp_introduction}. All of them present strengths, but also weaknesses: in order to address those, a new framework can be a solution.
 
-In the following sections of this chapter, these themes are described in details, in order to define the goal of this thesis. Specifically Section~\ref{section:aggregate_programming_introduction} describes the aggregate programming characteristics and its main complexities, in Section~\ref{section:state_of_the_art} are introduced the implementation of the aggregate paradigm that constitute the current state of the art, and Section~\ref{section:motivation_goal} presents the motivations behind this work and the goals that aims to achieve.
+In the following sections of this chapter, these themes are described in details, in order to define the goal of this thesis. Specifically Section~\ref{section:aggregate_programming_introduction} describes the aggregate programming characteristics and its main complexities, in Section~\ref{section:state_of_the_art} are introduced the implementations of the aggregate paradigm that constitute the current state of the art, and Section~\ref{section:motivation_goal} presents the motivations behind this work and the goals that aims to achieve.
 
 \section{Context}\label{section:aggregate_programming_introduction}
 In this section it is going to be discussed in details the paradigm of Aggregate Programming, in order to provide the context of its development and an overview about how the paradigm works.
@@ -37,7 +37,7 @@ Some relevant complexities are the following~\cite{distributed_systems_challenge
 \end{itemize}
 
 Traditionally, the development of this kind of architectures is focused on the single device, instead of the system as a whole. This means that the developers need to concern about all the aspects just discussed, such as the coordination between devices, creating specific algorithms, but also about security, consistency, fault tolerance, which creates unnecessary complexities during the engineering of a system.\newline
-This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures, such as the one represented in Figure~\ref{fig:iot_connected_things}, which shows an example of a real life environment, with numerous heterogeneous devices that needs to communicate with each others.
+This approach is not feasible when dealing with large-scale, decentralized and adaptive infrastructures, such as the one represented in Figure~\ref{fig:iot_connected_things}, which shows an example of a real life environment, with numerous heterogeneous devices that need to communicate with each others.
 
 \begin{figure}[!ht]
     \centering
@@ -60,8 +60,8 @@ Considering the \textbf{local} perspective, P is computing on a round-based sche
     \item it retrieves the information received from neighbors while it was sleeping. The messages sent by the neighbors are fields, and they map the neighbor device identifier with the values computed;
     \item it gathers information about its context;
     \item it retrieves the information stored locally in the previous round about the context;
-    \item it executes P, which might manipulate the data of the current context, the data retrieved in the previous round and the neighbors values;
-    \item at the end of the execution of P, the device stores the current context's value in the local memory and sent the message to all the neighbors about the current computation;
+    \item it executes P, which might manipulate the data of the current context, the data retrieved from the previous round and the neighbors values;
+    \item at the end of the execution of P, the device stores the current context's value in the local memory and sent a message to all the neighbors about the current computation;
     \item at the end of the round, the device returns to sleep, until another round begins.
 \end{itemize}
 
@@ -97,7 +97,7 @@ It is possible to overcome this limitation by extending the field calculus with 
 The expected consequence of a branch construct is to determine the portion of code that is going to be computed. In the field calculus, the branch construct also has an unusual behavior, which is called domain restriction.
 
 \begin{lstlisting}
-    if (e0) {e1} else {e2}
+if (e0) {e1} else {e2}
 \end{lstlisting}
 Taking in consideration this portion of pseudocode, it is possible to identify two different restricted subdomains: 
 \begin{enumerate}
@@ -122,7 +122,7 @@ Second, when dealing with a computational field, such as when retrieving neighbo
 
 In order to explain this concept better, here is a snippet of pseudocode:
 \begin{lstlisting}
-    if (e0) {nbr(e1)} else {nbr(e2)}
+if (e0) {nbr(e1)} else {nbr(e2)}
 \end{lstlisting}
 When a device $\delta_1$ is in the domain $D_{true}$, it computes $nbr(e1)$: this means that it is retrieving from the neighbors that computed $e1$, while evaluating $e1$ itself.\newline
 Consequently, $\delta_1$ and the other devices have to be aligned in order to exchange information: they are all in the same subdomain, in which $e0$ is evaluated as true, and they are computing $nbr(e1)$.\newline
@@ -154,7 +154,7 @@ The architecture is based on Java, and the reasons are multiple:
     \item Java optimizations in terms of speed and resources consumption are making it a valid alternative to low-level languages, such as C.
 \end{itemize}
 
-Since Protelis is a functional language, but its syntax is Java-like, its adoption is not difficult. For example, the following is a snippet of code written in Protelis, which is used to calculate the distance between each device and the source, creating a gradient base on said distance:
+Since Protelis is a functional language, but its syntax is Java-like, its adoption is not difficult. For example, the following is a snippet of code written in Protelis, which is used to calculate the distance between each device and the source, using the gradient algorithm:
 \begin{lstlisting}[language=Python, caption=Protelis example, captionpos=b]
 def myPosition() = self.getDevicePosition()
 def nbrRange() = nbr(myPosition()).distanceTo(myPosition())
@@ -180,7 +180,7 @@ One of the key features of ScaFi is its support for declarative programming, whi
 
 ScaFi aims to provide a high-level and type-safe programming interface for building complex systems.\newline
 The combination of the Scala programming language, the Akka framework, and the JVM provides a strong foundation for building scalable and robust distributed systems.\newline
-In particular, the choice of a JVM-based architecture has the same advantages discussed previously for Protelis (Section~\ref{subsection:protelis}), which are mainly portability, low-cost of devices, diffusion and general JVM performances optimizations.
+In particular, the choice of a JVM-based architecture has the same advantages discussed previously for Protelis in Section~\ref{subsection:protelis}, which are mainly portability, low-cost of devices, diffusion and general JVM performances optimizations.
 
 \subsection{FCPP}\label{subsection:fcpp}
 FCPP~\cite{fcpp_introduction} is a library in C++14, and it implements the field calculus.\newline
@@ -192,12 +192,12 @@ Differently from Protelis and ScaFi, FCPP does not rely on the Java Virtual Mach
     \item C++ is performance-oriented, which means that the system requirements are very low, increasing the variety of devices that can use FCCP.
 \end{itemize}
 
-These two features allow the coverage of multiple use-cases that were not possible to handle utilizing Protelis and ScaFi: for example the deployment on microcontroller-based systems or cloud applications that have strict parallelism requirements in order to scale correctly, which is guaranteed by the performance improvements.\newline
+These two features allow the coverage of multiple use-cases that were not possible to handle using Protelis and ScaFi: for example the deployment on microcontroller-based systems or cloud applications that have strict parallelism requirements in order to scale correctly, which is guaranteed by the performance improvements.\newline
 Since it is based on a lower level language that Protelis and Scafi, programs written in FCCP might be difficult to understand when dealing with complex systems.
 
 \section{Motivation and goal}\label{section:motivation_goal}
 When talking about aggregate computing, there are several important features that must be considered when comparing different aggregate programming frameworks, such as ScaFi, Protelis, and FCPP.\newline
-After the analysis of the previous sections, it is possible to conclude that:
+After the analysis of the previous sections, it is possible to achieve the following conclusion:
 \begin{itemize}
     \item \textbf{Protelis}\newline
     It has a simple and expressive programming model, but its simplicity and expressiveness come at the cost of performances, as the framework does not provide much control over the underlying data structures and algorithms. Moreover, Protelis might not be the best choice for systems that require strong interoperability with other systems and technologies, since it has a limited set of integrations;
@@ -215,4 +215,4 @@ These considerations highlight crucial weaknesses of the already existent framew
 \end{itemize}
 
 The goal of this thesis is the study and the implementation of the aggregate programming paradigm, facing the alignment problem discussed in Section~\ref{subsection:alignment}, focussing on transparency, minimality and portability.\newline
-The reminder of this thesis is organized as follows. Chapter~\ref{chapter:metaprogramming} debates all the possibilities of metaprogramming in Kotlin, and Chapter~\ref{chapter:alignment} explains in details the solution of the alignment problem. Chapter~\ref{chapter:collektive} describes how the DSL is implemented and shows the end usage result. Finally, Chapter~\ref{chapter:conclusion} summarizes the work done in this thesis, adding plans for future development.
+The reminder of this thesis is organized as follows. Chapter~\ref{chapter:metaprogramming} debates all the possibilities of metaprogramming in Kotlin, and Chapter~\ref{chapter:alignment} explains in details the solution of the alignment problem. Chapter~\ref{chapter:collektive} describes how the DSL is implemented, shows the end usage result, and presents the validation process. Finally, Chapter~\ref{chapter:conclusion} summarizes the work done in this thesis, adding plans for future development.
