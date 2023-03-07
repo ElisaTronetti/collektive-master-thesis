@@ -344,8 +344,8 @@ Afterwords, it updates the local state, and it sends the via network the message
 By using the mechanisms just presented, it is possible to create tests that check the correct interaction between devices, also verifying that the alignment works properly. Moreover, \textit{KotlinTest} allows to run the implemented tests over the different targets of the project, testing the compatibility of the software over different platforms.
 
 The second validation process regards mainly the functional testing, and it aims to provide a proof of concept of the potential of Collektive.\newline
-The goal is to implement a gradient algorithm using the constructs provided by the DSL, and then simulate the computation of node in \textbf{Alchemist Simulator}~\cite{alchemist}.\newline
-In order to achieve this objective, it has been created a new submodule in the Collektive project called \textbf{collektive-test}. Alchemist dependencies, the DSL and the Gradle and compiler plugin are necessary in order to develop this validation process.
+The goal is to implement a gradient algorithm using the constructs provided by the DSL, and then simulate the computation of a distributed system using \textbf{Alchemist Simulator}~\cite{alchemist}.\newline
+In order to achieve this objective, it has been created a new submodule in the Collektive project called \textbf{collektive-test}. Alchemist dependencies, the DSL, and the Gradle and compiler plugin are fundamental for this purpose. 
 
 The following classes are required in order to create the correct infrastructure used to make the simulation possible:
 \begin{itemize}
@@ -353,7 +353,7 @@ The following classes are required in order to create the correct infrastructure
     \item \textbf{CollektiveIncarnation}: an incarnation is the interpreter that allows Alchemist to understand a language and to execute it correctly. This incarnation is specific for Collektive, and it is used to find the aggregate entry point through reflections, and it defines how each iteration of the aggregate program should be performed.
 \end{itemize}
 
-The algorithm is implemented as an \textit{AggregateContext} extension function is shown in the code in Listing~\ref{code:gradient_algorithm}.
+The algorithm is implemented as an \textit{AggregateContext} extension function, and it is shown in the code in Listing~\ref{code:gradient_algorithm}.
 \begin{lstlisting}[caption={Gradient algorithm implemented using Collektive}, captionpos=b, language=Kotlin, label={code:gradient_algorithm}]
 fun AggregateContext.gradient(
     source: Boolean,
@@ -368,7 +368,7 @@ fun AggregateContext.gradient(
     }
 }
 \end{lstlisting}
-The algorithm calculates the gradient from a node that is defined as \textit{source}. By using the \textit{sharing} construct, it is possible to retrieve all the neighbors' data. This is used to obtain the distances of the neighbors from the source, and then, the distance of the current device is added to the neighbors one. After that, it is searched the minimum distance, which is going to be the current distance from the current device to the source node. Finally, the algorithm returns zero if the node is the source, infinity if the minimum distance is not found, or the minimum value.\newline
+The algorithm calculates the gradient from a node that is defined as \textit{source}. By using the \textit{sharing} construct, it is possible to retrieve all the neighbors' data. This is used to obtain the distances of the neighbors from the source, and then, the distance of the current device is added to the neighbors one. After that, it is searched the minimum distance, which is going to be the current distance from the device to the source node. Finally, the algorithm returns zero if the node is the source, infinity if the minimum distance is not found, or the minimum value.\newline
 Since \textit{sharing} has been used, the computed value is then propagated to the neighborhood.
 
 In order to make the incarnation find the aggregate program, it is necessary to define an entry point, which is reported in the code in Listing~\ref{code:gradient_algorithm_entry_point}.
@@ -387,10 +387,10 @@ class Aggregate(private val node: CollektiveDevice<*>) {
 \end{lstlisting}
 The \textbf{Aggregate} class takes as parameter a \textit{CollektiveDevice}, which is used to establish the device that is currently computing.\newline
 The function \textbf{entrypoint()} is the function that the incarnation is going to look for and execute.\newline
-The entry point creates an \textit{aggregate} block, which takes as parameter all the contextual information about the device: the device identifier, the message received from the neighbors, and the state computed in the previous round. The computation consists of the execution of the gradient algorithm just presented, and it also defines that the node with the identification number \textit{0} is going to be the source.\newline
+The entry point creates an \textit{aggregate} block, which takes as parameter all the contextual information about the device: the device identifier, the messages received from the neighbors, and the state obtained in the previous round. The computation consists of the execution of the gradient algorithm just presented, and it also defines that the node with the identification number \textit{0} is going to be the source.\newline
 At the end of the single execution of the aggregate program, the current state of the device is updated.
 
-Finally, it has been created the simulation environment, which creates \textbf{200 nodes} in a 2D space in small space range. The result of the creation of the nodes is shown in Figure~\ref{fig:collektive_before_running_the_simulation}.
+Finally, it has been created the simulation environment, which creates \textbf{200 nodes} in a 2D space. The result of the creation of the nodes is shown in Figure~\ref{fig:collektive_before_running_the_simulation}.
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=0.75]{document/chapters/4-collektive/images/collektive_before_running_the_simulation.png}
@@ -404,7 +404,7 @@ The source node can be distinguished from the other nodes from the different sha
 The user interface of the Alchemist Simulator shows also other information:
 \begin{enumerate}
     \item \textbf{Rounds performed}: it refers to the number of time the aggregate program has been executed before reaching a stable gradient. The example showed in Figure~\ref{fig:collektive_simulation_completed} performed \textbf{30331} rounds;
-    \item \textbf{Execution time}: this is a valuable indicator of the performance of algorithm written using Collektive. The example in exam found a stable solution of the gradient in \textbf{150.73 milliseconds}.
+    \item \textbf{Execution time}: this is a valuable indicator of the performance of the algorithm written using Collektive. The example in exam found a stable solution of the gradient in \textbf{150.73 milliseconds}.
 \end{enumerate}
 \begin{figure}[!ht]
     \centering
@@ -413,4 +413,4 @@ The user interface of the Alchemist Simulator shows also other information:
     \label{fig:collektive_simulation_completed}
 \end{figure}
 
-This validation process using Alchemist Simulator showed the potential of Collektive: it is easy to implement algorithms that define the behavior of a system, and the execution is fast and reliable.
+This validation process using Alchemist Simulator shows the potential of Collektive: it is easy to implement algorithms that define the behavior of a system, and the execution is fast and reliable.
