@@ -191,7 +191,7 @@ The \textbf{Gradle module} is a wrapper for the Kotlin module, and it is an entr
 
 \noindent The \textbf{Kotlin module} is dived in three main parts:
 \begin{itemize}
-    \item \textbf{CommandLineProcessor}: the options created in the Gradle subplugin are loaded and used by the CommandLineProcessor. Whenever a Kotlin program is launched, kotlinc is invoked and the arguments that are set in the subplugin are passed to the Kotlin compiler;
+    \item \textbf{CommandLineProcessor}: the options created in the Gradle subplugin are loaded and used by the CommandLineProcessor. Whenever a Kotlin program is launched, \textit{kotlinc} is invoked and the arguments that are set in the subplugin are passed to the Kotlin compiler;
     \item \textbf{ComponentRegistrar}: it registers the extension components, which are going to be used when the project is compiling;
     \item \textbf{Extensions}: they are used to actually generate code. There are a lot of different extensions, which are used based on the use case.
 \end{itemize}
