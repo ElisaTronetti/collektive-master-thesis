@@ -1,7 +1,7 @@
 \chapter{Transparent alignment in Kotlin}\label{chapter:alignment}
 The alignment, discussed in Section~\ref{subsection:alignment}, is a crucial feature that must be provided in order to create a working implementation of the \textbf{Aggregate programming} paradigm. 
 
-The first step necessary to find a solution for a problem is to define a simple use case, which is going to be the base of the resolution attempts. A good starting point to illustate this is represented by the code in Listing~\ref{code:first_alignment_code_example}, which was also discussed previously in Section~\ref{subsection:alignment}. In order to be coherent with the final solution, the code is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
+The first step necessary to find a solution for a problem is to define a simple use case, which is going to be the base of the resolution attempts. A good starting point to illustrate this is represented by the code in Listing~\ref{code:first_alignment_code_example}, which was also discussed previously in Section~\ref{subsection:alignment}. In order to be coherent with the final solution, the code is now written in Kotlin and the nbr-expression is now called \textit{neighboring}.
 \begin{lstlisting}[caption={Starting point code to resolve the alignment problem}, captionpos=b, language=Kotlin, label={code:first_alignment_code_example}]
 fun f1() {neighboring(e1)}
 fun f2() {neighboring(e1)}
@@ -120,7 +120,7 @@ This leads to the conclusion that it is crucial for the solution of the alignmen
 Concluding, the characteristics of annotation and KSP are added in Table~\ref{tab:annotation_ksp_table} alongside with the stacktrace and hash ones, summarizing the considerations made on all the alternatives considered up until this point.
 
 \section{KCP: solution with total transparency and portability}\label{section:compiler_plugin_solution}
-\textbf{Kotlin compiler plugins} are another metaprogramming alternative. As discussed previously in Section~\ref{section:compiler_plugin_explanation}, the development of a compiler plugin requires a lot of time and study, but it also provide a total freedom when trying to modify the code at compile time.
+\textbf{Kotlin compiler plugins} are another metaprogramming alternative. As discussed previously in Section~\ref{section:compiler_plugin_explanation}, the development of a compiler plugin requires a lot of time and study, but it also provides a total freedom when trying to modify the code at compile time.
 
 The following considerations prove that a plugin can be used to solve the alignment problem:
 \begin{itemize}
