@@ -92,7 +92,7 @@ interface Stack {
 By using the \textit{Stack} it is possible to add to a data structure everything that is necessary for the alignment, which might be for example function calls. Considering the base case cited previously in Listing~\ref{code:first_alignment_code_example}, when executing \textit{f1}, the stack list should contain \textit{[f1, neighboring]}, and when computing \textit{f2} would be \textit{[f2, neighboring]}, making it possible to uniquely identify the two different expressions.\newline
 Trying to obtain the result just described, the problem can be divided in two smaller steps:
 \begin{enumerate}
-    \item The aggregate programming constructs are part of the DSL functions exposed to the final user, meaning that it is not possible for the user to change their implementation in any way while using it. Moreover, the name of these functions is known in advanced. This leads to create a simple solution for handling them, which consists on changing their implementations and adding a line of code that it is responsible to insert in the \textit{Stack} data structure the function name. For example, in the \textit{neighboring} implementation there is a function call to align that add its name to the stack.
+    \item The aggregate programming constructs are part of the DSL functions exposed to the final user, meaning that it is not possible for the user to change their implementation in any way while using it. Moreover, the name of these functions is known in advanced. This leads to create a simple solution for handling them, which consists on changing their implementations and adding a line of code that it is responsible to insert in the \textit{Stack} data structure the function name. For example, in the \textit{neighboring} implementation there would be a function call responsible for the alignment, that add its name to the stack.
     \item The second problem, which is more complex, can not be solved in the same way, since it would be the final user to manually solve the alignment problem. The solution would be to modify the functions \textit{f1} and \textit{f2} using KSP and adding the same line of code discussed for the previous case. On the other hand, the direct modification of the source code is not allowed by KSP, which means that the only solution would be to recreate the same code of the user, with the added function calls. This solution would be feasible for simple use cases, but it is not efficient when dealing with complex systems.
 \end{enumerate}
 This leads to the conclusion that it is crucial for the solution of the alignment problem to have the possibility to modify the source code. KSP can be used as a temporary solution for some use cases, also taking advantage of the simple and powerful API that it provides, but the downsides are important factors to consider.
@@ -125,7 +125,7 @@ Concluding, the characteristics of annotation and KSP are added in Table~\ref{ta
 The following considerations prove that a plugin can be used to solve the alignment problem:
 \begin{itemize}
     \item When developing a project using Kotlin multiplatform, the compiler translates under the hood the Kotlin code into the code for the targets. Before doing that, it is transformed into an \textit{Intermediate Representation}, called \textbf{IR}, which as been discussed in Section~\ref{section:kotlin_ir}. This representation allows the creation of multiplatform compiler plugins, without the need to distinguish the plugin between the different platforms;
-    \item Since the source code is completely available at compile time, it is possible to analyze it in order to make the plugin understand when the alignment is needed. Then, new code can be generated to guarantee the correct alignment, which can be similar to the stack discussed for KSP; 
+    \item Since the source code is completely available at compile time, it is possible to analyze it in order to make the plugin understand when the alignment is needed. Then, new code can be generated to guarantee the correct alignment, which can rely to a stack similar to the one discussed for KSP; 
     \item Since the generation is based on the intermediate representation, this allows the interoperability between the different project targets, and also on devices running on the same platform;
     \item The plugin modifications are applied at compile time, which does not impact in a relevant way the execution time;
     \item Finally, the code generation is also totally transparent to the user, meaning that he does not have to worry about the alignment.
@@ -169,37 +169,27 @@ When a device needs to know its computational state, it can retrieve its path us
 data class Path(val path: List<Any?>)
 \end{lstlisting}
 
-The data structures that can be used to store the information about the computation has been defined, which lays the foundations of the alignment solution.
+The data structures that can be used to store the information about the computation has been defined, which lays the foundations of the alignment solution.\newline
+It is now necessary to provide a method that actually updates the stack correctly, without having to do it manually. This is also going to be the function call generated by the compiler plugin to perform the alignment.\newline
+The method \textit{alignedOn} in Listing~\ref{code:alignedOn_compiler_plugin} needs to be explained further, since its behavior is central in the solution proposed.
 \begin{lstlisting}[caption={Function that perfoms the alignment in the Kotlin compiler plugin solution}, captionpos=b, language=Kotlin, label={code:alignedOn_compiler_plugin}]
 fun <R> alignedOn(pivot: Any?, body: () -> R): R {
     stack.alignRaw(pivot)
     return body().also { stack.dealign() }
 }
 \end{lstlisting}
-It is now necessary to provide a method that actually update the stack correctly, without having to do it manually. This is also going to be the function call generated by the compiler plugin to perform the alignment.\newline
-The method \textit{alignedOn} in Listing~\ref{code:alignedOn_compiler_plugin} needs to be explained further, since its behavior is central in the solution proposed.\newline
 The function signature accepts two parameters: the first one is the \textit{pivot}, which is the identifier that is going to be pushed in the stack, the second one is \textit{body}, which is the element that is going to be computed.\newline
-For instance, considering the base example reported at the beginning of this chapter in Listing~\ref{code:first_alignment_code_example} and supposing the computation of \textit{f1}, the \textit{pivot} would be the name of the function, that is the string \textit{f1}, and the body would be \textit{f1()}, which performs the computation of that function.\newline
+For instance, considering the base example reported at the beginning of this chapter in Listing~\ref{code:first_alignment_code_example}, and supposing the computation of \textit{f1}, the \textit{pivot} would be the name of the function, that is the string \textit{f1}, and the body would be \textit{f1()}, which performs the computation of that function.\newline
 The implementation of \textit{alignedOn} is entitled to update the stack pushing the pivot, then it executes the function taken as parameter and returns as output the value computed. Once the computation of the function is completed, it also resets the stack at its previous state.
 
-The basic information to explain the solution has been presented, and it is now necessary to divide the problem in two smaller steps. In Section~\ref{subsection:function_alignment} it is going to be discussed how to perform the alignment when dealign with function calls, giving also example of the generation of the code created by the compiler plugin. Then, in Section~\ref{subsection:branch_alignment} it is going to be explained how to guarantee the alignment when there are branches that cause domain restriction.
+The basic information to explain the solution has been presented, and it is now necessary to divide the problem in two smaller steps. In Section~\ref{subsection:function_alignment} it is going to be discussed how to perform the alignment when dealign with function calls, giving also an example of the generation of the code created by the compiler plugin. Then, in Section~\ref{subsection:branch_alignment} it is going to be explained how to guarantee the alignment when there are branches that cause domain restriction.
 
 \subsection{Function alignment with KCP}\label{subsection:function_alignment}
-Before describing how to generate code using the compiler plugin, it is necessary to define what Kotlin compiler plugin should generate in the context of functions.
+Before describing the mechanism used to generate code using the compiler plugin, it is necessary to define what the Kotlin compiler plugin should generate in the context of functions.
 
-Listing~\ref{code:generation_first_alignment_code_example} shows how Listing~\ref{code:first_alignment_code_example} is modified during compilation by the compiler plugin.
+Listing~\ref{code:generation_first_alignment_code_example} shows how the code presented as base case example in Listing~\ref{code:first_alignment_code_example} is modified during compilation by the compiler plugin.
 
-To each function call now corresponds a new call to \textit{alignedOn} function, creating the mechanism of alignment.\newline
-While executing the code in Listing~\ref{code:generation_first_alignment_code_example}, this is what happen to the stack:
-\begin{itemize}
-    \item First, the \textit{alignedOn} on line 12 is executed and the state of the stack is now \textit{[f1]};
-    \item Then, \textit{f1} is computed, which causes another \textit{alignedOn} call. The stack is updated, and its current value is now \textit{[f1, neighboring]};
-    \item While executing the neighboring function, the device looks into the messages received by its neighbors in order to find fields that match the current stack value \textit{[f1, neighboring]}. Those neighbors are the one aligned with the considered computing device;
-    \item Then the \textit{alignedOn} call at line 2 has completed its execution, so there is another update on the stack, which dealign from the current state. The stack is \textit{[f1]};
-    \item Also the \textit{alignedOn} on line 12 is finished, causing the stack to be empty again;
-    \item The exact behavior happens when computing \textit{f2}, with the difference that the stack when computing the neighboring function is \textit{[f2, neighboring]}. In this way, only the neighbors values found that executed \textit{f2} and then \textit{neighboring} are considered.
-\end{itemize}
-
+To each function call now corresponds a new call to the \textit{alignedOn} function reported previously in Listing~\ref{code:alignedOn_compiler_plugin}, creating the mechanism of alignment.
 \begin{lstlisting}[caption={Generation goal to handle the alignment of Listing~\ref{code:first_alignment_code_example}}, captionpos=b, language=Kotlin, label={code:generation_first_alignment_code_example}]
 fun f1() {
     alignedOn("neighboring"){
@@ -219,7 +209,15 @@ alignedOn("f2"){
     f2()
 }
 \end{lstlisting}
-
+While executing the code in Listing~\ref{code:generation_first_alignment_code_example}, this is what happen to the stack:
+\begin{itemize}
+    \item First, the \textit{alignedOn} on line 12 is executed and the state of the stack is now \textit{[f1]};
+    \item Then, \textit{f1} is computed, which causes another \textit{alignedOn} call. The stack is updated, and its current value is now \textit{[f1, neighboring]};
+    \item While executing the neighboring function, the device looks into the messages received by its neighbors in order to find fields that match the current stack value \textit{[f1, neighboring]}. Those neighbors are the one aligned with the considered computing device;
+    \item Then the \textit{alignedOn} call at line 2 has completed its execution, so there is another update on the stack, which dealign from the current state. The stack is \textit{[f1]};
+    \item Also the \textit{alignedOn} on line 12 is finished, causing the stack to be empty again;
+    \item The exact behavior happens when computing \textit{f2}, with the difference that the stack when computing the neighboring function is \textit{[f2, neighboring]}. In this way, only the neighbors values found that executed \textit{f2} and then \textit{neighboring} are considered.
+\end{itemize}
 
 Now that the end result that wants to be achieved for this base case is clear, the compiler plugin can be explained in details.\newline
 Since most of a basic plugin implementation has been presented in the example in Section~\ref{section:compiler_plugin_example}, only the crucial part of the transformation of the code are going to be discussed in this section.
@@ -248,7 +246,7 @@ Starting from the function calls, this is what happen:
     \end{enumerate}
     Of the three possible outcomes, only the third one makes the computation continue, in all the other cases the not modified function call is returned. For this reason, it is necessary to assume that an \textit{AggregateContext} reference has been found in order to continue to explain how the transformation works;
     \item In order to be able to create a new function call in the source code, it has to be declared inside an \textbf{irStatement}, which is used to define also the scope where the function is created;
-    \item Inside the \textit{irStatement} is then created the \textit{alignedOn} function call.
+    \item Inside the \textit{irStatement} is then created the \textit{alignedOn} function call;
     \item Finally, the transformed function call is returned.
 \end{itemize}
 
@@ -327,8 +325,7 @@ The Figure~\ref{fig:ir_trasformation_with_code_elements} shows how the various e
 The \textit{AggregateCallTransformer} finds the aggregate call, the \textit{AlignmentTransformer} is able to understand which function needs to be aligned, which in this example is \textit{neighboring}. Then the new function call is created, with the two parameters: the name of the original function and its call.
 
 \subsection{Branch construct alignment}\label{subsection:branch_alignment}
-As anticipated in Section~\ref{subsection:alignment}, also the branch construct creates a domain restriction that needs to be handled by the alignment feature.\newline
-Again, it is necessary to define the required result that has to be achieved by the compiler plugin.
+As anticipated in Section~\ref{subsection:alignment}, also the branch construct creates a domain restriction that needs to be handled by the alignment feature. Again, it is necessary to define the required result that has to be achieved by the compiler plugin.
 \begin{lstlisting}[caption={Base example of Koltin code that requires the branch alignment}, captionpos=b, language=Kotlin, label={code:branches_alignment_code_example}]
 val number = (0..10).random()
 if (number > 5) {
@@ -435,6 +432,6 @@ this.body = context.
             }
 \end{lstlisting}
 
-This constituted the whole behavior of the compiler plugin when dealing with a \textit{IrBranch}, but the transformation is similar when dealing with an \textit{IrElseBranch}.\newline
-One final detail of the transformation of the branches is in common with the function handling: the alignment is required if and only if there are aggregate programming construct calls, which means that the modification of an \textit{IrBranch} when its body does not involve any aggregate function is useless.\newline
+This constituted the whole behavior of the compiler plugin when dealing with a \textit{IrBranch}, but the transformation is almost identical when a \textit{IrElseBranch} is considered.\newline
+One final detail of the transformation of the branches is in common with the functions handling: the alignment is required if and only if there are aggregate programming construct calls, which means that the modification of an \textit{IrBranch} when its body does not involve any aggregate function is useless.\newline
 For this reason, the same controls performed for the function calls are applied here, which means that, when visiting any branch, only if the \textit{AggregateContext} reference is found in any of it body expression or expressions' children, then the alignment transformation is actuated. This enhances the performances of the Kotlin compiler plugin created.
