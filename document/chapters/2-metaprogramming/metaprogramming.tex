@@ -155,7 +155,7 @@ On the other hand, since the goal of KSP is to be a simple solution for common p
 \end{itemize}
 
 \subsection{Kotlin compiler plugins}\label{section:compiler_plugin_explanation}
-Kotlin compiler plugins~\cite{compiler_plugins_jetbrains} are a way to extend the functionalities of the Kotlin compiler by adding custom processing to the compilation. This means that the compiler plugin code runs at compile-time, and, since this is a feature of \textit{kotlinc}, it only works on Kotlin source code.
+Kotlin compiler plugins\footnote{\url{https://resources.jetbrains.com/storage/products/kotlinconf2018/slides/5\_Writing\%20Your\%20First\%20Kotlin\%20Compiler\%20Plugin.pdf} \label{compiler_plugin_slides_footnote}} are a way to extend the functionalities of the Kotlin compiler by adding custom processing to the compilation. This means that the compiler plugin code runs at compile-time, and, since this is a feature of \textit{kotlinc}, it only works on Kotlin source code.
 
 Compiler plugins allow automating tasks and enforce coding standards. For example, they can be used to generate boilerplate code, such as accessor methods, or to enforce specific naming conventions or coding styles. Compiler plugins can also be used to perform code analysis and modification, such as adding custom checks and warnings, or refactoring the code automatically.
 
@@ -172,12 +172,12 @@ Moreover, compiler plugins can slow down the compilation process and make it mor
 
 Finally, another aspect that must be taken in consideration is the fact that the Kotlin compiler API is not documented. This means that working with it and understanding the functions' behaviors is not an easy task, and it requires even more time.
 
-A Kotlin compiler plugin architecture is organized as shown in Figure~\ref{fig:kotlin_compiler_plugin_architecture}.
+A Kotlin compiler plugin architecture is organized as shown in Figure~\ref{fig:kotlin_compiler_plugin_architecture}\footref{compiler_plugin_slides_footnote}.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[scale=1]{document/chapters/2-metaprogramming/images/kotlin_compiler_plugin_architecture.pdf}
-    \caption{The Kotlin compiler plugin architecture~\cite{compiler_plugins_jetbrains}}
+    \caption{The Kotlin compiler plugin architecture}
     \label{fig:kotlin_compiler_plugin_architecture}
 \end{figure}
 
